@@ -43,8 +43,8 @@
     width: var(--max-width);
     max-width: 100%;
     display: grid;
-    grid-template-columns: minmax(auto, 400px) auto;
-    grid-template-rows: minmax(auto, 400px) auto 200px;
+    grid-template-columns: 400px auto;
+    grid-template-rows: 400px auto 1fr;
     grid-template-areas:
     "logo description"
     "donate subscribe";
@@ -135,6 +135,19 @@
     position: relative;
 }
 
+.logoDeleteButton {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    padding: 10px;
+    zIndex: 1;
+    color: red;
+}
+
+.logoDeleteButton:hover {
+    transform: scale(1.1);
+}
+
 @media (prefers-reduced-motion) {
     .card:hover span {
         transform: none;
@@ -222,16 +235,6 @@
 @media (min-width: 701px) and (max-width: 1120px) {
     .grid {
         grid-template-columns: repeat(2, 50%);
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    .vercelLogo {
-        filter: invert(1);
-    }
-
-    .logo {
-        filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
     }
 }
 

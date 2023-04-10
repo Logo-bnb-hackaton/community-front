@@ -4,7 +4,6 @@ import styles from '@/styles/Home.module.css'
 import WalletButton from "@/components/wallet/WalletButton";
 import ReactMarkdown from 'react-markdown'
 
-import profilePic from '../assets/test_logo.jpeg'
 import youtubeIcon from '../assets/social_media_logo/youtube_icon.png'
 import githubIcon from '../assets/social_media_logo/github_square_icon.png'
 import notionIcon from '../assets/social_media_logo/notion_icon.png'
@@ -12,6 +11,7 @@ import telegramIcon from '../assets/social_media_logo/telegram_icon.png'
 import twitterIcon from '../assets/social_media_logo/twitter_icon.png'
 import gmailIcon from '../assets/social_media_logo/gmail_icon.png'
 import {useState} from "react";
+import Logo from "@/components/logo/Logo";
 
 const socialLinks = [
     {
@@ -68,13 +68,7 @@ export default function Home() {
 
                 <div className={styles.center}>
                     <div className={styles.grid}>
-                        <Image
-                            style={{borderRadius: "30px", gridArea: "logo"}}
-                            src={profilePic}
-                            alt="Profile logo"
-                            width={400}
-                            height={400}
-                        />
+                        <Logo logoUrl={undefined} editable={true}/>
                         <div className={styles.profileDescription} style={{gridArea: "description"}}>
                             <p style={{fontSize: "80px", fontWeight: "bold"}}>{"Cryptus".toUpperCase()}</p>
                             <div style={{padding: "1rem 0", maxWidth: "100%", maxHeight: "100%"}}>
@@ -108,6 +102,9 @@ export default function Home() {
                         </div>
                         <button className={styles.payButton} style={{gridArea: "donate"}}>Donate</button>
                         <button className={styles.payButton} style={{gridArea: "subscribe"}}>Subscribe</button>
+                    </div>
+                    <div>
+
                     </div>
                 </div>
             </main>
