@@ -1,56 +1,16 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 import WalletButton from "@/components/wallet/WalletButton";
 import ReactMarkdown from 'react-markdown'
-
-import youtubeIcon from '../assets/social_media_logo/youtube_icon.png'
-import githubIcon from '../assets/social_media_logo/github_square_icon.png'
-import notionIcon from '../assets/social_media_logo/notion_icon.png'
-import telegramIcon from '../assets/social_media_logo/telegram_icon.png'
-import twitterIcon from '../assets/social_media_logo/twitter_icon.png'
-import gmailIcon from '../assets/social_media_logo/gmail_icon.png'
-import {useState} from "react";
+import React, {useState} from "react";
 import Logo from "@/components/logo/Logo";
+import SocialMediaList from "@/components/social_media_list/SocialMediaList";
 
-const socialLinks = [
-    {
-        type: "YouTube",
-        icon: youtubeIcon,
-        link: ""
-    },
-    {
-        type: "Github",
-        icon: githubIcon,
-        link: ""
-    },
-    {
-        type: "Notion",
-        icon: notionIcon,
-        link: ""
-    },
-    {
-        type: "Telegram",
-        icon: telegramIcon,
-        link: ""
-    },
-    {
-        type: "Twitter",
-        icon: twitterIcon,
-        link: ""
-    },
-    {
-        type: "Gmail",
-        icon: gmailIcon,
-        link: ""
-    },
-]
 
 export default function Home() {
 
     const [description, setDescription] = useState("## Как заработать на криптовалюте?\nВы находитесь в правильном месте, если задали себе этот вопрос. Инвестиции в криптовалюту, заработок на **криптовалюте**  - в скором времени вы изучите все про эти темы.\n")
 
-    console.log(description)
     return (
         <>
             <Head>
@@ -77,27 +37,10 @@ export default function Home() {
                             <div style={{
                                 display: "flex",
                                 flexDirection: "row",
-                                justifyContent: "space-between",
                                 alignItems: "center",
                                 gap: "20px"
                             }}>
-                                {socialLinks.map((item, index) =>
-                                    <a key={index}
-                                       href="https://www.youtube.com/@CRYPTUSMEDIA/about"
-                                       className={styles.card}
-                                       target="_blank"
-                                       rel="noopener noreferrer"
-                                    >
-                                        <Image
-                                            src={item.icon}
-                                            alt={`${item.type} logo`}
-                                            fill
-                                            // width={70}
-                                            // height={70}
-                                        />
-                                    </a>
-                                )
-                                }
+                                <SocialMediaList socialMediaLinks={[]}/>
                             </div>
                         </div>
                         <button className={styles.payButton} style={{gridArea: "donate"}}>Donate</button>

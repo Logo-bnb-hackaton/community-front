@@ -67,6 +67,21 @@
     transform: scale(1.05);
 }
 
+.cardDeleteButton {
+    cursor: pointer;
+    position: absolute;
+    right: -10px;
+    top: -15px;
+    /*padding: 5px;*/
+    z-index: 1;
+    color: black;
+}
+
+.cardDeleteButton:hover {
+    transform: scale(1.1);
+    color: red;
+}
+
 .center {
     max-width: var(--max-width);
     width: 100vw;
