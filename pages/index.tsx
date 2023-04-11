@@ -1,15 +1,25 @@
 import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
-import WalletButton from "@/components/wallet/WalletButton";
-import ReactMarkdown from 'react-markdown'
-import React, {useState} from "react";
-import Logo from "@/components/logo/Logo";
-import SocialMediaList from "@/components/social_media_list/SocialMediaList";
+import React, {useEffect, useState} from "react";
+import {useAccount} from "wagmi";
+import Link from 'next/link'
+import Header from "@/components/header/Header";
 
 
 export default function Home() {
 
-    const [description, setDescription] = useState("## Как заработать на криптовалюте?\nВы находитесь в правильном месте, если задали себе этот вопрос. Инвестиции в криптовалюту, заработок на **криптовалюте**  - в скором времени вы изучите все про эти темы.\n")
+    const account = useAccount();
+
+    const isAccountConnected = () => {
+        return account && account.isConnected;
+    }
+
+    const [profileId, setProfileId] = useState<number | undefined>(undefined);
+
+    useEffect(()=>{
+        if (!account) return;
+        setProfileId(1);
+    },[account]);
 
     return (
         <>
@@ -21,34 +31,11 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
             <main className={styles.main}>
-                <div className={styles.description}>
-                    <p>Logo</p>
-                    <WalletButton/>
-                </div>
+                <Header profileId={profileId} edited={false} saveCallback={undefined} setEdited={undefined}/>
 
-                <div className={styles.center}>
-                    <div className={styles.grid}>
-                        <Logo logoUrl={undefined} editable={true}/>
-                        <div className={styles.profileDescription} style={{gridArea: "description"}}>
-                            <p style={{fontSize: "80px", fontWeight: "bold"}}>{"Cryptus".toUpperCase()}</p>
-                            <div style={{padding: "1rem 0", maxWidth: "100%", maxHeight: "100%"}}>
-                                <ReactMarkdown className={styles.lineBreak}>{description}</ReactMarkdown>
-                            </div>
-                            <div style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: "20px"
-                            }}>
-                                <SocialMediaList socialMediaLinks={[]}/>
-                            </div>
-                        </div>
-                        <button className={styles.payButton} style={{gridArea: "donate"}}>Donate</button>
-                        <button className={styles.payButton} style={{gridArea: "subscribe"}}>Subscribe</button>
-                    </div>
-                    <div>
-
-                    </div>
+                <div className={styles.center} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                    {!isAccountConnected() && <h2>Please connect wallet</h2>}
+                    {isAccountConnected() && <Link href={"/profile/1"}>To profile</Link>}
                 </div>
             </main>
         </>

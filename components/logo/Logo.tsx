@@ -1,10 +1,12 @@
-import React, {SyntheticEvent, useEffect, useState} from 'react';
-import {DeleteOutlined, LoadingOutlined, PlusOutlined} from '@ant-design/icons';
+import React, {SyntheticEvent, useState} from 'react';
+import {DeleteOutlined, LoadingOutlined, UserAddOutlined} from '@ant-design/icons';
 import {message, Upload} from 'antd';
 import type {RcFile, UploadChangeParam, UploadProps} from 'antd/es/upload';
 import type {UploadFile} from 'antd/es/upload/interface';
 import Image from "next/image";
 import styles from '@/styles/Home.module.css'
+
+const {Dragger} = Upload;
 
 const getBase64 = (img: RcFile, callback: (url: string) => void) => {
     const reader = new FileReader();
@@ -25,13 +27,13 @@ const beforeUpload = (file: RcFile) => {
 };
 
 // todo add logic with editable
-export default function Logo({logoUrl, editable = false}: { logoUrl?: string, editable: boolean }) {
+export default function Logo({
+                                 logoUrl,
+                                 setLogoUrl,
+                                 edited = false,
+                                 hasError = false
+                             }: { logoUrl?: string, setLogoUrl: Function, edited: boolean, hasError: boolean | undefined }) {
     const [loading, setLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState<string>();
-
-    useEffect(() => {
-        if (logoUrl) setImageUrl(logoUrl);
-    }, [logoUrl]);
 
     const handleChange: UploadProps['onChange'] = (info: UploadChangeParam<UploadFile>) => {
         if (info.file.status === 'uploading') {
@@ -42,19 +44,12 @@ export default function Logo({logoUrl, editable = false}: { logoUrl?: string, ed
             // Get this url from response in real world.
             getBase64(info.file.originFileObj as RcFile, (url) => {
                 setLoading(false);
-                setImageUrl(url);
+                setLogoUrl(url);
             });
         }
     };
 
-    const uploadButton = (
-        <div>
-            {loading ? <LoadingOutlined/> : <PlusOutlined/>}
-            <div style={{marginTop: 8}}>Upload</div>
-        </div>
-    );
-
-    const deleteButtonHandler = (e: SyntheticEvent<any>) => setImageUrl(undefined);
+    const deleteButtonHandler = (e: SyntheticEvent<any>) => setLogoUrl(undefined);
 
     return (
         <div style={{
@@ -64,30 +59,31 @@ export default function Logo({logoUrl, editable = false}: { logoUrl?: string, ed
             justifyContent: "center",
             alignItems: "center",
         }}>
-            {imageUrl &&
+            {logoUrl &&
                 <>
-                    <Image src={imageUrl} alt={"Community logo"} style={{borderRadius: "30px"}} fill/>
+                    <Image src={logoUrl} alt={"Community logo"} style={{borderRadius: "30px"}} fill/>
 
-                    <div className={styles.logoDeleteButton} onClick={deleteButtonHandler}>
-                        <DeleteOutlined style={{color: "red", fontSize: "20px"}}/>
-                    </div>
+                    {edited &&
+                        <div className={styles.logoDeleteButton} onClick={deleteButtonHandler}>
+                            <DeleteOutlined style={{color: "red", fontSize: "20px"}}/>
+                        </div>
+                    }
                 </>
             }
             {
-                !imageUrl &&
-                <div style={{width: "110px", height: "110px"}}>
-                    <Upload
-                        name="avatar"
-                        listType="picture-card"
-                        className="avatar-uploader"
-                        showUploadList={false}
-                        beforeUpload={beforeUpload}
-                        onChange={handleChange}
-                        accept="image/*"
-                    >
-                        {uploadButton}
-                    </Upload>
-                </div>
+                !logoUrl &&
+                <Dragger
+                    maxCount={1}
+                    className={`${styles.draggerWrapper} ${hasError ? styles.errorBorder : ""}`}
+                    accept="image/*"
+                    beforeUpload={beforeUpload}
+                    onChange={handleChange}
+                >
+                    <p className="ant-upload-drag-icon">
+                        {loading ? <LoadingOutlined/> : <UserAddOutlined style={{color: "#ECFDD7"}}/>}
+                    </p>
+                    <p className="ant-upload-text">Click or drag logo file to this area to upload</p>
+                </Dragger>
             }
         </div>
     );

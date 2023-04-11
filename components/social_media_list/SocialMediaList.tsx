@@ -2,30 +2,36 @@ import styles from "@/styles/Home.module.css";
 import Image, {StaticImageData} from "next/image";
 import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 import {Input, Modal, Select} from "antd";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import youtubeIcon from "@/assets/social_media_logo/youtube_icon.png";
 import githubIcon from "@/assets/social_media_logo/github_square_icon.png";
 import notionIcon from "@/assets/social_media_logo/notion_icon.png";
 import telegramIcon from "@/assets/social_media_logo/telegram_icon.png";
 import twitterIcon from "@/assets/social_media_logo/twitter_icon.png";
 import gmailIcon from "@/assets/social_media_logo/gmail_icon.png";
+import externalIcon from "@/assets/social_media_logo/external_link_icon.png";
+import instagramIcon from "@/assets/social_media_logo/instagram_icon.png";
 
 export default function SocialMediaList(
-    {socialMediaLinks}: { socialMediaLinks: SocialMediaLink[] }
+    {
+        socialMediaLinks,
+        setSocialLinks,
+        edited = false,
+        hasError = false
+    }: { socialMediaLinks: SocialMediaLink[], setSocialLinks: Function, edited: boolean, hasError: boolean | undefined }
 ) {
 
-    const [socialLinks, setSocialLinks] = useState<SocialMediaLink[]>([])
     const [addSocialLinkMenu, setAddSocialLinkMenu] = useState(false)
 
     const [newSocialMediaType, setNewSocialMediaType] = useState(SocialMediaType.YouTube)
     const [newSocialMediaLink, setNewSocialMediaLink] = useState("")
 
-    useEffect(() => {
-        setSocialLinks(socialMediaLinks)
-    }, [socialMediaLinks])
+    const showAddSocialLinkMenu = () => setAddSocialLinkMenu(true)
 
-    const showAddSocialLinkMenu = () => {
-        setAddSocialLinkMenu(true)
+    const externalLinkRegExp = /((http|https):\/\/)(.*)/
+    const prepareUrl = (url: string): string => {
+        if (externalLinkRegExp.test(url)) return url;
+        return `https://${url}`;
     }
 
     const addNewSocialLink = () => {
@@ -33,53 +39,44 @@ export default function SocialMediaList(
             console.error("Please fill all fields")
             return
         }
-        let newLink = new SocialMediaLink(newSocialMediaType, staticImageByType(newSocialMediaType), newSocialMediaLink);
-        setSocialLinks([...socialLinks, newLink]);
+        if (!urlValidatorByType(newSocialMediaType).test(newSocialMediaLink)) {
+            console.error("Please fill all fields")
+            return
+        }
+        let newLink = new SocialMediaLink(newSocialMediaType, staticImageByType(newSocialMediaType), prepareUrl(newSocialMediaLink));
+        setSocialLinks([...socialMediaLinks, newLink]);
         setAddSocialLinkMenu(false);
         setNewSocialMediaLink("");
     }
 
     const deleteButtonHandler = (indexForDelete: number) => {
-        console.log(indexForDelete);
-        setSocialLinks([...socialLinks].filter((item, index) => index != indexForDelete));
+        setSocialLinks([...socialMediaLinks].filter((item, index) => index != indexForDelete));
     }
 
     return (
         <>
-            {socialLinks.map((item, index) =>
+            {socialMediaLinks.map((item, index) =>
                 <div className={styles.card} key={index}>
-                    <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    <a href={item.link} target="_blank" rel="noopener noreferrer">
                         <Image
                             src={item.icon}
                             alt={`${item.type} logo`}
                             fill
                         />
                     </a>
-                    <div className={styles.cardDeleteButton}
-                         onClick={() => deleteButtonHandler(index)}>
-                        <DeleteOutlined style={{fontSize: "10px"}}/>
-                    </div>
+                    {edited &&
+                        <div className={styles.cardDeleteButton}
+                             onClick={() => deleteButtonHandler(index)}>
+                            <DeleteOutlined style={{fontSize: "10px"}}/>
+                        </div>
+                    }
                 </div>
             )
             }
             {
-                socialLinks.length < 7 &&
+                socialMediaLinks.length < 7 && edited &&
                 <>
-                    <button style={{
-                        width: "70px",
-                        height: "70px",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: "rgba(0, 0, 0, 0.02)",
-                        border: "1px dashed #d9d9d9",
-                        borderRadius: "8px",
-                    }}
+                    <button className={`${styles.addCardButton} ${hasError ? styles.errorBorder : ""}`}
                             onClick={showAddSocialLinkMenu}>
                         <PlusOutlined/>
                         <p style={{paddingTop: "8px"}}>Add link</p>
@@ -138,7 +135,26 @@ export enum SocialMediaType {
     Telegram = "Telegram",
     Twitter = "Twitter",
     Gmail = "Gmail",
+    Instagram = "Instagram",
     Link = "Link",
+}
+
+export const toSocialMediaLink = (url: string): SocialMediaLink => {
+    const type = getType(url);
+    console.log(`Type: ${type}, url: ${url}`);
+    return new SocialMediaLink(type, staticImageByType(type), url);
+}
+
+const getType = (url: string): SocialMediaType => {
+    let it = urlValidatorByTypeMap.entries();
+    let entry = it.next();
+    while (!entry.done) {
+        const type = entry.value[0];
+        const regExp = entry.value[1];
+        if (regExp.test(url)) return type;
+        entry = it.next();
+    }
+    return SocialMediaType.Link;
 }
 
 const staticImageByType = (type: SocialMediaType) => {
@@ -155,8 +171,28 @@ const staticImageByType = (type: SocialMediaType) => {
             return twitterIcon;
         case SocialMediaType.Gmail:
             return gmailIcon;
+        case SocialMediaType.Instagram:
+            return instagramIcon;
         case SocialMediaType.Link:
-            // todo fix create default image
-            return youtubeIcon;
+        default:
+            return externalIcon;
     }
+}
+
+const defaultRegExp = /(.*)/;
+const urlValidatorByTypeMap: Map<SocialMediaType, RegExp> = new Map([
+    [SocialMediaType.YouTube, /((http|https):\/\/)?(www\.)?youtube\.com\/(.*)/],
+    [SocialMediaType.Github, /((http|https):\/\/)?(www\.)?github\.com\/(.*)/],
+    [SocialMediaType.Notion, /((http|https):\/\/)?(www\.)?notion\.so\/(.*)/],
+    [SocialMediaType.Telegram, /((http|https):\/\/)?(www\.)?t\.me\/(.*)/],
+    [SocialMediaType.Twitter, /((http|https):\/\/)?(www\.)?twitter\.com\/(.*)/],
+    [SocialMediaType.Gmail, /(.*)gmail.com(.*)/],
+    [SocialMediaType.Instagram, /((http|https):\/\/)?(www\.)?instagram\.com\/(.*)/],
+    [SocialMediaType.Link, defaultRegExp],
+]);
+
+const urlValidatorByType = (type: SocialMediaType): RegExp => {
+    const regExp = urlValidatorByTypeMap.get(type);
+    if (regExp) return regExp;
+    return defaultRegExp;
 }
