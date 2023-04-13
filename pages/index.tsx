@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {useAccount} from "wagmi";
 import Link from 'next/link'
 import Header from "@/components/header/Header";
@@ -14,13 +14,6 @@ export default function Home() {
         return account && account.isConnected;
     }
 
-    const [profileId, setProfileId] = useState<number | undefined>(undefined);
-
-    useEffect(()=>{
-        if (!account) return;
-        setProfileId(1);
-    },[account]);
-
     return (
         <>
             <Head>
@@ -31,9 +24,10 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
             <main className={styles.main}>
-                <Header profileId={profileId} edited={false} saveCallback={undefined} setEdited={undefined}/>
+                <Header profileOwner={undefined} saveCallback={undefined} edited={false} setEdited={undefined}/>
 
-                <div className={styles.center} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                <div className={styles.center}
+                     style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
                     {!isAccountConnected() && <h2>Please connect wallet</h2>}
                     {isAccountConnected() && <Link href={"/profile/1"}>To profile</Link>}
                 </div>

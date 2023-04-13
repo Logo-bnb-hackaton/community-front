@@ -11,6 +11,7 @@ import textIcon from "@/assets/test_logo.jpeg";
 const mockkProfile = [
     {
         id: "1",
+        owner: "0xc0dEdbFD9224c8C7e0254825820CC706180259F2",
         title: "CRYPTUS",
         description: "## Как заработать на криптовалюте?\nВы находитесь в правильном месте, если задали себе этот вопрос. Инвестиции в криптовалюту, заработок на **криптовалюте**  - в скором времени вы изучите все про эти темы.\n",
         logoUrl: textIcon.src,
@@ -43,6 +44,7 @@ const Profile = () => {
     const router = useRouter()
     const {profileId} = router.query
 
+    const [profileOwner, setProfileOwner] = useState("");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
     const [logoUrl, setLogoUrl] = useState<string>();
@@ -53,13 +55,16 @@ const Profile = () => {
 
     useEffect(() => {
         if (!profileId) return;
+        // todo fix it, make real call
         const profile = mockkProfile.filter(item => item.id === profileId)[0];
-        toSocialMediaLink("https://twitter.com/CryptusMedia");
         if (profile) {
+            setProfileOwner(profile.owner);
             setTitle(profile.title);
             setDescription(profile.description);
             setLogoUrl(profile.logoUrl);
             setSocialLinks(profile.socialLinks.map(link => toSocialMediaLink(link)));
+        } else {
+            router.push("/");
         }
     }, [profileId]);
 
@@ -137,7 +142,7 @@ const Profile = () => {
 
     return (
         <main className={styles.main}>
-            <Header profileId={profileId as string} saveCallback={saveCallback} edited={edited} setEdited={setEdited}/>
+            <Header profileOwner={profileOwner} saveCallback={saveCallback} edited={edited} setEdited={setEdited}/>
 
             <div className={styles.center} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
                 <div className={styles.grid}>

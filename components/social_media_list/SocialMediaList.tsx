@@ -23,6 +23,7 @@ export default function SocialMediaList(
 
     const [addSocialLinkMenu, setAddSocialLinkMenu] = useState(false)
 
+    const [editedLinkItemId, setEditedLinkItemId] = useState<number | undefined>(undefined);
     const [newSocialMediaType, setNewSocialMediaType] = useState(SocialMediaType.YouTube)
     const [newSocialMediaLink, setNewSocialMediaLink] = useState("")
 
@@ -36,28 +37,65 @@ export default function SocialMediaList(
 
     const addNewSocialLink = () => {
         if (!newSocialMediaType || !newSocialMediaLink || newSocialMediaLink.length == 0) {
-            console.error("Please fill all fields")
+            console.error("Please fill all fields.")
             return
         }
         if (!urlValidatorByType(newSocialMediaType).test(newSocialMediaLink)) {
-            console.error("Please fill all fields")
+            console.error("Invalid type and link.")
             return
         }
         let newLink = new SocialMediaLink(newSocialMediaType, staticImageByType(newSocialMediaType), prepareUrl(newSocialMediaLink));
-        setSocialLinks([...socialMediaLinks, newLink]);
-        setAddSocialLinkMenu(false);
-        setNewSocialMediaLink("");
+
+        if (editedLinkItemId !== undefined) {
+            console.log(`editing ${editedLinkItemId}`);
+            setSocialLinks([...socialMediaLinks.map((item, index) => {
+                if (index === editedLinkItemId) {
+                    return newLink;
+                } else {
+                    return item;
+                }
+            })]);
+        } else {
+            const json = JSON.stringify(newLink);
+            const hasLink = socialMediaLinks.filter(item => JSON.stringify(item) == json).length > 0;
+            if (!hasLink) {
+                setSocialLinks([...socialMediaLinks, newLink]);
+            }
+        }
+
+        resetToDefaultValue();
+    }
+
+    const cancelNewSocialLink = () => {
+        resetToDefaultValue();
     }
 
     const deleteButtonHandler = (indexForDelete: number) => {
         setSocialLinks([...socialMediaLinks].filter((item, index) => index != indexForDelete));
     }
 
+
+    const showEditSocialLinkMenu = (index: number, type: SocialMediaType, link: string) => {
+        setEditedLinkItemId(index);
+        setNewSocialMediaType(type);
+        setNewSocialMediaLink(link);
+        setAddSocialLinkMenu(true);
+    }
+
+    const resetToDefaultValue = () => {
+        setEditedLinkItemId(undefined);
+        setAddSocialLinkMenu(false);
+        setNewSocialMediaLink("");
+        setNewSocialMediaType(SocialMediaType.YouTube);
+    }
+
     return (
         <>
             {socialMediaLinks.map((item, index) =>
                 <div className={styles.card} key={index}>
-                    <a href={item.link} target="_blank" rel="noopener noreferrer">
+                    <a href={edited ? '#' : item.link} target={edited ? "" : "_blank"} rel="noopener noreferrer"
+                       onClick={edited ? () => showEditSocialLinkMenu(index, item.type, item.link) : () => {
+                       }}>
                         <Image
                             src={item.icon}
                             alt={`${item.type} logo`}
@@ -85,12 +123,13 @@ export default function SocialMediaList(
                         title="Add social media link"
                         centered
                         open={addSocialLinkMenu}
-                        onOk={() => addNewSocialLink()}
-                        onCancel={() => setAddSocialLinkMenu(false)}
+                        onOk={addNewSocialLink}
+                        onCancel={cancelNewSocialLink}
                     >
                         <div style={{display: "flex", flexDirection: "row"}}>
                             <Select
                                 defaultValue={newSocialMediaType}
+                                value={newSocialMediaType}
                                 style={{width: 120}}
                                 onChange={v => setNewSocialMediaType(v)}
                                 options={
@@ -141,7 +180,6 @@ export enum SocialMediaType {
 
 export const toSocialMediaLink = (url: string): SocialMediaLink => {
     const type = getType(url);
-    console.log(`Type: ${type}, url: ${url}`);
     return new SocialMediaLink(type, staticImageByType(type), url);
 }
 

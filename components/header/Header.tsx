@@ -7,21 +7,23 @@ import {FormOutlined} from "@ant-design/icons";
 
 export default function Header(
     {
-        profileId,
+        profileOwner = undefined,
         saveCallback = undefined,
         edited = false,
         setEdited = undefined,
-    }: { profileId: number | string | undefined, saveCallback: Function | undefined, edited: boolean, setEdited: Function | undefined }
+    }: { profileOwner: string | undefined, saveCallback: Function | undefined, edited: boolean, setEdited: Function | undefined }
 ) {
 
     const [editAvailable, setEditAvailable] = useState(false);
 
     const account = useAccount();
     useEffect(() => {
-        if (!account || !profileId) return;
-        // todo fix it
-        setEditAvailable(true);
-    }, [account, profileId])
+        if (account && profileOwner && account.isConnected && account.address == profileOwner) {
+            setEditAvailable(true);
+            return;
+        }
+        setEditAvailable(false);
+    }, [account, profileOwner])
 
     const onEditHandle = () => {
         setEdited!!(true);
