@@ -7,6 +7,7 @@ import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
 import {Input} from "antd";
 import textIcon from "@/assets/test_logo.jpeg";
+import axios from "axios";
 
 const mockkProfile = [
     {
@@ -36,6 +37,22 @@ class ProfileError {
         this.socialMediaLinks = socialMediaLinks;
     }
 }
+class ProfileRes {
+    id: string;
+    logo: string;
+    title: string;
+    description: string;
+    socialMediaLinks: string[];
+
+
+    constructor(id: string, logo: string, title: string, description: string, socialMediaLinks: string[]) {
+        this.id = id;
+        this.logo = logo;
+        this.title = title;
+        this.description = description;
+        this.socialMediaLinks = socialMediaLinks;
+    }
+}
 
 const MAX_DESCRIPTION_LEN = 250;
 
@@ -44,37 +61,48 @@ const Profile = () => {
     const router = useRouter()
     const {profileId} = router.query
 
-    const [profileOwner, setProfileOwner] = useState("");
+    const [profileOwner, setProfileOwner] = useState("0xc0dEdbFD9224c8C7e0254825820CC706180259F2");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
     const [logoUrl, setLogoUrl] = useState<string>();
-    const [socialLinks, setSocialLinks] = useState<SocialMediaLink[]>([])
+    const [socialMediaLinks, setSocialMediaLinks] = useState<SocialMediaLink[]>([])
     const [edited, setEdited] = useState(false)
 
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined)
 
     useEffect(() => {
         if (!profileId) return;
-        // todo fix it, make real call
-        const profile = mockkProfile.filter(item => item.id === profileId)[0];
-        if (profile) {
-            setProfileOwner(profile.owner);
-            setTitle(profile.title);
-            setDescription(profile.description);
-            setLogoUrl(profile.logoUrl);
-            setSocialLinks(profile.socialLinks.map(link => toSocialMediaLink(link)));
-        } else {
-            router.push("/");
-        }
+        axios({
+            method: 'post',
+            url: "http://localhost:8080/profile/",
+            data: {
+                profileId: profileId.toString()
+            },
+        }).then(res => {
+            if (res.data.status == "error") {
+                return;
+            }
+            const profile = res.data.profile as ProfileRes;
+            if (profile) {
+                // todo fix it
+                // setProfileOwner(profile.owner);
+                setTitle(profile.title);
+                setDescription(profile.description);
+                setLogoUrl(profile.logo);
+                setSocialMediaLinks(profile.socialMediaLinks.map(link => toSocialMediaLink(link)));
+            } else {
+                router.push("/");
+            }
+        });
     }, [profileId]);
 
-    const saveCallback = () => {
+    const saveCallback = async () => {
         console.log("Save profile callback....");
 
         const hasLogoError = !logoUrl;
         const hasTitleError = !title;
         const hasDescriptionError = !description || description.length > MAX_DESCRIPTION_LEN;
-        const hasSocialLinksError = socialLinks.length === 0;
+        const hasSocialLinksError = socialMediaLinks.length === 0;
 
         if (
             hasLogoError ||
@@ -91,13 +119,27 @@ const Profile = () => {
 
         setEdited(false);
         setProfileError(undefined);
-        console.log(socialLinks);
-        console.log(logoUrl);
+
+        const req = {
+            id: profileId,
+            title: title,
+            description: description,
+            logo: logoUrl,
+            socialMediaLinks: socialMediaLinks.map(link => link.link)
+        }
+        const rawResponse = await axios({
+            method: 'post',
+            url: "http://localhost:8080/profile/update",
+            data: req,
+        });
+
+        console.log("rawResponse");
+        console.log(rawResponse);
         return true;
     }
 
     const socialLinkHandler = (links: SocialMediaLink[]) => {
-        setSocialLinks(links);
+        setSocialMediaLinks(links);
         if (profileError) {
             setProfileError(
                 new ProfileError(
@@ -179,7 +221,7 @@ const Profile = () => {
                             alignItems: "center",
                             gap: "20px"
                         }}>
-                            <SocialMediaList socialMediaLinks={socialLinks} setSocialLinks={socialLinkHandler}
+                            <SocialMediaList socialMediaLinks={socialMediaLinks} setSocialLinks={socialLinkHandler}
                                              edited={edited} hasError={profileError && profileError.socialMediaLinks}/>
                         </div>
                     </div>
