@@ -3,14 +3,15 @@ import Image, {StaticImageData} from "next/image";
 import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 import {Input, Modal, Select} from "antd";
 import React, {useState} from "react";
-import youtubeIcon from "@/assets/social_media_logo/youtube_icon.png";
-import githubIcon from "@/assets/social_media_logo/github_square_icon.png";
-import notionIcon from "@/assets/social_media_logo/notion_icon.png";
-import telegramIcon from "@/assets/social_media_logo/telegram_icon.png";
-import twitterIcon from "@/assets/social_media_logo/twitter_icon.png";
-import gmailIcon from "@/assets/social_media_logo/gmail_icon.png";
+import youtubeIcon from "@/assets/social_media_logo/youtube.svg";
+import githubIcon from "@/assets/social_media_logo/github.svg";
+import telegramIcon from "@/assets/social_media_logo/telegram.svg";
+import twitterIcon from "@/assets/social_media_logo/twitter.svg";
 import externalIcon from "@/assets/social_media_logo/external_link_icon.png";
-import instagramIcon from "@/assets/social_media_logo/instagram_icon.png";
+import instagramIcon from "@/assets/social_media_logo/instagram.svg";
+import facebookIcon from "@/assets/social_media_logo/facebook.svg";
+import vkIcon from "@/assets/social_media_logo/vk.svg";
+import discordIcon from "@/assets/social_media_logo/discord.svg";
 
 export default function SocialMediaList(
     {
@@ -97,6 +98,7 @@ export default function SocialMediaList(
                        onClick={edited ? () => showEditSocialLinkMenu(index, item.type, item.link) : () => {
                        }}>
                         <Image
+                            style={{borderRadius: "20px"}}
                             src={item.icon}
                             alt={`${item.type} logo`}
                             fill
@@ -170,11 +172,12 @@ export class SocialMediaLink {
 export enum SocialMediaType {
     YouTube = "YouTube",
     Github = "Github",
-    Notion = "Notion",
     Telegram = "Telegram",
     Twitter = "Twitter",
-    Gmail = "Gmail",
     Instagram = "Instagram",
+    Facebook = "Facebook",
+    Vk = "Vk",
+    Discord = "Discord",
     Link = "Link",
 }
 
@@ -201,31 +204,35 @@ const staticImageByType = (type: SocialMediaType) => {
             return youtubeIcon;
         case SocialMediaType.Github:
             return githubIcon;
-        case SocialMediaType.Notion:
-            return notionIcon;
         case SocialMediaType.Telegram:
             return telegramIcon;
         case SocialMediaType.Twitter:
             return twitterIcon;
-        case SocialMediaType.Gmail:
-            return gmailIcon;
         case SocialMediaType.Instagram:
             return instagramIcon;
+        case SocialMediaType.Facebook:
+            return facebookIcon;
+        case SocialMediaType.Vk:
+            return vkIcon;
+        case SocialMediaType.Discord:
+            return discordIcon;
         case SocialMediaType.Link:
         default:
             return externalIcon;
     }
 }
 
+// todo think about this filters
 const defaultRegExp = /(.*)/;
 const urlValidatorByTypeMap: Map<SocialMediaType, RegExp> = new Map([
     [SocialMediaType.YouTube, /((http|https):\/\/)?(www\.)?youtube\.com\/(.*)/],
     [SocialMediaType.Github, /((http|https):\/\/)?(www\.)?github\.com\/(.*)/],
-    [SocialMediaType.Notion, /((http|https):\/\/)?(www\.)?notion\.so\/(.*)/],
     [SocialMediaType.Telegram, /((http|https):\/\/)?(www\.)?t\.me\/(.*)/],
     [SocialMediaType.Twitter, /((http|https):\/\/)?(www\.)?twitter\.com\/(.*)/],
-    [SocialMediaType.Gmail, /(.*)gmail.com(.*)/],
     [SocialMediaType.Instagram, /((http|https):\/\/)?(www\.)?instagram\.com\/(.*)/],
+    [SocialMediaType.Facebook, /((http|https):\/\/)?(www\.)?facebook\.com\/(.*)/],
+    [SocialMediaType.Vk, /((http|https):\/\/)?(www\.)?vk\.com\/(.*)/],
+    [SocialMediaType.Discord, /((http|https):\/\/)?(www\.)?discord\.gg\/(.*)/],
     [SocialMediaType.Link, defaultRegExp],
 ]);
 

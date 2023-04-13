@@ -6,23 +6,7 @@ import SocialMediaList, {SocialMediaLink, toSocialMediaLink} from "@/components/
 import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
 import {Input} from "antd";
-import textIcon from "@/assets/test_logo.jpeg";
 import axios from "axios";
-
-const mockkProfile = [
-    {
-        id: "1",
-        owner: "0xc0dEdbFD9224c8C7e0254825820CC706180259F2",
-        title: "CRYPTUS",
-        description: "## Как заработать на криптовалюте?\nВы находитесь в правильном месте, если задали себе этот вопрос. Инвестиции в криптовалюту, заработок на **криптовалюте**  - в скором времени вы изучите все про эти темы.\n",
-        logoUrl: textIcon.src,
-        socialLinks: [
-            "https://www.youtube.com/@CRYPTUSMEDIA",
-            "https://t.me/CRYPTUS_CHAT",
-            "https://twitter.com/CryptusMedia"
-        ]
-    }
-];
 
 class ProfileError {
     logo: boolean;
