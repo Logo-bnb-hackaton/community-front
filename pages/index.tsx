@@ -10,10 +10,13 @@ export default function Home() {
 
     const account = useAccount();
 
-    const isAccountConnected = () => {
-        return account && account.isConnected;
+    const content = () => {
+        return (
+            (account && account.isConnected) ?
+                <Link href={"/profile/1"}>To profile</Link> :
+                <h2>Please connect wallet</h2>
+        );
     }
-
     return (
         <>
             <Head>
@@ -26,10 +29,10 @@ export default function Home() {
             <main className={styles.main}>
                 <Header profileOwner={undefined} saveCallback={undefined} edited={false} setEdited={undefined}/>
 
-                <div className={styles.center}
-                     style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                    {!isAccountConnected() && <h2>Please connect wallet</h2>}
-                    {isAccountConnected() && <Link href={"/profile/1"}>To profile</Link>}
+                <div className={styles.center}>
+                    {
+                        content()
+                    }
                 </div>
             </main>
         </>

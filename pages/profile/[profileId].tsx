@@ -225,16 +225,10 @@ const Profile = () => {
                                         <ReactMarkdown className={styles.lineBreak}>{description}</ReactMarkdown>
                                 }
                             </div>
-                            <div style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: "20px"
-                            }}>
-                                <SocialMediaList socialMediaLinks={socialMediaLinks} setSocialLinks={socialLinkHandler}
-                                                 edited={edited}
-                                                 hasError={profileError && profileError.socialMediaLinks}/>
-                            </div>
+                            <SocialMediaList socialMediaLinks={socialMediaLinks} setSocialLinks={socialLinkHandler}
+                                             edited={edited}
+                                             hasError={profileError && profileError.socialMediaLinks}/>
+
                         </div>
                     }
 

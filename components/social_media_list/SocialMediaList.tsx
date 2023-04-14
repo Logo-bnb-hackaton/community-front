@@ -13,6 +13,9 @@ import facebookIcon from "@/assets/social_media_logo/facebook.svg";
 import vkIcon from "@/assets/social_media_logo/vk.svg";
 import discordIcon from "@/assets/social_media_logo/discord.svg";
 
+
+const SOCIAL_MEDIA_LINK_SIZE = 6;
+
 export default function SocialMediaList(
     {
         socialMediaLinks,
@@ -91,7 +94,12 @@ export default function SocialMediaList(
     }
 
     return (
-        <>
+        <div style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "28px"
+        }}>
             {socialMediaLinks.map((item, index) =>
                 <div className={styles.card} key={index}>
                     <a href={edited ? '#' : item.link} target={edited ? "" : "_blank"} rel="noopener noreferrer"
@@ -114,10 +122,10 @@ export default function SocialMediaList(
             )
             }
             {
-                socialMediaLinks.length < 7 && edited &&
+                socialMediaLinks.length < SOCIAL_MEDIA_LINK_SIZE && edited &&
                 <>
                     {
-                        Array(7 - socialMediaLinks.length).fill(
+                        Array(SOCIAL_MEDIA_LINK_SIZE - socialMediaLinks.length).fill(
                             <button className={`${styles.addCardButton} ${hasError ? styles.errorBorder : ""}`}
                                     onClick={showAddSocialLinkMenu}>
                                 <PlusOutlined/>
@@ -157,7 +165,7 @@ export default function SocialMediaList(
                     </Modal>
                 </>
             }
-        </>
+        </div>
     );
 }
 

@@ -40,7 +40,7 @@ export default function Header(
 
     return (
         <div className={styles.description}>
-            <p><a href={"/"}>Logo 1</a></p>
+            <p style={{fontSize: "48px", fontWeight:"bold", fontFamily: 'CoHeadlineCorp'}}><a href={"/"}>LOGO</a></p>
             <div style={{display: "flex", flexDirection: "row"}}>
                 {editAvailable &&
                     <div style={{width: "60px", height: "60px", marginRight: "24px"}}>
