@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import SocialMediaList, {SocialMediaLink, toSocialMediaLink} from "@/components/social_media_list/SocialMediaList";
 import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
-import {Input} from "antd";
+import {Input, Skeleton} from "antd";
 import axios from "axios";
 
 class ProfileError {
@@ -21,6 +21,7 @@ class ProfileError {
         this.socialMediaLinks = socialMediaLinks;
     }
 }
+
 class ProfileRes {
     id: string;
     logo: string;
@@ -49,35 +50,47 @@ const Profile = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
     const [logoUrl, setLogoUrl] = useState<string>();
-    const [socialMediaLinks, setSocialMediaLinks] = useState<SocialMediaLink[]>([])
-    const [edited, setEdited] = useState(false)
+    const [socialMediaLinks, setSocialMediaLinks] = useState<SocialMediaLink[]>([]);
+    const [edited, setEdited] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined)
 
+
     useEffect(() => {
-        if (!profileId) return;
-        axios({
-            method: 'post',
-            url: "http://localhost:8080/profile/",
-            data: {
-                profileId: profileId.toString()
-            },
-        }).then(res => {
-            if (res.data.status == "error") {
-                return;
-            }
-            const profile = res.data.profile as ProfileRes;
-            if (profile) {
-                // todo fix it
-                // setProfileOwner(profile.owner);
-                setTitle(profile.title);
-                setDescription(profile.description);
-                setLogoUrl(profile.logo);
-                setSocialMediaLinks(profile.socialMediaLinks.map(link => toSocialMediaLink(link)));
-            } else {
-                router.push("/");
-            }
-        });
+        try {
+            setIsLoading(true);
+            if (!profileId) return;
+            axios({
+                method: 'post',
+                url: "http://localhost:8080/profile/",
+                data: {
+                    profileId: profileId.toString()
+                },
+            }).then(res => {
+                try {
+                    if (res.data.status == "error") {
+                        return;
+                    }
+                    const profile = res.data.profile as ProfileRes;
+                    if (profile) {
+                        // todo fix it
+                        // setProfileOwner(profile.owner);
+                        setTitle(profile.title);
+                        setDescription(profile.description);
+                        setLogoUrl(profile.logo);
+                        setSocialMediaLinks(profile.socialMediaLinks.map(link => toSocialMediaLink(link)));
+                    } else {
+                        router.push("/");
+                    }
+                } finally {
+                    setIsLoading(false);
+                }
+            });
+        } catch (e) {
+            console.error(`Catch error: ${e}`);
+            return;
+        }
     }, [profileId]);
 
     const saveCallback = async () => {
@@ -170,46 +183,68 @@ const Profile = () => {
         <main className={styles.main}>
             <Header profileOwner={profileOwner} saveCallback={saveCallback} edited={edited} setEdited={setEdited}/>
 
+            {/*<button onClick={safeMint}>Safe mint</button>*/}
             <div className={styles.center} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
                 <div className={styles.grid}>
-                    <Logo logoUrl={logoUrl} setLogoUrl={logoDraggerHandler} edited={edited}
-                          hasError={profileError && profileError.logo}/>
-                    <div className={styles.profileDescription} style={{gridArea: "description"}}>
-                        {
-                            edited ?
-                                <Input
-                                    status={profileError && profileError.title ? "error" : ""}
-                                    className={styles.titleInput}
-                                    placeholder="Community name"
-                                    value={title}
-                                    onChange={titleInputHandler}/> :
-                                <p className={styles.title}>{title}</p>
-                        }
 
-                        <div style={{/*padding: "42px 0",*/ maxWidth: "100%", maxHeight: "100%"}}>
+                    {
+                        isLoading ?
+                            <Skeleton.Avatar active shape={"square"}
+                                             style={{width: "100%", height: "100%", borderRadius: "30px"}}/> :
+                            <Logo logoUrl={logoUrl}
+                                  setLogoUrl={logoDraggerHandler}
+                                  edited={edited}
+                                  hasError={profileError && profileError.logo}
+                            />
+                    }
+
+                    {isLoading ?
+                        <Skeleton active className={styles.profileDescription}/> :
+                        <div className={styles.profileDescription} style={{gridArea: "description"}}>
                             {
                                 edited ?
-                                    <Input.TextArea
-                                        status={profileError && profileError.description ? "error" : ""}
-                                        value={description}
-                                        onChange={descriptionInputHandler}
-                                        autoSize={{minRows: 6, maxRows: 6}}
-                                        placeholder={`Community description. Max length is ${MAX_DESCRIPTION_LEN} characters.`}
-                                    /> :
-                                    <ReactMarkdown className={styles.lineBreak}>{description}</ReactMarkdown>
+                                    <Input
+                                        status={profileError && profileError.title ? "error" : ""}
+                                        className={styles.titleInput}
+                                        placeholder="Community name"
+                                        value={title}
+                                        onChange={titleInputHandler}/> :
+                                    <p className={styles.title}>{title}</p>
                             }
+
+                            <div style={{maxWidth: "100%", maxHeight: "100%"}}>
+                                {
+                                    edited ?
+                                        <Input.TextArea
+                                            status={profileError && profileError.description ? "error" : ""}
+                                            value={description}
+                                            onChange={descriptionInputHandler}
+                                            autoSize={{minRows: 6, maxRows: 6}}
+                                            placeholder={`Community description. Max length is ${MAX_DESCRIPTION_LEN} characters.`}
+                                        /> :
+                                        <ReactMarkdown className={styles.lineBreak}>{description}</ReactMarkdown>
+                                }
+                            </div>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: "20px"
+                            }}>
+                                <SocialMediaList socialMediaLinks={socialMediaLinks} setSocialLinks={socialLinkHandler}
+                                                 edited={edited}
+                                                 hasError={profileError && profileError.socialMediaLinks}/>
+                            </div>
                         </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: "20px"
-                        }}>
-                            <SocialMediaList socialMediaLinks={socialMediaLinks} setSocialLinks={socialLinkHandler}
-                                             edited={edited} hasError={profileError && profileError.socialMediaLinks}/>
-                        </div>
-                    </div>
-                    <button className={`${styles.payButton} ${styles.donateButton}`}>DONATE</button>
+                    }
+
+                    {
+                        isLoading ?
+                            <Skeleton.Button active className={styles.donateButton} shape={"square"}
+                                             style={{height: "5rem", width: "100%"}}/> :
+                            <button className={`${styles.payButton} ${styles.donateButton}`}>DONATE</button>
+                    }
+
                 </div>
             </div>
         </main>

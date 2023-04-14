@@ -43,16 +43,25 @@ export default function Header(
             <p><a href={"/"}>Logo 1</a></p>
             <div style={{display: "flex", flexDirection: "row"}}>
                 {editAvailable &&
-                    <div style={{paddingRight: "10px"}}>
-                        {edited ?
-                            <Button onClick={onSaveHandle} style={{height: "100%"}}>Save</Button> :
-                            <Button onClick={onEditHandle} style={{height: "100%"}}>
-                                <FormOutlined style={{fontSize: "15px"}}/>
-                            </Button>
-                        }
+                    <div style={{width: "60px", height: "60px", marginRight: "24px"}}>
+                        <Button
+                            onClick={edited ? onSaveHandle : onEditHandle}
+                            style={{
+                                height: "100%",
+                                width: "100%",
+                                border: "none",
+                                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                                // boxShadow: "none",
+                                // backgroundColor: "#F5F5F5",
+                                borderRadius: "10px",
+                                padding: "0"
+                        }}
+                        >
+                            {edited ? "Save" : <FormOutlined style={{fontSize: "20px"}}/>}
+                        </Button>
                     </div>
                 }
-                <WalletButton/>
+                <WalletButton />
             </div>
         </div>
     );

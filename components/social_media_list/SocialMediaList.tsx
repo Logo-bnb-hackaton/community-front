@@ -7,7 +7,7 @@ import youtubeIcon from "@/assets/social_media_logo/youtube.svg";
 import githubIcon from "@/assets/social_media_logo/github.svg";
 import telegramIcon from "@/assets/social_media_logo/telegram.svg";
 import twitterIcon from "@/assets/social_media_logo/twitter.svg";
-import externalIcon from "@/assets/social_media_logo/external_link_icon.png";
+import externalIcon from "@/assets/social_media_logo/external_link.svg";
 import instagramIcon from "@/assets/social_media_logo/instagram.svg";
 import facebookIcon from "@/assets/social_media_logo/facebook.svg";
 import vkIcon from "@/assets/social_media_logo/vk.svg";
@@ -116,11 +116,15 @@ export default function SocialMediaList(
             {
                 socialMediaLinks.length < 7 && edited &&
                 <>
-                    <button className={`${styles.addCardButton} ${hasError ? styles.errorBorder : ""}`}
-                            onClick={showAddSocialLinkMenu}>
-                        <PlusOutlined/>
-                        <p style={{paddingTop: "8px"}}>Add link</p>
-                    </button>
+                    {
+                        Array(7 - socialMediaLinks.length).fill(
+                            <button className={`${styles.addCardButton} ${hasError ? styles.errorBorder : ""}`}
+                                    onClick={showAddSocialLinkMenu}>
+                                <PlusOutlined/>
+                                <p style={{paddingTop: "8px"}}>Add link</p>
+                            </button>
+                        )
+                    }
                     <Modal
                         title="Add social media link"
                         centered
