@@ -1,22 +1,25 @@
 import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useAccount} from "wagmi";
 import Link from 'next/link'
 import Header from "@/components/header/Header";
 
-
 export default function Home() {
 
-    const account = useAccount();
+    const {isConnected} = useAccount();
 
-    const content = () => {
-        return (
-            (account && account.isConnected) ?
-                <Link href={"/profile/1"}>To profile</Link> :
-                <h2>Please connect wallet</h2>
-        );
-    }
+    // It's a workaround,
+    // details - https://ethereum.stackexchange.com/questions/133612/error-hydration-failed-because-the-initial-ui-does-not-match-what-was-rendered
+    const [isDefinitelyConnected, setIsDefinitelyConnected] = useState(false);
+    useEffect(() => {
+        if (isConnected) {
+            setIsDefinitelyConnected(true);
+        } else {
+            setIsDefinitelyConnected(false);
+        }
+    }, [isConnected]);
+
     return (
         <>
             <Head>
@@ -31,7 +34,9 @@ export default function Home() {
 
                 <div className={styles.center}>
                     {
-                        content()
+                        isDefinitelyConnected ?
+                            <Link href={"/profile/1"}>To profile</Link> :
+                            <h2>Please connect wallet</h2>
                     }
                 </div>
             </main>

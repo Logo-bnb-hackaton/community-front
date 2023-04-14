@@ -183,10 +183,8 @@ const Profile = () => {
         <main className={styles.main}>
             <Header profileOwner={profileOwner} saveCallback={saveCallback} edited={edited} setEdited={setEdited}/>
 
-            {/*<button onClick={safeMint}>Safe mint</button>*/}
             <div className={styles.center} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
                 <div className={styles.grid}>
-
                     {
                         isLoading ?
                             <Skeleton.Avatar active shape={"square"}
@@ -238,7 +236,6 @@ const Profile = () => {
                                              style={{height: "5rem", width: "100%"}}/> :
                             <button className={`${styles.payButton} ${styles.donateButton}`}>DONATE</button>
                     }
-
                 </div>
             </div>
         </main>
