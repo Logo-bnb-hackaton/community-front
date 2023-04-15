@@ -1,13 +1,19 @@
 import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
 import React, {useEffect, useState} from "react";
-import {useAccount} from "wagmi";
+import {useAccount, useContractRead, useContractWrite, usePrepareContractWrite} from "wagmi";
 import Link from 'next/link'
 import Header from "@/components/header/Header";
+import {Button} from "antd";
+import {ABI, CONTRACT_ADDRESS, WAIT_BLOCK_CONFIRMATIONS} from "@/constants";
+import {BigNumber} from "ethers";
+import {waitForTransaction} from "@wagmi/core";
 
 export default function Home() {
 
-    const {isConnected} = useAccount();
+    const {address, isConnected} = useAccount();
+    const [priceToMint, setPriceToMint] = useState<BigNumber | undefined>(undefined);
+    const [userProfileId, setUserProfileId] = useState<number | undefined>(undefined);
 
     // It's a workaround,
     // details - https://ethereum.stackexchange.com/questions/133612/error-hydration-failed-because-the-initial-ui-does-not-match-what-was-rendered
@@ -19,6 +25,88 @@ export default function Home() {
             setIsDefinitelyConnected(false);
         }
     }, [isConnected]);
+
+    /**
+     * Loading price to mint
+     */
+    const {data: priceToMintData, isSuccess: isPriceToMintDataSuccess} = useContractRead({
+        address: CONTRACT_ADDRESS,
+        abi: ABI,
+        functionName: 'priceToMint',
+        args: [address],
+    });
+
+    useEffect(() => {
+        if (isPriceToMintDataSuccess) {
+            setPriceToMint(priceToMintData as BigNumber);
+            console.log("Mint price received.");
+        } else {
+            console.log("Error, can't receive mint price");
+        }
+    }, [priceToMintData, isPriceToMintDataSuccess]);
+
+    /**
+     * Loading address tokens.
+     *
+     * I can't find a way to check if a user has a profile, so it's a workaround.
+     *
+     * success => has profile
+     * error => no profile
+     */
+    const {
+        data: tokenOfOwnerByIndexData,
+        isSuccess: isTokenOfOwnerByIndexSuccess,
+        refetch: tokenOfOwnerByIndexRefetch
+    } = useContractRead({
+        address: CONTRACT_ADDRESS,
+        abi: ABI,
+        functionName: 'tokenOfOwnerByIndex',
+        args: [address, 0],
+    });
+
+    useEffect(() => {
+        if (isTokenOfOwnerByIndexSuccess) {
+            console.log(`User has profile with id: ${tokenOfOwnerByIndexData}`);
+            setUserProfileId(tokenOfOwnerByIndexData as number);
+        } else {
+            setUserProfileId(undefined);
+            console.log("User doesn't have a profile.");
+        }
+    }, [priceToMintData, isPriceToMintDataSuccess]);
+
+    const {config: safeMintConfig} = usePrepareContractWrite({
+        address: CONTRACT_ADDRESS,
+        abi: ABI,
+        functionName: 'safeMint',
+        overrides: {
+            value: priceToMint
+        }
+    });
+
+    const [isMinting, setIsMinting] = useState(false);
+    const {writeAsync: safeMintWriteAsync} = useContractWrite(safeMintConfig)
+
+    const mint = async () => {
+        if (!priceToMint) {
+            console.error("Can't load mint price.");
+            return;
+        }
+        setIsMinting(true);
+        safeMintWriteAsync?.().then(data => {
+            return waitForTransaction({
+                hash: data.hash,
+                confirmations: WAIT_BLOCK_CONFIRMATIONS
+            })
+                .then(data => {
+                    console.log(data);
+                })
+                .finally(() => {
+                    setIsMinting(false);
+                    // after minting we have to receive token by user again.
+                    tokenOfOwnerByIndexRefetch();
+                });
+        });
+    }
 
     return (
         <>
@@ -35,7 +123,12 @@ export default function Home() {
                 <div className={styles.center}>
                     {
                         isDefinitelyConnected ?
-                            <Link href={"/profile/1"}>To profile</Link> :
+                            (
+                                userProfileId ?
+                                    <Link href={`/profile/${userProfileId}`}>To profile</Link> :
+                                    <Button loading={isMinting} onClick={mint}>Mint</Button>
+                            )
+                            :
                             <h2>Please connect wallet</h2>
                     }
                 </div>

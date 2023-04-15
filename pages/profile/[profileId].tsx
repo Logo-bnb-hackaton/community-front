@@ -5,8 +5,10 @@ import ReactMarkdown from "react-markdown";
 import SocialMediaList, {SocialMediaLink, toSocialMediaLink} from "@/components/social_media_list/SocialMediaList";
 import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
-import {Input, Skeleton} from "antd";
+import {Button, Input, Skeleton} from "antd";
 import axios from "axios";
+import {useAccount} from "wagmi";
+import {ethers} from "ethers";
 
 class ProfileError {
     logo: boolean;
@@ -43,6 +45,8 @@ const MAX_DESCRIPTION_LEN = 250;
 
 const Profile = () => {
 
+    const {address, isConnected} = useAccount();
+
     const router = useRouter()
     const {profileId} = router.query
 
@@ -55,7 +59,6 @@ const Profile = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined)
-
 
     useEffect(() => {
         try {
@@ -133,6 +136,18 @@ const Profile = () => {
         console.log("rawResponse");
         console.log(rawResponse);
         return true;
+    }
+
+    const donate = async () => {
+        console.log(address?.toString());
+        console.log(ethers.utils.parseEther("1"));
+
+        // let result = await prepareWriteContract({
+        //     address: CONTRACT_ADDRESS,
+        //     abi: ABI,
+        //     functionName: 'donateEth',
+        //     args: [address?.toString(), ]
+        // });
     }
 
     const socialLinkHandler = (links: SocialMediaLink[]) => {
@@ -234,7 +249,11 @@ const Profile = () => {
                         isLoading ?
                             <Skeleton.Button active className={styles.donateButton} shape={"square"}
                                              style={{height: "5rem", width: "100%"}}/> :
-                            <button className={`${styles.payButton} ${styles.donateButton}`}>DONATE</button>
+                            <Button
+                                disabled={!isConnected}
+                                className={`${styles.payButton} ${styles.donateButton}`}
+                                onClick={donate}
+                            >DONATE</Button>
                     }
                 </div>
             </div>

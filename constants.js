@@ -1,4 +1,5 @@
 export const CONTRACT_ADDRESS = "0x3dadF47D608cD37faC48590381B73CF5AC35684f";
+export const WAIT_BLOCK_CONFIRMATIONS = 2;
 export const ABI = [
     {
         inputs: [
