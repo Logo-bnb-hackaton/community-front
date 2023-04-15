@@ -5,10 +5,15 @@ import ReactMarkdown from "react-markdown";
 import SocialMediaList, {SocialMediaLink, toSocialMediaLink} from "@/components/social_media_list/SocialMediaList";
 import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
-import {Button, Input, Skeleton} from "antd";
+import {Button, Input, Modal, Result, Skeleton, Steps} from "antd";
 import axios from "axios";
-import {useAccount} from "wagmi";
+import {useAccount, useContractRead} from "wagmi";
 import {ethers} from "ethers";
+import {ABI, CONTRACT_ADDRESS} from "@/constants";
+import {prepareWriteContract, waitForTransaction, writeContract} from "@wagmi/core";
+import {StepProps} from "antd/es/steps";
+import {LoadingOutlined} from "@ant-design/icons";
+import {ResultStatusType} from "antd/es/result";
 
 class ProfileError {
     logo: boolean;
@@ -41,6 +46,31 @@ class ProfileRes {
     }
 }
 
+const defaultDonateSteps: StepProps[] = [
+    {
+        title: 'Set donate size',
+        status: "process",
+        icon: undefined
+    },
+    {
+        title: 'Approving',
+        status: "wait",
+        icon: undefined
+    },
+    {
+        title: 'Verification',
+        status: "wait",
+        icon: undefined
+    },
+    {
+        title: 'Done',
+        status: "wait",
+        icon: undefined
+    },
+]
+// deep copy
+const getDefaultDonateSteps = () => JSON.parse(JSON.stringify(defaultDonateSteps));
+
 const MAX_DESCRIPTION_LEN = 250;
 
 const Profile = () => {
@@ -50,7 +80,7 @@ const Profile = () => {
     const router = useRouter()
     const {profileId} = router.query
 
-    const [profileOwner, setProfileOwner] = useState("0xc0dEdbFD9224c8C7e0254825820CC706180259F2");
+    const [profileOwner, setProfileOwner] = useState<string | undefined>(undefined);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
     const [logoUrl, setLogoUrl] = useState<string>();
@@ -71,23 +101,26 @@ const Profile = () => {
                     profileId: profileId.toString()
                 },
             }).then(res => {
+                if (res.data.status == "error") {
+                    router.push("/");
+                    return;
+                }
+                let profile;
                 try {
-                    if (res.data.status == "error") {
-                        return;
-                    }
-                    const profile = res.data.profile as ProfileRes;
-                    if (profile) {
-                        // todo fix it
-                        // setProfileOwner(profile.owner);
-                        setTitle(profile.title);
-                        setDescription(profile.description);
-                        setLogoUrl(profile.logo);
-                        setSocialMediaLinks(profile.socialMediaLinks.map(link => toSocialMediaLink(link)));
-                    } else {
-                        router.push("/");
-                    }
-                } finally {
+                    profile = res.data.profile as ProfileRes;
+                } catch (e) {
+                    console.log("Can't cast response to profile.");
+                    console.error(e);
+                    profile = undefined;
+                }
+                if (profile) {
+                    setTitle(profile.title);
+                    setDescription(profile.description);
+                    setLogoUrl(profile.logo);
+                    setSocialMediaLinks(profile.socialMediaLinks.map(link => toSocialMediaLink(link)));
                     setIsLoading(false);
+                } else {
+                    router.push("/");
                 }
             });
         } catch (e) {
@@ -95,6 +128,22 @@ const Profile = () => {
             return;
         }
     }, [profileId]);
+
+    /**
+     * Loading profile owner
+     */
+    const {data: ownerAddress, isSuccess: isOwnerLoadingSuccess} = useContractRead({
+        address: CONTRACT_ADDRESS,
+        abi: ABI,
+        functionName: 'ownerOf',
+        args: [profileId]
+    });
+
+    useEffect(() => {
+        if (isOwnerLoadingSuccess) {
+            setProfileOwner(ownerAddress as string);
+        }
+    }, [ownerAddress, isOwnerLoadingSuccess]);
 
     const saveCallback = async () => {
         console.log("Save profile callback....");
@@ -138,16 +187,74 @@ const Profile = () => {
         return true;
     }
 
-    const donate = async () => {
-        console.log(address?.toString());
-        console.log(ethers.utils.parseEther("1"));
+    const [isDonateMenuOpen, setIsDonateMenuOpen] = useState(false);
+    const [isDonating, setIsDonating] = useState(false);
+    const [donateStep, setDonateStep] = useState<number>(0);
+    const [donateSteps, setDonateSteps] = useState<StepProps[]>(getDefaultDonateSteps())
+    const [donateSize, setDonateSize] = useState<string>("0.001");
+    const [donateResultStatus, setDonateResultStatus] = useState<ResultStatusType | undefined>(undefined);
 
-        // let result = await prepareWriteContract({
-        //     address: CONTRACT_ADDRESS,
-        //     abi: ABI,
-        //     functionName: 'donateEth',
-        //     args: [address?.toString(), ]
-        // });
+    const openDonateMenu = () => {
+        setIsDonateMenuOpen(true)
+    };
+    const closeDonateMenu = () => {
+        setIsDonateMenuOpen(false);
+        setDonateStep(0);
+        setDonateSteps(getDefaultDonateSteps());
+        setDonateResultStatus(undefined);
+    };
+
+    const setCurrentStepAndStatus = (stepIndex: number, status: 'wait' | 'process' | 'finish' | 'error') => {
+        setDonateStep(stepIndex);
+        setDonateSteps(
+            [...donateSteps.filter((item, index) => {
+                if (index === stepIndex) {
+                    item.status = status;
+                    if (status == 'process') {
+                        item.icon = <LoadingOutlined/>
+                    }
+                } else if (index < stepIndex) {
+                    item.icon = undefined;
+                }
+                return item;
+            })]
+        );
+    }
+    const donate = async () => {
+        // todo validate donateSize type and value
+        setDonateResultStatus(undefined);
+        const value = ethers.utils.parseEther(donateSize.toString());
+
+        const donateEthConfig = await prepareWriteContract({
+            address: CONTRACT_ADDRESS,
+            abi: ABI,
+            functionName: 'donateEth',
+            args: [profileId],
+            overrides: {
+                value: value
+            }
+        });
+
+        try {
+            setCurrentStepAndStatus(1, 'process');
+            setIsDonating(true);
+            let donateResult = await writeContract(donateEthConfig);
+            setCurrentStepAndStatus(2, 'process');
+            console.log(`Donate hash: ${donateResult.hash}`);
+            await waitForTransaction({
+                hash: donateResult.hash
+            });
+            setCurrentStepAndStatus(3, 'finish');
+            setDonateResultStatus("success");
+        } catch (e) {
+            console.log("set default steps");
+            setDonateSteps(getDefaultDonateSteps());
+            setDonateStep(0);
+            setDonateResultStatus("error");
+        } finally {
+            setIsDonating(false);
+            console.log("Done");
+        }
     }
 
     const socialLinkHandler = (links: SocialMediaLink[]) => {
@@ -252,9 +359,43 @@ const Profile = () => {
                             <Button
                                 disabled={!isConnected}
                                 className={`${styles.payButton} ${styles.donateButton}`}
-                                onClick={donate}
+                                onClick={openDonateMenu}
                             >DONATE</Button>
                     }
+                    <Modal
+                        width={"40vw"}
+                        title="Donate"
+                        centered
+                        open={isDonateMenuOpen}
+                        onOk={donate}
+                        okButtonProps={{disabled: isDonating}}
+                        cancelButtonProps={{disabled: isDonating}}
+                        onCancel={closeDonateMenu}
+                        okText={"Donate"}
+                    >
+                        <div style={{display: "flex", flexDirection: "column"}}>
+                            <Steps
+                                style={{padding: "30px 10px"}}
+                                size={"small"}
+                                items={donateSteps}
+                                current={donateStep}
+                            />
+                            <Input
+                                disabled={isDonating}
+                                value={donateSize}
+                                addonAfter="BNB"
+                                placeholder="Social media link"
+                                onChange={e => setDonateSize(e.target.value as string)}
+                            />
+
+                            {donateResultStatus &&
+                                <Result
+                                    status={donateResultStatus}
+                                    title={donateResultStatus === "success" ? "Thanks for the donation!" : "Something went wrong!"}
+                                />
+                            }
+                        </div>
+                    </Modal>
                 </div>
             </div>
         </main>
