@@ -97,7 +97,7 @@ const Profile = () => {
             if (!profileId) return;
             axios({
                 method: 'post',
-                url: "http://localhost:8080/profile/",
+                url: " https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev/profile/",
                 data: {
                     profileId: profileId.toString()
                 },
