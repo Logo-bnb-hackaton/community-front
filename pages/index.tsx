@@ -39,9 +39,6 @@ export default function Home() {
     useEffect(() => {
         if (isPriceToMintDataSuccess) {
             setPriceToMint(priceToMintData as BigNumber);
-            console.log("Mint price received.");
-        } else {
-            console.log("Error, can't receive mint price");
         }
     }, [priceToMintData, isPriceToMintDataSuccess]);
 
@@ -66,11 +63,9 @@ export default function Home() {
 
     useEffect(() => {
         if (isTokenOfOwnerByIndexSuccess) {
-            console.log(`User has profile with id: ${tokenOfOwnerByIndexData}`);
             setUserProfileId(tokenOfOwnerByIndexData as number);
         } else {
             setUserProfileId(undefined);
-            console.log("User doesn't have a profile.");
         }
     }, [priceToMintData, isPriceToMintDataSuccess]);
 

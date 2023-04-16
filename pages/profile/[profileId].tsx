@@ -91,10 +91,26 @@ const Profile = () => {
 
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined)
 
+    /**
+     * Loading profile owner
+     */
+    const {data: ownerAddress, isSuccess: isOwnerLoadingSuccess} = useContractRead({
+        address: CONTRACT_ADDRESS,
+        abi: ABI,
+        functionName: 'ownerOf',
+        args: [profileId]
+    });
+
+    useEffect(() => {
+        if (isOwnerLoadingSuccess) {
+            setProfileOwner(ownerAddress as string);
+        }
+    }, [ownerAddress, isOwnerLoadingSuccess]);
+
     useEffect(() => {
         try {
             setIsLoading(true);
-            if (!profileId) return;
+            if (!profileId || !profileOwner) return;
             axios({
                 method: 'post',
                 url: " https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev/profile/",
@@ -103,8 +119,14 @@ const Profile = () => {
                 },
             }).then(res => {
                 if (res.data.status == "error") {
-                    router.push("/");
-                    return;
+                    if (profileOwner !== address) {
+                        router.push("/");
+                        return;
+                    } else {
+                        setEdited(true);
+                        setIsLoading(false);
+                        return;
+                    }
                 }
                 let profile;
                 try {
@@ -122,29 +144,14 @@ const Profile = () => {
                     setIsLoading(false);
                 } else {
                     router.push("/");
+                    return;
                 }
             });
         } catch (e) {
             console.error(`Catch error: ${e}`);
             return;
         }
-    }, [profileId]);
-
-    /**
-     * Loading profile owner
-     */
-    const {data: ownerAddress, isSuccess: isOwnerLoadingSuccess} = useContractRead({
-        address: CONTRACT_ADDRESS,
-        abi: ABI,
-        functionName: 'ownerOf',
-        args: [profileId]
-    });
-
-    useEffect(() => {
-        if (isOwnerLoadingSuccess) {
-            setProfileOwner(ownerAddress as string);
-        }
-    }, [ownerAddress, isOwnerLoadingSuccess]);
+    }, [address, profileId, profileOwner, router]);
 
     const saveCallback = async () => {
         console.log("Save profile callback....");

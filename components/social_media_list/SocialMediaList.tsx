@@ -125,8 +125,10 @@ export default function SocialMediaList(
                 socialMediaLinks.length < SOCIAL_MEDIA_LINK_SIZE && edited &&
                 <>
                     {
-                        Array(SOCIAL_MEDIA_LINK_SIZE - socialMediaLinks.length).fill(
-                            <button className={`${styles.addCardButton} ${hasError ? styles.errorBorder : ""}`}
+                        Array(SOCIAL_MEDIA_LINK_SIZE - socialMediaLinks.length)
+                            .fill(0).map((zero, index) =>
+                            <button key={index}
+                                    className={`${styles.addCardButton} ${hasError ? styles.errorBorder : ""}`}
                                     onClick={showAddSocialLinkMenu}>
                                 <PlusOutlined/>
                                 <p style={{paddingTop: "8px"}}>Add link</p>
