@@ -69,7 +69,8 @@ const defaultDonateSteps: StepProps[] = [
     },
 ]
 // deep copy
-const getDefaultDonateSteps = () => JSON.parse(JSON.stringify(defaultDonateSteps));
+const defaultDonateStepsJson = JSON.stringify(defaultDonateSteps);
+const getDefaultDonateSteps = () => JSON.parse(defaultDonateStepsJson);
 
 const MAX_DESCRIPTION_LEN = 250;
 
@@ -192,7 +193,7 @@ const Profile = () => {
     const [donateStep, setDonateStep] = useState<number>(0);
     const [donateSteps, setDonateSteps] = useState<StepProps[]>(getDefaultDonateSteps())
     const [donateSize, setDonateSize] = useState<string>("0.001");
-    const [donateResultStatus, setDonateResultStatus] = useState<ResultStatusType | undefined>(undefined);
+    const [donateResult, setDonateResult] = useState<{ status: ResultStatusType, title: string } | undefined>(undefined);
 
     const openDonateMenu = () => {
         setIsDonateMenuOpen(true)
@@ -201,7 +202,7 @@ const Profile = () => {
         setIsDonateMenuOpen(false);
         setDonateStep(0);
         setDonateSteps(getDefaultDonateSteps());
-        setDonateResultStatus(undefined);
+        setDonateResult(undefined);
     };
 
     const setCurrentStepAndStatus = (stepIndex: number, status: 'wait' | 'process' | 'finish' | 'error') => {
@@ -222,7 +223,7 @@ const Profile = () => {
     }
     const donate = async () => {
         // todo validate donateSize type and value
-        setDonateResultStatus(undefined);
+        setDonateResult(undefined);
         const value = ethers.utils.parseEther(donateSize.toString());
 
         const donateEthConfig = await prepareWriteContract({
@@ -245,12 +246,18 @@ const Profile = () => {
                 hash: donateResult.hash
             });
             setCurrentStepAndStatus(3, 'finish');
-            setDonateResultStatus("success");
+            setDonateResult({
+                status: "success",
+                title: "Thanks for the donation!"
+            });
         } catch (e) {
             console.log("set default steps");
             setDonateSteps(getDefaultDonateSteps());
             setDonateStep(0);
-            setDonateResultStatus("error");
+            setDonateResult({
+                status: "error",
+                title: "Something went wrong!"
+            });
         } finally {
             setIsDonating(false);
             console.log("Done");
@@ -388,10 +395,10 @@ const Profile = () => {
                                 onChange={e => setDonateSize(e.target.value as string)}
                             />
 
-                            {donateResultStatus &&
+                            {donateResult &&
                                 <Result
-                                    status={donateResultStatus}
-                                    title={donateResultStatus === "success" ? "Thanks for the donation!" : "Something went wrong!"}
+                                    status={donateResult.status}
+                                    title={donateResult.title}
                                 />
                             }
                         </div>
