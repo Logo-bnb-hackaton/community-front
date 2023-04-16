@@ -1,8 +1,7 @@
 import React, {SyntheticEvent, useState} from 'react';
 import {DeleteOutlined, LoadingOutlined, UserAddOutlined} from '@ant-design/icons';
 import {message, Upload} from 'antd';
-import type {RcFile, UploadChangeParam, UploadProps} from 'antd/es/upload';
-import type {UploadFile} from 'antd/es/upload/interface';
+import type {RcFile} from 'antd/es/upload';
 import Image from "next/image";
 import styles from '@/styles/Home.module.css'
 
@@ -14,18 +13,6 @@ const getBase64 = (img: RcFile, callback: (url: string) => void) => {
     reader.readAsDataURL(img);
 };
 
-const beforeUpload = (file: RcFile) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-        message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-};
-
 // todo add logic with editable
 export default function Logo({
                                  logoUrl,
@@ -35,18 +22,23 @@ export default function Logo({
                              }: { logoUrl?: string, setLogoUrl: Function, edited: boolean, hasError: boolean | undefined }) {
     const [loading, setLoading] = useState(false);
 
-    const handleChange: UploadProps['onChange'] = (info: UploadChangeParam<UploadFile>) => {
-        if (info.file.status === 'uploading') {
-            setLoading(true);
-            return;
+    const beforeUpload = (file: RcFile) => {
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+            message.error('You can only upload JPG/PNG file!');
         }
-        if (info.file.status === 'done') {
-            // Get this url from response in real world.
-            getBase64(info.file.originFileObj as RcFile, (url) => {
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            message.error('Image must smaller than 2MB!');
+        }
+        // it's a workaround, replace to input with type data instead of `dragge`
+        if (isJpgOrPng && isLt2M) {
+            getBase64(file, (url) => {
                 setLoading(false);
                 setLogoUrl(url);
             });
         }
+        return false;
     };
 
     const deleteButtonHandler = (e: SyntheticEvent<any>) => setLogoUrl(undefined);
@@ -77,8 +69,6 @@ export default function Logo({
                     className={`${styles.draggerWrapper} ${hasError ? styles.errorBorder : ""}`}
                     accept="image/*"
                     beforeUpload={beforeUpload}
-                    onChange={handleChange}
-                    action={""}
                 >
                     <p className="ant-upload-drag-icon">
                         {loading ? <LoadingOutlined/> : <UserAddOutlined style={{color: "#ECFDD7"}}/>}
