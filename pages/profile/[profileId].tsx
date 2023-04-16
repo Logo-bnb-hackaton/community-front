@@ -73,6 +73,7 @@ const defaultDonateStepsJson = JSON.stringify(defaultDonateSteps);
 const getDefaultDonateSteps = () => JSON.parse(defaultDonateStepsJson);
 
 const MAX_DESCRIPTION_LEN = 250;
+const BACKEND_BASE_URL = 'https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev';
 
 export default function Profile() {
 
@@ -113,7 +114,7 @@ export default function Profile() {
             if (!profileId || !profileOwner) return;
             axios({
                 method: 'post',
-                url: " https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev/profile/",
+                url: `${BACKEND_BASE_URL}/profile/`,
                 data: {
                     profileId: profileId.toString()
                 },
@@ -184,7 +185,7 @@ export default function Profile() {
         }
         await axios({
             method: 'post',
-            url: "http://localhost:8080/profile/update",
+            url: `${BACKEND_BASE_URL}/profile/update`,
             data: req,
         });
         return true;
