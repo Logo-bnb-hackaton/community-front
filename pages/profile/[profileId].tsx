@@ -74,7 +74,7 @@ const getDefaultDonateSteps = () => JSON.parse(defaultDonateStepsJson);
 
 const MAX_DESCRIPTION_LEN = 250;
 
-const Profile = () => {
+export default function Profile() {
 
     const {address, isConnected} = useAccount();
 
@@ -168,8 +168,6 @@ const Profile = () => {
             hasSocialLinksError
         ) {
             const error = new ProfileError(hasLogoError, hasTitleError, hasDescriptionError, hasSocialLinksError);
-            console.log(`Has error`);
-            console.log(error);
             setProfileError(error);
             return false;
         }
@@ -184,14 +182,11 @@ const Profile = () => {
             logo: logoUrl,
             socialMediaLinks: socialMediaLinks.map(link => link.link)
         }
-        const rawResponse = await axios({
+        await axios({
             method: 'post',
             url: "http://localhost:8080/profile/update",
             data: req,
         });
-
-        console.log("rawResponse");
-        console.log(rawResponse);
         return true;
     }
 
@@ -415,5 +410,3 @@ const Profile = () => {
         </main>
     );
 }
-
-export default Profile

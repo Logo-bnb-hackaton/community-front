@@ -78,6 +78,7 @@ export default function Logo({
                     accept="image/*"
                     beforeUpload={beforeUpload}
                     onChange={handleChange}
+                    action={""}
                 >
                     <p className="ant-upload-drag-icon">
                         {loading ? <LoadingOutlined/> : <UserAddOutlined style={{color: "#ECFDD7"}}/>}
