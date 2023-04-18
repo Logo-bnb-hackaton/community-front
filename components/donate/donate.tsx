@@ -155,7 +155,7 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
         if (!balance) return Number.MAX_SAFE_INTEGER.toString();
 
         const value = ethers.utils.formatEther(balance);
-        console.log(`Max token value for ${donateCoin} is ${value}`);
+        // console.log(`Max token value for ${donateCoin} is ${value}`);
 
         return value.toString();
     }
@@ -197,7 +197,7 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
             console.error(`Invalid donate token params: ${tokenAddress} or ${tokenAmount}`);
             return;
         }
-        console.log(`${tokenAddress} and ${tokenAmount}`);
+        // console.log(`${tokenAddress} and ${tokenAmount}`);
 
 
         const donateTokenConfig = async () => prepareWriteContract({
@@ -209,7 +209,6 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
 
         const approveStep = async (indexProducer: () => number) => {
             const stepIndex = indexProducer();
-            console.log(`Approve spending ${stepIndex}`);
             setCurrentStepAndStatus(stepIndex, 'process');
 
             const spendingConfig = await prepareWriteContract({
@@ -220,7 +219,6 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
 
             });
             const approveResponse = await writeContract(spendingConfig);
-            console.log(approveResponse);
             await waitForTransaction({
                 hash: approveResponse.hash
             });
@@ -235,12 +233,10 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
     ) => {
         try {
             let index = 1;
-            console.log('Start ts execution');
             setIsDonating(true);
 
             // for tokens we have to approve spending step
             await approveStep(() => index++);
-            console.log(`After approve step: ${index}`);
 
             setCurrentStepAndStatus(index++, 'process');
             const config = await configBuilder();
@@ -266,7 +262,6 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
             });
         } finally {
             setIsDonating(false);
-            console.log("Done");
         }
     }
 
