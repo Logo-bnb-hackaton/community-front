@@ -51,8 +51,6 @@ export default function Header(
                                 width: "100%",
                                 border: "none",
                                 boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                                // boxShadow: "none",
-                                // backgroundColor: "#F5F5F5",
                                 borderRadius: "10px",
                                 padding: "0"
                         }}
