@@ -1,7 +1,7 @@
-import {Button, Input, Modal, Result, Select, Skeleton, Steps} from "antd";
+import {Button, InputNumber, Modal, Result, Select, Skeleton, Steps} from "antd";
 import styles from "@/styles/Home.module.css";
-import React, {useState} from "react";
-import {useAccount} from "wagmi";
+import React, {useEffect, useState} from "react";
+import {useAccount, useBalance, useContractReads} from "wagmi";
 import {StepProps} from "antd/es/steps";
 import {ResultStatusType} from "antd/es/result";
 import {LoadingOutlined} from "@ant-design/icons";
@@ -53,15 +53,20 @@ class Token {
 }
 
 const baseCoin = "BNB";
+// TODO set token contracts
+const plugAddress = '0x'
 const availableTokens: Token[] = [
     // todo add adresses
-    new Token("USDT", "0x"),
-    new Token("USDC", "0x"),
+    new Token("USDT", plugAddress),
+    new Token("USDC", plugAddress),
     new Token("BUSD", "0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814"),
-];
+].filter(item => item.address !== plugAddress);
 
 export default function Donate({isLoading, profileId}: { isLoading: boolean, profileId: string | undefined }) {
-    const {isConnected} = useAccount();
+    const {address, isConnected,} = useAccount();
+    const {data: baseBalanceResponse} = useBalance({
+        address: address
+    });
 
     const getDonateSteps = (coin: string) => {
         if (coin !== baseCoin) {
@@ -72,11 +77,12 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
 
     const [isDonateMenuOpen, setIsDonateMenuOpen] = useState(false);
     const [isDonating, setIsDonating] = useState(false);
-    const [currentDonateStep, setCurrentDonateStep] = useState<number>(0);
     const [donateCoin, setDonateCoin] = useState<string>(baseCoin);
     const [donateSize, setDonateSize] = useState<string>("0.001");
+    const [currentDonateStep, setCurrentDonateStep] = useState<number>(0);
     const [donateSteps, setDonateSteps] = useState<StepProps[]>(getDonateSteps(donateCoin))
     const [donateResult, setDonateResult] = useState<{ status: ResultStatusType, title: string } | undefined>(undefined);
+    const [tokenBalances, setTokenBalances] = useState<Map<string, BigNumber> | undefined>(undefined)
 
     const openDonateMenu = () => {
         setIsDonateMenuOpen(true)
@@ -110,6 +116,53 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
         setDonateSteps(getDonateSteps(value));
     }
 
+    /**
+     * Loading balance for tokens
+     */
+    const {data: tokenBalancesData, isLoading: isTokenBalancesLoading} = useContractReads({
+        contracts:
+            availableTokens.map(item => {
+                return {
+                    address: item.address,
+                    abi: ERC20_ABI,
+                    functionName: 'balanceOf',
+                    args: [address]
+                }
+            })
+        ,
+    });
+
+    useEffect(() => {
+        if (isTokenBalancesLoading) return;
+
+        const tokenBalances = new Map();
+        availableTokens.forEach((token, index) => {
+            tokenBalances.set(token.symbol, tokenBalancesData[index]!! as BigNumber);
+        });
+        setTokenBalances(tokenBalances);
+    }, [tokenBalancesData, isTokenBalancesLoading]);
+
+    const getMaxValue = () => {
+        let balance;
+
+        if (donateCoin === baseCoin) {
+            balance = baseBalanceResponse?.value;
+        } else {
+            balance = tokenBalances?.get(donateCoin);
+        }
+
+        // todo maybe add max donate size
+        if (!balance) return Number.MAX_SAFE_INTEGER.toString();
+
+        const value = ethers.utils.formatEther(balance);
+        console.log(`Max token value for ${donateCoin} is ${value}`);
+
+        return value.toString();
+    }
+
+    /**
+     * Donate logic
+     */
     const donate = async () => {
         // todo validate donateSize type and value
         setDonateResult(undefined);
@@ -217,7 +270,9 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
         }
     }
 
-    // Components
+    /**
+     * Components
+     */
     const availableCoinsSelector = () => {
         return (
             <Select defaultValue={baseCoin} style={{width: 100}} onChange={setCoin}>
@@ -252,7 +307,7 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
                 centered
                 open={isDonateMenuOpen}
                 onOk={donate}
-                okButtonProps={{disabled: isDonating}}
+                okButtonProps={{disabled: isDonating || donateSize === ""}}
                 cancelButtonProps={{disabled: isDonating}}
                 onCancel={closeDonateMenu}
                 okText={"Donate"}
@@ -265,12 +320,15 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
                         items={donateSteps}
                         current={currentDonateStep}
                     />
-                    <Input
+                    <InputNumber
+                        type="number"
+                        controls={false}
                         disabled={isDonating}
                         value={donateSize}
+                        max={getMaxValue()}
                         addonAfter={availableCoinsSelector()}
-                        placeholder="Social media link"
-                        onChange={e => setDonateSize(e.target.value as string)}
+                        placeholder="Please enter a donation amount"
+                        onChange={value => setDonateSize(value ? value.toString() : "")}
                     />
 
                     {donateResult &&
