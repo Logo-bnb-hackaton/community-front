@@ -270,7 +270,7 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
      */
     const availableCoinsSelector = () => {
         return (
-            <Select defaultValue={baseCoin} style={{width: 100}} onChange={setCoin}>
+            <Select defaultValue={baseCoin} style={{width: 100}} onChange={setCoin} disabled={isDonating}>
                 <Select.Option key={baseCoin} value={baseCoin}>{baseCoin}</Select.Option>
                 {
                     availableTokens.map(token => token.symbol).map(symbol => {
