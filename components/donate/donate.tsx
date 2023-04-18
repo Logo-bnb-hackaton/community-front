@@ -133,7 +133,7 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
     });
 
     useEffect(() => {
-        if (isTokenBalancesLoading) return;
+        if (isTokenBalancesLoading || !tokenBalancesData) return;
 
         const tokenBalances = new Map();
         availableTokens.forEach((token, index) => {
