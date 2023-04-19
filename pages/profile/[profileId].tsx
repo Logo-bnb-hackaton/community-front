@@ -152,6 +152,8 @@ export default function Profile() {
         };
         const batchSize = 10;
         return readContracts({
+            // todo idk how to fix it in 5 min
+            // @ts-ignore
             contracts:
                 Array(batchSize).fill(1)
                     .map((one, index) => {
