@@ -12,12 +12,14 @@ export default function Header(
         saveCallback = undefined,
         edited = false,
         setEdited = undefined,
+        disabled
     }: {
         isProfileLoading: boolean,
         profileOwner: string | undefined,
         saveCallback: Function | undefined,
         edited: boolean,
-        setEdited: Function | undefined
+        setEdited: Function | undefined,
+        disabled: boolean
     }
 ) {
 
@@ -52,6 +54,7 @@ export default function Header(
                 {editAvailable && !isProfileLoading &&
                     <div style={{width: "60px", height: "60px", marginRight: "24px"}}>
                         <Button
+                            disabled={disabled}
                             onClick={edited ? onSaveHandle : onEditHandle}
                             style={{
                                 height: "100%",

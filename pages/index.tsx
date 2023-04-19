@@ -113,7 +113,14 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
             <main className={styles.main}>
-                <Header isProfileLoading={false} profileOwner={undefined} saveCallback={undefined} edited={false} setEdited={undefined}/>
+                <Header
+                    isProfileLoading={false}
+                    profileOwner={undefined}
+                    saveCallback={undefined}
+                    edited={false}
+                    setEdited={undefined}
+                    disabled={false}
+                />
 
                 <div className={styles.center}>
                     {

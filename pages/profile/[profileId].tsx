@@ -258,11 +258,13 @@ export default function Profile() {
 
     return (
         <main className={styles.main}>
-            <Header isProfileLoading={isProfileLoading}
-                    profileOwner={profileOwner}
-                    saveCallback={saveCallback}
-                    edited={edited}
-                    setEdited={setEdited}
+            <Header
+                isProfileLoading={isProfileLoading}
+                profileOwner={profileOwner}
+                saveCallback={saveCallback}
+                edited={edited}
+                setEdited={setEdited}
+                disabled={isAvailableTokensLoading}
             />
 
             <div className={styles.center} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
