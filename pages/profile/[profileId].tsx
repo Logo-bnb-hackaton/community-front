@@ -62,7 +62,7 @@ export default function Profile() {
     const [base64Logo, setBase64Logo] = useState<string>();
     const [socialMediaLinks, setSocialMediaLinks] = useState<SocialMediaLink[]>([]);
     const [edited, setEdited] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isProfileLoading, setIsProfileLoading] = useState(false);
 
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined)
 
@@ -84,7 +84,7 @@ export default function Profile() {
 
     useEffect(() => {
         try {
-            setIsLoading(true);
+            setIsProfileLoading(true);
             if (!profileId || !profileOwner) return;
             axios({
                 method: 'post',
@@ -99,7 +99,7 @@ export default function Profile() {
                         return;
                     } else {
                         setEdited(true);
-                        setIsLoading(false);
+                        setIsProfileLoading(false);
                         return;
                     }
                 }
@@ -117,7 +117,7 @@ export default function Profile() {
                     setLogoId(profile.logoId);
                     setBase64Logo(profile.base64Logo);
                     setSocialMediaLinks(profile.socialMediaLinks.map(link => toSocialMediaLink(link)));
-                    setIsLoading(false);
+                    setIsProfileLoading(false);
                 } else {
                     router.push("/");
                     return;
@@ -214,12 +214,17 @@ export default function Profile() {
 
     return (
         <main className={styles.main}>
-            <Header profileOwner={profileOwner} saveCallback={saveCallback} edited={edited} setEdited={setEdited}/>
+            <Header isProfileLoading={isProfileLoading}
+                    profileOwner={profileOwner}
+                    saveCallback={saveCallback}
+                    edited={edited}
+                    setEdited={setEdited}
+            />
 
             <div className={styles.center} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
                 <div className={styles.grid}>
                     {
-                        isLoading ?
+                        isProfileLoading ?
                             <Skeleton.Avatar active shape={"square"}
                                              style={{width: "100%", height: "100%", borderRadius: "30px"}}/> :
                             <Logo logoUrl={base64Logo}
@@ -229,7 +234,7 @@ export default function Profile() {
                             />
                     }
 
-                    {isLoading ?
+                    {isProfileLoading ?
                         <Skeleton active className={styles.profileDescription}/> :
                         <div className={styles.profileDescription} style={{gridArea: "description"}}>
                             {
@@ -262,7 +267,7 @@ export default function Profile() {
 
                         </div>
                     }
-                    <Donate isLoading={isLoading} profileId={profileId as string}/>
+                    <Donate isLoading={isProfileLoading} profileId={profileId as string}/>
 
                 </div>
             </div>
