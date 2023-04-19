@@ -52,17 +52,30 @@ class Token {
     }
 }
 
-const baseCoin = "BNB";
+export const baseCoin = "BNB";
 // TODO set token contracts
 const plugAddress = '0x'
-const availableTokens: Token[] = [
+export const possibleTokens: Token[] = [
     // todo add adresses
     new Token("USDT", plugAddress),
     new Token("USDC", plugAddress),
     new Token("BUSD", "0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814"),
-].filter(item => item.address !== plugAddress);
+]
+// .filter(item => item.address !== plugAddress);
 
-export default function Donate({isLoading, profileId}: { isLoading: boolean, profileId: string | undefined }) {
+// todo maybe fix it
+export const symbolByAddress = new Map<`0x${string}`, string>();
+export const addressBySymbol = new Map<string, `0x${string}`>();
+possibleTokens.forEach(token => {
+    symbolByAddress.set(token.address, token.symbol);
+    addressBySymbol.set(token.symbol, token.address);
+});
+
+export default function Donate({
+                                   isLoading,
+                                   profileId,
+                                   availableTokens
+                               }: { isLoading: boolean, profileId: string | undefined, availableTokens: string[] }) {
     const {address, isConnected,} = useAccount();
     const {data: baseBalanceResponse} = useBalance({
         address: address
@@ -121,9 +134,9 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
      */
     const {data: tokenBalancesData, isLoading: isTokenBalancesLoading} = useContractReads({
         contracts:
-            availableTokens.map(item => {
+            availableTokens.map(symbol => {
                 return {
-                    address: item.address,
+                    address: addressBySymbol.get(symbol)!!,
                     abi: ERC20_ABI,
                     functionName: 'balanceOf',
                     args: [address]
@@ -136,27 +149,20 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
         if (isTokenBalancesLoading || !tokenBalancesData) return;
 
         const tokenBalances = new Map();
-        availableTokens.forEach((token, index) => {
-            tokenBalances.set(token.symbol, tokenBalancesData[index]!! as BigNumber);
+        availableTokens.forEach((symbol, index) => {
+            tokenBalances.set(symbol, tokenBalancesData[index]!! as BigNumber);
         });
         setTokenBalances(tokenBalances);
-    }, [tokenBalancesData, isTokenBalancesLoading]);
+    }, [tokenBalancesData, isTokenBalancesLoading, availableTokens]);
 
     const getMaxValue = () => {
-        let balance;
-
-        if (donateCoin === baseCoin) {
-            balance = baseBalanceResponse?.value;
-        } else {
-            balance = tokenBalances?.get(donateCoin);
-        }
+        const balance = donateCoin === baseCoin ? baseBalanceResponse?.value : tokenBalances?.get(donateCoin);
 
         // todo maybe add max donate size
         if (!balance) return Number.MAX_SAFE_INTEGER.toString();
 
         const value = ethers.utils.formatEther(balance);
         // console.log(`Max token value for ${donateCoin} is ${value}`);
-
         return value.toString();
     }
 
@@ -191,7 +197,7 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
     }
 
     const donateToken = async (donateCoin: string, donateSize: string) => {
-        const tokenAddress: `0x${string}` | undefined = availableTokens.find(token => token.symbol === donateCoin)?.address;
+        const tokenAddress: `0x${string}` | undefined = addressBySymbol.get(donateCoin)!!;
         const tokenAmount: BigNumber = ethers.utils.parseEther(donateSize);
         if (!tokenAddress || !tokenAmount) {
             console.error(`Invalid donate token params: ${tokenAddress} or ${tokenAmount}`);
@@ -273,7 +279,7 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
             <Select defaultValue={baseCoin} style={{width: 100}} onChange={setCoin} disabled={isDonating}>
                 <Select.Option key={baseCoin} value={baseCoin}>{baseCoin}</Select.Option>
                 {
-                    availableTokens.map(token => token.symbol).map(symbol => {
+                    availableTokens.map(symbol => {
                             return (
                                 <Select.Option key={symbol} value={symbol}>{symbol}</Select.Option>
                             );
@@ -293,6 +299,7 @@ export default function Donate({isLoading, profileId}: { isLoading: boolean, pro
                     <Button
                         disabled={!isConnected}
                         className={`${styles.payButton} ${styles.donateButton}`}
+                        style={{width: "100%"}}
                         onClick={openDonateMenu}
                     >DONATE</Button>
             }

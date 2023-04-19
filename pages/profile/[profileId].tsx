@@ -5,11 +5,13 @@ import ReactMarkdown from "react-markdown";
 import SocialMediaList, {SocialMediaLink, toSocialMediaLink} from "@/components/social_media_list/SocialMediaList";
 import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
-import {Input, Skeleton} from "antd";
+import {Button, Input, Skeleton} from "antd";
 import axios from "axios";
-import {useAccount, useContractRead} from "wagmi";
+import {readContracts, useAccount, useContractRead} from "wagmi";
 import {ABI, CONTRACT_ADDRESS} from "@/constants";
-import Donate from "@/components/donate/donate";
+import Donate, {addressBySymbol, baseCoin, possibleTokens, symbolByAddress} from "@/components/donate/donate";
+import {prepareWriteContract, waitForTransaction, writeContract} from "@wagmi/core";
+import {LoadingOutlined} from "@ant-design/icons";
 
 class ProfileError {
     logo: boolean;
@@ -64,6 +66,10 @@ export default function Profile() {
     const [edited, setEdited] = useState(false);
     const [isProfileLoading, setIsProfileLoading] = useState(false);
 
+    const [isAvailableTokensLoading, setIsAvailableTokensLoading] = useState(false);
+    const [processingToken, setProcessingToken] = useState<string | undefined>(undefined);
+    const [availableTokens, setAvailableTokens] = useState<string[]>([]);
+
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined)
 
     /**
@@ -86,6 +92,7 @@ export default function Profile() {
         try {
             setIsProfileLoading(true);
             if (!profileId || !profileOwner) return;
+
             axios({
                 method: 'post',
                 url: `${BACKEND_BASE_URL}/profile/`,
@@ -129,6 +136,39 @@ export default function Profile() {
         }
     }, [address, profileId, profileOwner, router]);
 
+    /**
+     * Read available tokens
+     */
+    useEffect(() => {
+        loadAvailableTokens()
+    }, [profileId]);
+
+    const loadAvailableTokens = async () => {
+        setIsAvailableTokensLoading(true);
+        const baseConfig = {
+            address: CONTRACT_ADDRESS,
+            abi: ABI,
+            functionName: 'donateTokenAddressesByAuthor',
+        };
+        const batchSize = 10;
+        return readContracts({
+            contracts:
+                Array(batchSize).fill(1)
+                    .map((one, index) => {
+                            return {
+                                ...baseConfig,
+                                args: [profileId, index]
+                            }
+                        }
+                    )
+        })
+            .then(data => {
+                const tokens = data.filter(item => item).map(address => symbolByAddress.get(address as `0x${string}`)) as string[];
+                setAvailableTokens(tokens);
+            })
+            .finally(() => setIsAvailableTokensLoading(false));
+    }
+
     const saveCallback = async () => {
         console.log("Save profile callback....");
 
@@ -151,64 +191,66 @@ export default function Profile() {
         setEdited(false);
         setProfileError(undefined);
 
-        const req = {
-            id: profileId,
-            title: title,
-            description: description,
-            logoId: logoId,
-            logo: logoId ? undefined : base64Logo, // if nothing change don't send image again
-            socialMediaLinks: socialMediaLinks.map(link => link.link)
-        }
         await axios({
             method: 'post',
             url: `${BACKEND_BASE_URL}/profile/update`,
-            data: req,
+            data: {
+                id: profileId,
+                title: title,
+                description: description,
+                logoId: logoId,
+                logo: logoId ? undefined : base64Logo, // if nothing change don't send image again
+                socialMediaLinks: socialMediaLinks.map(link => link.link)
+            },
         });
         return true;
     }
 
     const socialLinkHandler = (links: SocialMediaLink[]) => {
         setSocialMediaLinks(links);
-        if (profileError) {
-            setProfileError(
-                new ProfileError(
-                    profileError.logo, profileError.title, profileError.description, false
-                )
-            );
-        }
+        if (profileError) setProfileError({...profileError, socialMediaLinks: false});
     }
 
     const titleInputHandler = (e: any) => {
         setTitle(e.target.value);
-        if (profileError) {
-            setProfileError(
-                new ProfileError(
-                    profileError.logo, false, profileError.description, profileError.socialMediaLinks
-                )
-            );
-        }
+        if (profileError) setProfileError({...profileError, title: false});
     }
 
     const descriptionInputHandler = (e: any) => {
         setDescription(e.target.value);
-        if (profileError) {
-            setProfileError(
-                new ProfileError(
-                    profileError.logo, profileError.title, false, profileError.socialMediaLinks
-                )
-            );
-        }
+        if (profileError) setProfileError({...profileError, description: false});
     }
 
     const logoDraggerHandler = (base64Logo: string) => {
         setLogoId(undefined);
         setBase64Logo(base64Logo);
-        if (profileError) {
-            setProfileError(
-                new ProfileError(
-                    false, profileError.title, profileError.description, profileError.socialMediaLinks
-                )
-            );
+        if (profileError) setProfileError({...profileError, logo: false});
+    }
+
+    const enableOrDisableToken = async (tokenSymbol: string) => {
+        setIsAvailableTokensLoading(true);
+        setProcessingToken(tokenSymbol);
+        try {
+            const tokenAddress = addressBySymbol.get(tokenSymbol)!!;
+            const enabled = availableTokens.find(token => token === tokenSymbol) !== undefined;
+
+            const functionName = enabled ? 'removeDonateAddress' : 'addDonateAddress';
+            console.log(`functionName: ${functionName}`);
+            const config = await prepareWriteContract({
+                address: CONTRACT_ADDRESS,
+                abi: ABI,
+                functionName: functionName,
+                args: [tokenAddress, profileId]
+            })
+            const {hash} = await writeContract(config);
+            await waitForTransaction({hash: hash});
+
+            await loadAvailableTokens();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsAvailableTokensLoading(false);
+            setProcessingToken(undefined);
         }
     }
 
@@ -267,7 +309,41 @@ export default function Profile() {
 
                         </div>
                     }
-                    <Donate isLoading={isProfileLoading} profileId={profileId as string}/>
+                    {
+                        edited ?
+                            <div style={{
+                                gridArea: "donate",
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between"
+                            }}>
+                                <Button
+                                    key={baseCoin}
+                                    disabled={true}
+                                    className={`${styles.payButton}`}
+                                    style={{width: "22%", backgroundColor: "#DBFCAC"}}
+                                    onClick={e => {
+                                    }}
+                                >{baseCoin.toUpperCase()}</Button>
+                                {
+                                    possibleTokens.map(item => item.symbol).map(symbol =>
+                                        <Button
+                                            disabled={isAvailableTokensLoading}
+                                            key={symbol}
+                                            className={`
+                                            ${styles.payButton} 
+                                            ${availableTokens.find(t => t === symbol) === undefined ? styles.notSelectedToken : ""}`}
+                                            style={{width: "22%"}}
+                                            onClick={e => enableOrDisableToken(symbol)}
+                                        >{symbol.toUpperCase()} {symbol === processingToken ?
+                                            <LoadingOutlined/> : ""}</Button>
+                                    )
+                                }
+                            </div>
+                            :
+                            <Donate isLoading={isProfileLoading} profileId={profileId as string}
+                                    availableTokens={availableTokens}/>
+                    }
 
                 </div>
             </div>
