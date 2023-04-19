@@ -27,23 +27,26 @@ class ProfileError {
 
 class ProfileRes {
     id: string;
-    logo: string;
     title: string;
     description: string;
+    logoId: string;
+    base64Logo: string;
     socialMediaLinks: string[];
 
 
-    constructor(id: string, logo: string, title: string, description: string, socialMediaLinks: string[]) {
+    constructor(id: string, title: string, description: string, logoId: string, base64Logo: string, socialMediaLinks: string[]) {
         this.id = id;
-        this.logo = logo;
         this.title = title;
         this.description = description;
+        this.logoId = logoId;
+        this.base64Logo = base64Logo;
         this.socialMediaLinks = socialMediaLinks;
     }
 }
 
 const MAX_DESCRIPTION_LEN = 250;
-const BACKEND_BASE_URL = 'https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev';
+// const BACKEND_BASE_URL = 'https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev';
+const BACKEND_BASE_URL = 'http://localhost:8080';
 
 export default function Profile() {
 
@@ -55,7 +58,9 @@ export default function Profile() {
     const [profileOwner, setProfileOwner] = useState<string | undefined>(undefined);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
-    const [logoUrl, setLogoUrl] = useState<string>();
+
+    const [logoId, setLogoId] = useState<string>();
+    const [base64Logo, setBase64Logo] = useState<string>();
     const [socialMediaLinks, setSocialMediaLinks] = useState<SocialMediaLink[]>([]);
     const [edited, setEdited] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -110,7 +115,8 @@ export default function Profile() {
                 if (profile) {
                     setTitle(profile.title);
                     setDescription(profile.description);
-                    setLogoUrl(profile.logo);
+                    setLogoId(profile.logoId);
+                    setBase64Logo(profile.base64Logo);
                     setSocialMediaLinks(profile.socialMediaLinks.map(link => toSocialMediaLink(link)));
                     setIsLoading(false);
                 } else {
@@ -127,7 +133,7 @@ export default function Profile() {
     const saveCallback = async () => {
         console.log("Save profile callback....");
 
-        const hasLogoError = !logoUrl;
+        const hasLogoError = !base64Logo;
         const hasTitleError = !title;
         const hasDescriptionError = !description || description.length > MAX_DESCRIPTION_LEN;
         const hasSocialLinksError = socialMediaLinks.length === 0;
@@ -150,7 +156,8 @@ export default function Profile() {
             id: profileId,
             title: title,
             description: description,
-            logo: logoUrl,
+            logoId: logoId,
+            logo: logoId ? undefined : base64Logo, // if nothing change don't send image again
             socialMediaLinks: socialMediaLinks.map(link => link.link)
         }
         await axios({
@@ -194,8 +201,9 @@ export default function Profile() {
         }
     }
 
-    const logoDraggerHandler = (url: string) => {
-        setLogoUrl(url);
+    const logoDraggerHandler = (base64Logo: string) => {
+        setLogoId(undefined);
+        setBase64Logo(base64Logo);
         if (profileError) {
             setProfileError(
                 new ProfileError(
@@ -215,7 +223,7 @@ export default function Profile() {
                         isLoading ?
                             <Skeleton.Avatar active shape={"square"}
                                              style={{width: "100%", height: "100%", borderRadius: "30px"}}/> :
-                            <Logo logoUrl={logoUrl}
+                            <Logo logoUrl={base64Logo}
                                   setLogoUrl={logoDraggerHandler}
                                   edited={edited}
                                   hasError={profileError && profileError.logo}
