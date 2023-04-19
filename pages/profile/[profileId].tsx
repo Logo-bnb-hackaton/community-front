@@ -45,8 +45,7 @@ class ProfileRes {
 }
 
 const MAX_DESCRIPTION_LEN = 250;
-// const BACKEND_BASE_URL = 'https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev';
-const BACKEND_BASE_URL = 'http://localhost:8080';
+const BACKEND_BASE_URL = 'https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev';
 
 export default function Profile() {
 
