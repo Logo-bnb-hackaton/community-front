@@ -1,13 +1,13 @@
 import {Button, InputNumber, Modal, Result, Select, Skeleton, Steps} from "antd";
 import styles from "@/styles/Home.module.css";
 import React, {useEffect, useState} from "react";
-import {useAccount, useBalance, useContractReads} from "wagmi";
+import {erc20ABI, useAccount, useBalance, useContractReads} from "wagmi";
 import {StepProps} from "antd/es/steps";
 import {ResultStatusType} from "antd/es/result";
 import {LoadingOutlined} from "@ant-design/icons";
 import {BigNumber, ethers} from "ethers";
 import {prepareWriteContract, waitForTransaction, writeContract, WriteContractPreparedArgs} from "@wagmi/core";
-import {ABI, CONTRACT_ADDRESS, ERC20_ABI} from "@/constants";
+import {ABI, CONTRACT_ADDRESS} from "@/constants";
 
 const defaultDonateSteps: StepProps[] = [
     {
@@ -53,15 +53,11 @@ class Token {
 }
 
 export const baseCoin = "BNB";
-// TODO set token contracts
-const plugAddress = '0x'
 export const possibleTokens: Token[] = [
-    // todo add adresses
-    new Token("USDT", plugAddress),
-    new Token("USDC", plugAddress),
-    new Token("BUSD", "0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814"),
+    new Token("USDT", '0x5eAD2D2FA49925dbcd6dE99A573cDA494E3689be'),
+    new Token("USDC", '0x953b8279d8Eb26c42d33bA1Aca130d853cb941C8'),
+    new Token("BUSD", '0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814'),
 ]
-// .filter(item => item.address !== plugAddress);
 
 // todo maybe fix it
 export const symbolByAddress = new Map<`0x${string}`, string>();
@@ -137,7 +133,7 @@ export default function Donate({
             availableTokens.map(symbol => {
                 return {
                     address: addressBySymbol.get(symbol)!!,
-                    abi: ERC20_ABI,
+                    abi: erc20ABI,
                     functionName: 'balanceOf',
                     args: [address]
                 }
@@ -219,7 +215,7 @@ export default function Donate({
 
             const spendingConfig = await prepareWriteContract({
                 address: tokenAddress!!,
-                abi: ERC20_ABI,
+                abi: erc20ABI,
                 functionName: 'approve',
                 args: [CONTRACT_ADDRESS, tokenAmount]
 
