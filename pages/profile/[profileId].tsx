@@ -223,7 +223,7 @@ export default function Profile() {
         if (profileError) setProfileError({...profileError, description: false});
     }
 
-    const logoDraggerHandler = (base64Logo: string) => {
+    const logoDraggerHandler = (base64Logo: string| undefined) => {
         setLogoId(undefined);
         setBase64Logo(base64Logo);
         if (profileError) setProfileError({...profileError, logo: false});
@@ -273,8 +273,8 @@ export default function Profile() {
                         isProfileLoading ?
                             <Skeleton.Avatar active shape={"square"}
                                              style={{width: "100%", height: "100%", borderRadius: "30px"}}/> :
-                            <Logo logoUrl={base64Logo}
-                                  setLogoUrl={logoDraggerHandler}
+                            <Logo base64Logo={base64Logo}
+                                  setBase64Logo={logoDraggerHandler}
                                   edited={edited}
                                   hasError={profileError && profileError.logo}
                             />
