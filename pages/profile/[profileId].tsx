@@ -11,7 +11,7 @@ import {readContracts, useAccount, useContractRead} from "wagmi";
 import {ABI, CONTRACT_ADDRESS} from "@/constants";
 import Donate, {addressBySymbol, baseCoin, possibleTokens, symbolByAddress} from "@/components/donate/donate";
 import {prepareWriteContract, waitForTransaction, writeContract} from "@wagmi/core";
-import {LoadingOutlined} from "@ant-design/icons";
+import {FileAddOutlined, LoadingOutlined} from "@ant-design/icons";
 
 class ProfileError {
     logo: boolean;
@@ -51,11 +51,12 @@ const BACKEND_BASE_URL = 'https://jr6v17son2.execute-api.us-east-1.amazonaws.com
 
 export default function Profile() {
 
-    const {address} = useAccount();
+    const {address, isConnected} = useAccount();
 
     const router = useRouter()
     const {profileId} = router.query
 
+    const [editAvailable, setEditAvailable] = useState(false);
     const [profileOwner, setProfileOwner] = useState<string | undefined>(undefined);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("")
@@ -84,7 +85,13 @@ export default function Profile() {
 
     useEffect(() => {
         if (isOwnerLoadingSuccess) {
-            setProfileOwner(ownerAddress as string);
+            const owner = ownerAddress as string;
+            setProfileOwner(owner);
+            if (isConnected && address === owner) {
+                setEditAvailable(true);
+                return;
+            }
+            setEditAvailable(false);
         }
     }, [ownerAddress, isOwnerLoadingSuccess]);
 
@@ -223,7 +230,7 @@ export default function Profile() {
         if (profileError) setProfileError({...profileError, description: false});
     }
 
-    const logoDraggerHandler = (base64Logo: string| undefined) => {
+    const logoDraggerHandler = (base64Logo: string | undefined) => {
         setLogoId(undefined);
         setBase64Logo(base64Logo);
         if (profileError) setProfileError({...profileError, logo: false});
@@ -260,9 +267,9 @@ export default function Profile() {
         <main className={styles.main}>
             <Header
                 isProfileLoading={isProfileLoading}
-                profileOwner={profileOwner}
                 saveCallback={saveCallback}
                 edited={edited}
+                editAvailable={editAvailable}
                 setEdited={setEdited}
                 disabled={isAvailableTokensLoading}
             />
@@ -350,6 +357,14 @@ export default function Profile() {
                     }
 
                 </div>
+                {editAvailable && !isProfileLoading &&
+                    <Button
+                        disabled={!isConnected}
+                        className={`${styles.payButton}`}
+                        style={{width: "100%", height: "100px", backgroundColor: "#f5f5f5", marginTop: "48px"}}
+                        onClick={() => router.push("/event")}
+                    >Add subscription <FileAddOutlined/></Button>
+                }
             </div>
         </main>
     );

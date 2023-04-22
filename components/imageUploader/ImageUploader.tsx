@@ -13,9 +13,9 @@ const getBase64 = (img: RcFile, callback: (url: string) => void) => {
 
 export default function ImageUploader(
     {
-        description, sizeText, hasError, edited, base64Img, setBase64Img
+        disabled, description, sizeText, hasError, edited, base64Img, setBase64Img
     }: {
-        description: string, sizeText: string, hasError: boolean, edited: boolean,
+        disabled: boolean, description: string, sizeText: string, hasError: boolean, edited: boolean,
         base64Img: string | undefined, setBase64Img: (img: string | undefined) => void,
     }
 ) {
@@ -48,7 +48,7 @@ export default function ImageUploader(
                 <>
                     <Image src={base64Img} alt={"Community logo"} style={{borderRadius: "30px"}} fill/>
 
-                    {edited &&
+                    {edited && !disabled &&
                         <div className={styles.logoDeleteButton} onClick={deleteButtonHandler}>
                             <DeleteOutlined style={{color: "red", fontSize: "20px"}}/>
                         </div>
@@ -57,6 +57,7 @@ export default function ImageUploader(
             }
             {!base64Img &&
                 <Upload.Dragger
+                    disabled={disabled}
                     maxCount={1}
                     accept="image/*"
                     beforeUpload={beforeUpload}
@@ -68,7 +69,8 @@ export default function ImageUploader(
                         justifyContent: "center",
                         alignItems: "center",
                         backgroundColor: '#f5f5f5',
-                        border: '1px dashed #000',
+                        border: '1px dashed',
+                        borderColor: hasError ? 'red' : 'black',
                         borderRadius: '20px'
                     }}
                     className={`${styles.draggerWrapper} ${hasError ? styles.errorBorder : ""}`}

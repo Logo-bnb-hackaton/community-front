@@ -10,8 +10,8 @@ export default function Index() {
         <main className={homeStyles.main}>
             <Header
                 isProfileLoading={false}
-                profileOwner={undefined}
                 saveCallback={undefined}
+                editAvailable={false}
                 edited={false}
                 setEdited={undefined}
                 disabled={false}

@@ -1,38 +1,26 @@
 import styles from "@/styles/Home.module.css";
 import WalletButton from "@/components/wallet/WalletButton";
-import React, {useEffect, useState} from "react";
-import {useAccount} from "wagmi";
+import React from "react";
 import {Button} from "antd";
 import {FormOutlined} from "@ant-design/icons";
 
 export default function Header(
     {
         isProfileLoading,
-        profileOwner = undefined,
         saveCallback = undefined,
+        editAvailable = false,
         edited = false,
         setEdited = undefined,
         disabled
     }: {
         isProfileLoading: boolean,
-        profileOwner: string | undefined,
         saveCallback: Function | undefined,
+        editAvailable: boolean,
         edited: boolean,
         setEdited: Function | undefined,
         disabled: boolean
     }
 ) {
-
-    const [editAvailable, setEditAvailable] = useState(false);
-
-    const account = useAccount();
-    useEffect(() => {
-        if (account && profileOwner && account.isConnected && account.address == profileOwner) {
-            setEditAvailable(true);
-            return;
-        }
-        setEditAvailable(false);
-    }, [account, profileOwner])
 
     const onEditHandle = () => {
         setEdited!!(true);
