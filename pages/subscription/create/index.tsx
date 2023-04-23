@@ -1,11 +1,9 @@
+import React from "react";
 import homeStyles from "@/styles/Home.module.css";
 import Header from "@/components/header/Header";
-import React from "react";
-import styles from "@/styles/Event.module.css"
-import EditEvent from "@/components/event/edit";
+import Edit from "@/components/event/edit/Edit";
 
-export default function Index() {
-
+export default function CreatePage() {
     return (
         <main className={homeStyles.main}>
             <Header
@@ -16,10 +14,7 @@ export default function Index() {
                 setEdited={undefined}
                 disabled={false}
             />
-
-            <div className={styles.eventWrapper}>
-                <EditEvent/>
-            </div>
+            <Edit data={undefined}/>
         </main>
     );
 }

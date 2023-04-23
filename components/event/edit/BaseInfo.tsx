@@ -27,6 +27,7 @@ export function hasError(errors: BaseInfoErrors): boolean {
 }
 
 export class BaseInfoData {
+    id: string | undefined;
     title: string;
     description: string;
     coin: string;
@@ -35,6 +36,7 @@ export class BaseInfoData {
     base64PreviewImg: string | undefined;
 
     constructor(
+        id: string | undefined,
         title: string,
         description: string,
         coin: string,

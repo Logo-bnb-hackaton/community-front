@@ -295,7 +295,7 @@ export default function Donate({
                     <Button
                         disabled={!isConnected}
                         className={`${styles.payButton} ${styles.donateButton}`}
-                        style={{width: "100%"}}
+                        style={{width: "100%", height: "100px"}}
                         onClick={openDonateMenu}
                     >DONATE</Button>
             }

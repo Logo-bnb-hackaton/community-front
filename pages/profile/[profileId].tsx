@@ -12,6 +12,7 @@ import {ABI, CONTRACT_ADDRESS} from "@/constants";
 import Donate, {addressBySymbol, baseCoin, possibleTokens, symbolByAddress} from "@/components/donate/donate";
 import {prepareWriteContract, waitForTransaction, writeContract} from "@wagmi/core";
 import {FileAddOutlined, LoadingOutlined} from "@ant-design/icons";
+import {subscriptions} from "@/pages/subscription/[subscriptionId]";
 
 class ProfileError {
     logo: boolean;
@@ -362,9 +363,15 @@ export default function Profile() {
                         disabled={!isConnected}
                         className={`${styles.payButton}`}
                         style={{width: "100%", height: "100px", backgroundColor: "#f5f5f5", marginTop: "48px"}}
-                        onClick={() => router.push("/event")}
+                        onClick={() => router.push("/subscription/create")}
                     >Add subscription <FileAddOutlined/></Button>
                 }
+                <div>
+                    <h1>Subs</h1>
+                    {
+                        subscriptions.map(s => <h2 key={s.id}>{s.id}</h2>)
+                    }
+                </div>
             </div>
         </main>
     );
