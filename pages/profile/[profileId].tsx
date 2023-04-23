@@ -12,6 +12,7 @@ import {ABI, CONTRACT_ADDRESS} from "@/constants";
 import Donate, {addressBySymbol, baseCoin, possibleTokens, symbolByAddress} from "@/components/donate/donate";
 import {prepareWriteContract, waitForTransaction, writeContract} from "@wagmi/core";
 import {FileAddOutlined, LoadingOutlined} from "@ant-design/icons";
+import Subscriptions from "@/components/subscriptions/Subscriptions";
 import {subscriptions} from "@/pages/subscription/[subscriptionId]";
 
 class ProfileError {
@@ -94,7 +95,7 @@ export default function Profile() {
             }
             setEditAvailable(false);
         }
-    }, [ownerAddress, isOwnerLoadingSuccess]);
+    }, [ownerAddress, isOwnerLoadingSuccess, isConnected, address]);
 
     useEffect(() => {
         try {
@@ -275,7 +276,8 @@ export default function Profile() {
                 disabled={isAvailableTokensLoading}
             />
 
-            <div className={styles.center} style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+            <div className={styles.center}
+                 style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
                 <div className={styles.grid}>
                     {
                         isProfileLoading ?
@@ -366,12 +368,9 @@ export default function Profile() {
                         onClick={() => router.push("/subscription/create")}
                     >Add subscription <FileAddOutlined/></Button>
                 }
-                <div>
-                    <h1>Subs</h1>
-                    {
-                        subscriptions.map(s => <h2 key={s.id}>{s.id}</h2>)
-                    }
-                </div>
+                {subscriptions.length !== 0 &&
+                    <Subscriptions subscriptions={subscriptions}/>
+                }
             </div>
         </main>
     );
