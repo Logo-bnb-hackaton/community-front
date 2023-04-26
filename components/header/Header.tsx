@@ -1,38 +1,24 @@
 import styles from "@/styles/Home.module.css";
 import WalletButton from "@/components/wallet/WalletButton";
-import React, {useEffect, useState} from "react";
-import {useAccount} from "wagmi";
+import React from "react";
 import {Button} from "antd";
 import {FormOutlined} from "@ant-design/icons";
 
 export default function Header(
     {
-        isProfileLoading,
-        profileOwner = undefined,
         saveCallback = undefined,
+        editAvailable = false,
         edited = false,
         setEdited = undefined,
         disabled
     }: {
-        isProfileLoading: boolean,
-        profileOwner: string | undefined,
         saveCallback: Function | undefined,
+        editAvailable: boolean,
         edited: boolean,
         setEdited: Function | undefined,
         disabled: boolean
     }
 ) {
-
-    const [editAvailable, setEditAvailable] = useState(false);
-
-    const account = useAccount();
-    useEffect(() => {
-        if (account && profileOwner && account.isConnected && account.address == profileOwner) {
-            setEditAvailable(true);
-            return;
-        }
-        setEditAvailable(false);
-    }, [account, profileOwner])
 
     const onEditHandle = () => {
         setEdited!!(true);
@@ -51,7 +37,7 @@ export default function Header(
         <div className={styles.description}>
             <p style={{fontSize: "48px", fontWeight: "bold", fontFamily: 'CoHeadlineCorp'}}><a href={"/"}>LOGO</a></p>
             <div style={{display: "flex", flexDirection: "row"}}>
-                {editAvailable && !isProfileLoading &&
+                {editAvailable &&
                     <div style={{width: "60px", height: "60px", marginRight: "24px"}}>
                         <Button
                             disabled={disabled}

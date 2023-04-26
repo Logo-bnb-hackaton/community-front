@@ -1,0 +1,87 @@
+.subscriptionsWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.subscriptionsTitle {
+    font-size: 48px;
+    font-family: var(--font-co-headline-corp);
+    font-weight: bold;
+    padding: 80px 0 64px 0;
+}
+
+.subscriptionsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.subscriptionWrapper {
+    cursor: pointer;
+    width: 340px;
+    height: 450px;
+    position: relative;
+}
+
+.subscriptionStub {
+    width: 100%;
+    height: 100%;
+    background-color: var(--default-white-color);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-family: var(--font-co-headline-corp);
+    color: #D9D9D9;
+}
+
+.subscriptionImage {
+    border-radius: 20px;
+}
+
+.subscriptionTitle {
+    position: absolute;
+    background-color: var(--default-white-color);
+    border-radius: 15px;
+    padding: 0 23px;
+    bottom: 0;
+    margin: 24px;
+    font-size: 24px;
+    font-family: var(--font-co-headline-corp);
+    font-weight: bold;
+    line-height: 50px;
+}
+
+.subscriptionStatus {
+    cursor: pointer;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 15px;
+    top: 0;
+    right: 0;
+    margin: 24px;
+    font-size: 24px;
+    font-family: var(--font-co-headline-corp);
+    font-weight: bold;
+    background-color: var(--default-white-color);
+    line-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.subscriptionStatus:hover {
+    transform: scale(1.05);
+}
+
+.subscriptionSuccess {
+    background-color: var(--primary-green-color);
+}
+
+.subscriptionError {
+    background-color: var(--primary-red-color);
+}

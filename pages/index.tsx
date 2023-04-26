@@ -5,7 +5,7 @@ import {useAccount, useContractRead, useContractWrite, usePrepareContractWrite} 
 import Link from 'next/link'
 import Header from "@/components/header/Header";
 import {Button} from "antd";
-import {ABI, CONTRACT_ADDRESS, WAIT_BLOCK_CONFIRMATIONS} from "@/constants";
+import {MAIN_NFT_ABI, MAIN_NFT_ADDRESS, WAIT_BLOCK_CONFIRMATIONS} from "@/constants";
 import {BigNumber} from "ethers";
 import {waitForTransaction} from "@wagmi/core";
 
@@ -30,8 +30,8 @@ export default function Home() {
      * Loading price to mint
      */
     const {data: priceToMintData, isSuccess: isPriceToMintDataSuccess} = useContractRead({
-        address: CONTRACT_ADDRESS,
-        abi: ABI,
+        address: MAIN_NFT_ADDRESS,
+        abi: MAIN_NFT_ABI,
         functionName: 'priceToMint',
         args: [address],
     });
@@ -55,8 +55,8 @@ export default function Home() {
         isSuccess: isTokenOfOwnerByIndexSuccess,
         refetch: tokenOfOwnerByIndexRefetch
     } = useContractRead({
-        address: CONTRACT_ADDRESS,
-        abi: ABI,
+        address: MAIN_NFT_ADDRESS,
+        abi: MAIN_NFT_ABI,
         functionName: 'tokenOfOwnerByIndex',
         args: [address, 0],
     });
@@ -67,11 +67,11 @@ export default function Home() {
         } else {
             setUserProfileId(undefined);
         }
-    }, [priceToMintData, isPriceToMintDataSuccess]);
+    }, [priceToMintData, isPriceToMintDataSuccess, isTokenOfOwnerByIndexSuccess, tokenOfOwnerByIndexData]);
 
     const {config: safeMintConfig} = usePrepareContractWrite({
-        address: CONTRACT_ADDRESS,
-        abi: ABI,
+        address: MAIN_NFT_ADDRESS,
+        abi: MAIN_NFT_ABI,
         functionName: 'safeMint',
         overrides: {
             value: priceToMint
@@ -114,9 +114,8 @@ export default function Home() {
             </Head>
             <main className={styles.main}>
                 <Header
-                    isProfileLoading={false}
-                    profileOwner={undefined}
                     saveCallback={undefined}
+                    editAvailable={false}
                     edited={false}
                     setEdited={undefined}
                     disabled={false}

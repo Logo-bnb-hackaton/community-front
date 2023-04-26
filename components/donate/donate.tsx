@@ -1,4 +1,4 @@
-import {Button, InputNumber, Modal, Result, Select, Skeleton, Steps} from "antd";
+import {Button, InputNumber, Modal, Result, Select, Steps} from "antd";
 import styles from "@/styles/Home.module.css";
 import React, {useEffect, useState} from "react";
 import {erc20ABI, useAccount, useBalance, useContractReads} from "wagmi";
@@ -7,7 +7,8 @@ import {ResultStatusType} from "antd/es/result";
 import {LoadingOutlined} from "@ant-design/icons";
 import {BigNumber, ethers} from "ethers";
 import {prepareWriteContract, waitForTransaction, writeContract, WriteContractPreparedArgs} from "@wagmi/core";
-import {ABI, CONTRACT_ADDRESS} from "@/constants";
+import {MAIN_NFT_ADDRESS, PUBLIC_DONATION_ABI, PUBLIC_DONATION_ADDRESS} from "@/constants";
+import {addressBySymbol, baseCoin} from "@/utils/tokens";
 
 const defaultDonateSteps: StepProps[] = [
     {
@@ -42,37 +43,16 @@ const getBnbDonateSteps = () => JSON.parse(bnbDonateStepsJson);
 const tokenDonateStepsJson = JSON.stringify(defaultDonateSteps);
 const getTokenDonateSteps = () => JSON.parse(tokenDonateStepsJson);
 
-class Token {
+export interface Token {
     symbol: string;
     address: `0x${string}`;
-
-    constructor(symbol: string, address: `0x${string}`) {
-        this.symbol = symbol;
-        this.address = address;
-    }
 }
 
-export const baseCoin = "BNB";
-export const possibleTokens: Token[] = [
-    new Token("USDT", '0x5eAD2D2FA49925dbcd6dE99A573cDA494E3689be'),
-    new Token("USDC", '0x953b8279d8Eb26c42d33bA1Aca130d853cb941C8'),
-    new Token("BUSD", '0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814'),
-]
-
-// todo maybe fix it
-export const symbolByAddress = new Map<`0x${string}`, string>();
-export const addressBySymbol = new Map<string, `0x${string}`>();
-possibleTokens.forEach(token => {
-    symbolByAddress.set(token.address, token.symbol);
-    addressBySymbol.set(token.symbol, token.address);
-});
-
 export default function Donate({
-                                   isLoading,
                                    profileId,
                                    availableTokens
-                               }: { isLoading: boolean, profileId: string | undefined, availableTokens: string[] }) {
-    const {address, isConnected,} = useAccount();
+                               }: { profileId: string | undefined, availableTokens: string[] }) {
+    const {address} = useAccount();
     const {data: baseBalanceResponse} = useBalance({
         address: address
     });
@@ -179,8 +159,8 @@ export default function Donate({
     const donateBaseCoin = async (donateCoin: string, donateSize: string) => {
         const value = ethers.utils.parseEther(donateSize.toString());
         const donateEthConfig = async () => prepareWriteContract({
-            address: CONTRACT_ADDRESS,
-            abi: ABI,
+            address: PUBLIC_DONATION_ADDRESS,
+            abi: PUBLIC_DONATION_ABI,
             functionName: 'donateEth',
             args: [profileId],
             overrides: {
@@ -203,8 +183,8 @@ export default function Donate({
 
 
         const donateTokenConfig = async () => prepareWriteContract({
-            address: CONTRACT_ADDRESS,
-            abi: ABI,
+            address: PUBLIC_DONATION_ADDRESS,
+            abi: PUBLIC_DONATION_ABI,
             functionName: 'donateToken',
             args: [tokenAddress, tokenAmount, profileId],
         });
@@ -217,7 +197,7 @@ export default function Donate({
                 address: tokenAddress!!,
                 abi: erc20ABI,
                 functionName: 'approve',
-                args: [CONTRACT_ADDRESS, tokenAmount]
+                args: [MAIN_NFT_ADDRESS, tokenAmount]
 
             });
             const approveResponse = await writeContract(spendingConfig);
@@ -288,17 +268,11 @@ export default function Donate({
 
     return (
         <>
-            {
-                isLoading ?
-                    <Skeleton.Button active className={styles.donateButton} shape={"square"}
-                                     style={{height: "5rem", width: "100%"}}/> :
-                    <Button
-                        disabled={!isConnected}
-                        className={`${styles.payButton} ${styles.donateButton}`}
-                        style={{width: "100%"}}
-                        onClick={openDonateMenu}
-                    >DONATE</Button>
-            }
+            <Button
+                className={`${styles.payButton} ${styles.donateButton}`}
+                style={{width: "100%", height: "100px"}}
+                onClick={openDonateMenu}
+            >DONATE</Button>
             <Modal
                 width={"50vw"}
                 title="Donate"
