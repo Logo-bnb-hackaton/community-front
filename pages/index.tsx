@@ -67,7 +67,7 @@ export default function Home() {
         } else {
             setUserProfileId(undefined);
         }
-    }, [priceToMintData, isPriceToMintDataSuccess]);
+    }, [priceToMintData, isPriceToMintDataSuccess, isTokenOfOwnerByIndexSuccess, tokenOfOwnerByIndexData]);
 
     const {config: safeMintConfig} = usePrepareContractWrite({
         address: MAIN_NFT_ADDRESS,
