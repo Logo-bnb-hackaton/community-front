@@ -3,11 +3,13 @@ import ImageUploader from "@/components/imageUploader/ImageUploader";
 
 // todo add logic with editable
 export default function Logo({
+                                 isLoading,
                                  base64Logo,
                                  setBase64Logo,
                                  edited = false,
                                  hasError = false
                              }: {
+    isLoading: boolean,
     base64Logo?: string,
     setBase64Logo: (base64Img: string | undefined) => void,
     edited: boolean,
@@ -22,6 +24,7 @@ export default function Logo({
             alignItems: "center",
         }}>
             <ImageUploader
+                disabled={isLoading}
                 description={"Click or drag logo file to this area to upload"}
                 sizeText={"400 x 400 px"}
                 hasError={hasError}

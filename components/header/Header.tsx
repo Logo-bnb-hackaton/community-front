@@ -6,14 +6,12 @@ import {FormOutlined} from "@ant-design/icons";
 
 export default function Header(
     {
-        isProfileLoading,
         saveCallback = undefined,
         editAvailable = false,
         edited = false,
         setEdited = undefined,
         disabled
     }: {
-        isProfileLoading: boolean,
         saveCallback: Function | undefined,
         editAvailable: boolean,
         edited: boolean,
@@ -39,7 +37,7 @@ export default function Header(
         <div className={styles.description}>
             <p style={{fontSize: "48px", fontWeight: "bold", fontFamily: 'CoHeadlineCorp'}}><a href={"/"}>LOGO</a></p>
             <div style={{display: "flex", flexDirection: "row"}}>
-                {editAvailable && !isProfileLoading &&
+                {editAvailable &&
                     <div style={{width: "60px", height: "60px", marginRight: "24px"}}>
                         <Button
                             disabled={disabled}

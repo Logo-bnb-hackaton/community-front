@@ -19,6 +19,7 @@
 }
 
 .subscriptionWrapper {
+    cursor: pointer;
     width: 340px;
     height: 450px;
     position: relative;
@@ -55,6 +56,7 @@
 }
 
 .subscriptionStatus {
+    cursor: pointer;
     position: absolute;
     width: 40px;
     height: 40px;
@@ -70,6 +72,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.subscriptionStatus:hover {
+    transform: scale(1.05);
 }
 
 .subscriptionSuccess {
