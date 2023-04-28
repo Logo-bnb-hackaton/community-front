@@ -79,7 +79,7 @@
   width: 100vw;
   min-height: 100%;
   /*position: relative;*/
-  padding: 112px 0;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -189,6 +189,11 @@
   border-radius: 8px;
 }
 
+.welcome {
+  align-items: left;
+  justify-content: left;
+}
+
 .createProfileButton {
   max-width: var(--max-width);
   width: 100%;
@@ -222,6 +227,22 @@
   margin-bottom: 30px;
   width: 72px !important;
   height: 65px !important;
+}
+
+.welcome_content {
+  font-size: 36px;
+  justify-content: left;
+  align-items: center;
+  width: 100%;
+}
+
+.welcome_content_left_side {
+  margin-top: 20px;
+  margin-bottom: 40px;
+  flex: 1;
+  float: left;
+  justify-content: left;
+  align-items: center;
 }
 
 .home_content {
@@ -262,6 +283,16 @@
   background-position: center center;
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+.logo_nodde {
+  width: 578px;
+  height: 113px;
+  margin: 20px 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url("../pages/images/landing/logo_nodde.png");
 }
 
 .home_image_1 {

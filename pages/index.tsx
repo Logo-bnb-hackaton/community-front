@@ -151,7 +151,18 @@ export default function Home() {
                             <h2>Please connect wallet</h2>
                     }
                 </div> */}
+
         <div className={styles.center}>
+          <div className={styles.welcome_content}>
+            <div className={styles.welcome_content_left_side}>
+              <h1>Welcome to</h1>
+              <div className={styles.logo_nodde}></div>
+              Create a closed sessions for training, streams,
+              <br /> and other events, as well as receive
+              <br /> donations from subscribers.
+            </div>
+          </div>
+
           <Button
             className={styles.createProfileButton}
             loading={isMinting}
