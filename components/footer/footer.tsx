@@ -5,35 +5,7 @@ import { Button } from "antd";
 import { FormOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 
-export default function Header({
-  saveCallback = undefined,
-  editAvailable = false,
-  edited = false,
-  setEdited = undefined,
-  disabled,
-}: {
-  saveCallback: Function | undefined;
-  editAvailable: boolean;
-  edited: boolean;
-  setEdited: Function | undefined;
-  disabled: boolean;
-}) {
-  const onEditHandle = () => {
-    setEdited!!(true);
-  };
-
-  const router = useRouter();
-  const currentPage = router.pathname;
-
-  const onSaveHandle = () => {
-    if (!saveCallback) {
-      console.log("Save callback is undefined");
-      return;
-    }
-    console.log("Saving result");
-    saveCallback();
-  };
-
+export default function Footer() {
   return (
     <div className={styles.description}>
       {currentPage !== "/" ? (

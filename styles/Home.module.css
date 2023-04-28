@@ -3,7 +3,7 @@
   flex-direction: column;
   /*justify-content: space-between;*/
   align-items: center;
-  padding: 3rem 3rem 0;
+  /* padding: 3rem 3rem 0; */
   min-height: 100vh;
 }
 
@@ -16,6 +16,7 @@
   width: 100%;
   z-index: 2;
   font-family: var(--font-mono);
+  margin: 66px 0 30px 0;
 }
 
 .code {
@@ -79,7 +80,8 @@
   width: 100vw;
   min-height: 100%;
   /*position: relative;*/
-  padding: 20px 20px;
+  padding: 0 20px;
+  margin: 0 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -225,62 +227,68 @@
 }
 
 .welcome_content {
-  font-size: 36px;
+  font-size: 34px;
   justify-content: left;
   align-items: center;
   width: 100%;
 }
 
 .welcome_content_left_side {
+  max-width: 753px;
   margin-top: 20px;
   margin-bottom: 40px;
   flex: 1;
   float: left;
   justify-content: left;
   align-items: center;
+  text-align: justify;
 }
 
 .home_content {
-  font-size: 36px;
+  font-size: 34px;
   justify-content: center;
   align-items: center;
   width: 100%;
+  margin: 32px 0;
 }
 
 .home_content_left_side {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  max-width: calc(var(--max-width) / 2.5);
+  height: 275px;
   flex: 1;
   float: left;
   display: flex;
   justify-content: left;
   align-items: center;
+  text-align: justify;
 }
 
 .home_content_right_side {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  max-width: calc(var(--max-width) / 2.5);
+  height: 275px;
   flex: 1;
   float: right;
   display: flex;
   justify-content: right;
   align-items: center;
+  text-align: justify;
 }
 
 .home_right_side_text {
-  padding-right: 30px;
+  padding-right: 0px;
 }
 
 .home_image {
   width: 470px;
-  height: 275px;
+  height: 324px;
   background-position: center center;
   background-repeat: no-repeat;
   background-size: contain;
 }
 
 .logo_nodde {
-  width: 578px;
+  max-width: 578px;
+  width: 100%;
   height: 113px;
   margin: 40px 0;
   background-position: center center;

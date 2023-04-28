@@ -157,9 +157,8 @@ export default function Home() {
             <div className={styles.welcome_content_left_side}>
               <h1>Welcome to</h1>
               <div className={styles.logo_nodde}></div>
-              Create a closed sessions for training, streams,
-              <br /> and other events, as well as receive
-              <br /> donations from subscribers.
+              Create a closed sessions for training, streams, and other events,
+              as well as receive donations from subscribers.
             </div>
           </div>
 
@@ -174,8 +173,7 @@ export default function Home() {
           <div className={styles.arrow}></div>
           <div className={styles.home_content}>
             <div className={styles.home_content_left_side}>
-              Firstly, connect your wallet
-              <br /> to the platform
+              Firstly, connect your wallet to the platform
             </div>
             <div className={styles.home_content_right_side}>
               <div
@@ -191,18 +189,14 @@ export default function Home() {
             </div>
             <div className={styles.home_content_right_side}>
               <div className={styles.home_right_side_text}>
-                Click the "Create Profile"
-                <br /> button and pay the
-                <br /> registration fee
+                Click the "Create Profile" button and pay the registration fee
               </div>
             </div>
           </div>
           <div className={styles.home_content}>
             <div className={styles.home_content_left_side}>
-              Fill out your profile,
-              <br /> including your community
-              <br /> name, photos, description,
-              <br /> and other details
+              Fill out your profile, including your community name, photos,
+              description, and other details
             </div>
             <div className={styles.home_content_right_side}>
               <div
@@ -218,15 +212,13 @@ export default function Home() {
             </div>
             <div className={styles.home_content_right_side}>
               <div className={styles.home_right_side_text}>
-                Select the currencies for
-                <br /> donations
+                Select the currencies for donations
               </div>
             </div>
           </div>
           <div className={styles.home_content}>
             <div className={styles.home_content_left_side}>
-              Click the "Save" button
-              <br /> to complete the registration
+              Click the "Save" button to complete the registration
             </div>
             <div className={styles.home_content_right_side}>
               <div
