@@ -110,7 +110,7 @@ a {
 }
 
 h1 {
-  margin: 20px;
+  margin: 20px 0;
   font-size: 48px;
   font-family: var(--font-co-headline-corp);
 }

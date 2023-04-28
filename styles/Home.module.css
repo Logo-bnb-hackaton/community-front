@@ -75,11 +75,11 @@
 }
 
 .center {
-  max-width: var(--max-width);
+  max-width: calc(var(--max-width) + 40px);
   width: 100vw;
   min-height: 100%;
   /*position: relative;*/
-  padding: 20px 0;
+  padding: 20px 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -189,11 +189,6 @@
   border-radius: 8px;
 }
 
-.welcome {
-  align-items: left;
-  justify-content: left;
-}
-
 .createProfileButton {
   max-width: var(--max-width);
   width: 100%;
@@ -247,7 +242,6 @@
 
 .home_content {
   font-size: 36px;
-  display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -288,7 +282,7 @@
 .logo_nodde {
   width: 578px;
   height: 113px;
-  margin: 20px 0;
+  margin: 40px 0;
   background-position: center center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -315,13 +309,9 @@
   background-image: url("../pages/images/landing/picture5.png");
 }
 
-@media screen and (max-width: var(--max-width)) {
+@media screen and (max-width: 900) {
   .home_content {
     flex-direction: column;
-  }
-
-  .center {
-    max-width: var(--max-width);
   }
 }
 
