@@ -5,8 +5,8 @@
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 
-  --font-co-headline-corp: CoHeadlineCorp-Bold;
-  --font-montserrat: Montserrat;
+  --font-co-headline-corp: co-headline, sans-serif;
+  --font-montserrat: Montserrat, sans-serif;
 
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -118,13 +118,22 @@ h2 {
 }
 
 @font-face {
-  font-family: "CoHeadlineCorp-Bold";
-  src: url("../font/CoHeadlineCorp-Bold.ttf");
+  font-family: "co-headline";
+  src: url("https://use.typekit.net/af/ffcb6d/00000000000000007735fd22/30/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3")
+      format("woff2"),
+    url("https://use.typekit.net/af/ffcb6d/00000000000000007735fd22/30/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3")
+      format("woff"),
+    url("https://use.typekit.net/af/ffcb6d/00000000000000007735fd22/30/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3")
+      format("opentype");
+  font-display: auto;
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: normal;
 }
 
 @font-face {
-  font-family: "Montserrat";
-  src: url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+  font-family: "Montserrat", sans-serif;
+  src: url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 }
 
 /*@media (prefers-color-scheme: dark) {*/
