@@ -1,6 +1,7 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import {
   useAccount,
   useContractRead,
@@ -20,6 +21,7 @@ import { BigNumber } from "ethers";
 import { waitForTransaction } from "@wagmi/core";
 
 export default function Home() {
+  const router = useRouter();
   const { address, isConnected } = useAccount();
   const [priceToMint, setPriceToMint] = useState<BigNumber | undefined>(
     undefined
@@ -55,6 +57,12 @@ export default function Home() {
       setPriceToMint(priceToMintData as BigNumber);
     }
   }, [priceToMintData, isPriceToMintDataSuccess]);
+
+  useEffect(() => {
+    if (isDefinitelyConnected && userProfileId) {
+      router.push(`/profile/${userProfileId}`);
+    }
+  }, [isDefinitelyConnected, userProfileId]);
 
   /**
    * Loading address tokens.
@@ -105,21 +113,29 @@ export default function Home() {
       console.error("Can't load mint price.");
       return;
     }
-    setIsMinting(true);
-    safeMintWriteAsync?.().then((data) => {
-      return waitForTransaction({
-        hash: data.hash,
-        confirmations: WAIT_BLOCK_CONFIRMATIONS,
-      })
-        .then((data) => {
-          console.log(data);
+
+    setIsMinting(!!safeMintWriteAsync);
+
+    safeMintWriteAsync?.()
+      .then((data) => {
+        return waitForTransaction({
+          hash: data.hash,
+          confirmations: WAIT_BLOCK_CONFIRMATIONS,
         })
-        .finally(() => {
-          setIsMinting(false);
-          // after minting we have to receive token by user again.
-          tokenOfOwnerByIndexRefetch();
-        });
-    });
+          .then((data) => {
+            console.log(data);
+          })
+          .finally(() => {
+            // after minting we have to receive token by user again.
+            tokenOfOwnerByIndexRefetch();
+          });
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setIsMinting(false);
+      });
   };
 
   return (
