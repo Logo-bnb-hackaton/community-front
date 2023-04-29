@@ -1,9 +1,5 @@
 import styles from "@/styles/Home.module.css";
-import WalletButton from "@/components/wallet/WalletButton";
 import React from "react";
-import { Button } from "antd";
-import { FormOutlined } from "@ant-design/icons";
-import { useRouter } from "next/router";
 
 export default function Footer() {
   return (

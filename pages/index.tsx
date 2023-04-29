@@ -155,20 +155,7 @@ export default function Home() {
           setEdited={undefined}
           disabled={false}
         />
-
-        {/* <div className={styles.center}>
-                    {
-                        isDefinitelyConnected ?
-                            (
-                                userProfileId ?
-                                    <Link href={`/profile/${userProfileId}`}>To profile</Link> :
-                                    <Button loading={isMinting} onClick={mint}>Mint</Button>
-                            )
-                            :
-                            <h2>Please connect wallet</h2>
-                    }
-                </div> */}
-
+        
         <div className={styles.center}>
           <div className={styles.welcome_content}>
             <div className={styles.welcome_content_left_side}>
@@ -183,6 +170,7 @@ export default function Home() {
             className={styles.createProfileButton}
             loading={isMinting}
             onClick={mint}
+            disabled={!isDefinitelyConnected}
           >
             Create a profile
           </Button>
@@ -248,6 +236,7 @@ export default function Home() {
             className={styles.createProfileButton}
             loading={isMinting}
             onClick={mint}
+            disabled={!isDefinitelyConnected}
           >
             Create a profile
           </Button>
