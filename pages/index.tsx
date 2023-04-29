@@ -1,6 +1,7 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useEffect, useState } from "react";
+import { useRef } from "react";
 import { useRouter } from "next/router";
 import {
   useAccount,
@@ -30,6 +31,7 @@ export default function Home() {
     undefined
   );
   const [isSticky, setIsSticky] = useState(false);
+  const arrowRef = useRef<HTMLDivElement>(null);
 
   // It's a workaround,
   // details - https://ethereum.stackexchange.com/questions/133612/error-hydration-failed-because-the-initial-ui-does-not-match-what-was-rendered
@@ -133,8 +135,6 @@ export default function Home() {
       })
       .catch((err) => {
         console.error(err);
-      })
-      .finally(() => {
         setIsMinting(false);
       });
   };
@@ -153,11 +153,20 @@ export default function Home() {
     };
   }, []);
 
+  const handleClick = () => {
+    if (arrowRef.current) {
+      arrowRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <>
       <Head>
         <title>Nodde community</title>
-        <meta name="description" content="Web3 application for closed sessions, streams, other events, and donations" />
+        <meta
+          name="description"
+          content="Web3 application for closed sessions, streams, other events, and donations"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -190,7 +199,12 @@ export default function Home() {
             Create a profile
           </Button>
           <h1>Build you own community</h1>
-          <div className={styles.arrow}></div>
+          <div
+            id="arrow"
+            className={styles.arrow}
+            onClick={handleClick}
+            ref={arrowRef}
+          ></div>
           <div className={styles.home_content}>
             <div className={styles.home_content_left_side}>
               Firstly, connect your wallet to the platform
