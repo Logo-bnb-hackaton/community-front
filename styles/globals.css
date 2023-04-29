@@ -5,9 +5,8 @@
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 
-  --font-co-headline-corp: CoHeadlineCorp;
-  --font-co-headline-corp-bold: CoHeadlineCorp-Bold;
-  --font-raleway: Raleway;
+  --font-co-headline-corp: CoHeadlineCorp-Bold;
+  --font-montserrat: Montserrat;
 
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -99,13 +98,7 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  font-family: var(--font-raleway);
-  /*background: linear-gradient(*/
-  /*    to bottom,*/
-  /*    transparent,*/
-  /*    rgb(var(--background-end-rgb))*/
-  /*  )*/
-  /*  rgb(var(--background-start-rgb));*/
+  font-family: var(--font-montserrat);
 }
 
 a {
@@ -124,23 +117,14 @@ h2 {
   font-family: var(--font-co-headline-corp);
 }
 
-p {
-  font-size: 14px;
-}
-
-@font-face {
-  font-family: "CoHeadlineCorp";
-  src: url("../font/CoHeadlineCorp-Regular.ttf");
-}
-
 @font-face {
   font-family: "CoHeadlineCorp-Bold";
   src: url("../font/CoHeadlineCorp-Bold.ttf");
 }
 
 @font-face {
-  font-family: "Raleway";
-  src: url("../font/Raleway-Regular.ttf");
+  font-family: "Montserrat";
+  src: url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 }
 
 /*@media (prefers-color-scheme: dark) {*/
