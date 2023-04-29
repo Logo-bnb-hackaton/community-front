@@ -113,7 +113,12 @@ h1 {
 }
 
 h2 {
-  font-size: 38px;
+  font-size: 32px;
+  font-family: var(--font-co-headline-corp);
+}
+
+h3 {
+  font-size: 21px;
   font-family: var(--font-co-headline-corp);
 }
 

@@ -6,6 +6,25 @@
   /* padding: 3rem 3rem 0; */
   min-height: 100vh;
   padding-bottom: 70px;
+  margin-top: 135px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  top: 0;
+  position: fixed;
+  background: linear-gradient(
+    to bottom,
+    white,
+    white,
+    white,
+    white,
+    transparent
+  );
+  z-index: 999;
 }
 
 .description {
@@ -16,7 +35,7 @@
   max-width: calc(var(--max-width) + 40px);
   width: 100%;
   z-index: 2;
-  margin: 66px 0 30px 0;
+  margin: 55px 0 30px 0;
   padding: 0 20px;
 }
 
@@ -215,6 +234,7 @@
 
 .createProfileButton:hover {
   font-size: 52px;
+  padding: 10px;
 }
 
 .arrow {

@@ -138,6 +138,21 @@ export default function Home() {
       });
   };
 
+  const [isSticky, setIsSticky] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      const logo = document.querySelector(`#logo_nodde`);
+      if (logo) {
+        const logoRect = logo.getBoundingClientRect();
+        setIsSticky(logoRect.top <= 0);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <>
       <Head>
@@ -154,13 +169,14 @@ export default function Home() {
           edited={false}
           setEdited={undefined}
           disabled={false}
+          showLogo={isSticky}
         />
-        
+
         <div className={styles.center}>
           <div className={styles.welcome_content}>
             <div className={styles.welcome_content_left_side}>
               <h1>Welcome to</h1>
-              <div className={styles.logo_nodde}></div>
+              <div id="logo_nodde" className={styles.logo_nodde}></div>
               Create a closed sessions for training, streams, and other events,
               as well as receive donations from subscribers.
             </div>
