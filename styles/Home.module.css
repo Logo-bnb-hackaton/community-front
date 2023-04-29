@@ -199,7 +199,8 @@
   line-height: normal;
   vertical-align: baseline;
   font-weight: bold;
-  font-size: 43px;
+  font-size: 48px;
+  font-family: var(--font-co-headline-corp);
   align-items: center;
   justify-content: center;
   background-color: var(--primary-green-color);
@@ -213,7 +214,7 @@
 }
 
 .createProfileButton:hover {
-  font-size: 46px;
+  font-size: 52px;
 }
 
 .arrow {
