@@ -8,36 +8,25 @@ import { useRouter } from "next/router";
 export default function Footer() {
   return (
     <div className={styles.description}>
-      {currentPage !== "/" ? (
-        <a href={"/"}>
+      <div className={styles.footer_content}>
+        <div>NODDE</div>
+        <div>
+          NODDE is a Web3 native social platform created
+          <br />
+          by 0xc0de team.
+        </div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <a href="https://discord.gg/bnbchain" target="_blank">
           <div
-            style={{ width: "179px", height: "35px", margin: 0 }}
-            className={styles.logo_nodde}
+            className={`${styles.footer_images} ${styles.discord_footer_image}`}
           ></div>
         </a>
-      ) : (
-        <div> </div>
-      )}
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        {editAvailable && (
-          <div style={{ width: "60px", height: "60px", marginRight: "24px" }}>
-            <Button
-              disabled={disabled}
-              onClick={edited ? onSaveHandle : onEditHandle}
-              style={{
-                height: "100%",
-                width: "100%",
-                border: "none",
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                borderRadius: "10px",
-                padding: "0",
-              }}
-            >
-              {edited ? "Save" : <FormOutlined style={{ fontSize: "20px" }} />}
-            </Button>
-          </div>
-        )}
-        <WalletButton />
+        <a href="https://twitter.com/BNBChain" target="_blank">
+          <div
+            className={`${styles.footer_images} ${styles.twitter_footer_image}`}
+          ></div>
+        </a>
       </div>
     </div>
   );

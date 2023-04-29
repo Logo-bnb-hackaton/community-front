@@ -9,6 +9,7 @@ import {
 } from "wagmi";
 import Link from "next/link";
 import Header from "@/components/header/Header";
+import Footer from "@/components/footer/Footer";
 import { Button } from "antd";
 import {
   MAIN_NFT_ABI,
@@ -235,6 +236,8 @@ export default function Home() {
             Create a profile
           </Button>
         </div>
+
+        <Footer />
       </main>
     </>
   );

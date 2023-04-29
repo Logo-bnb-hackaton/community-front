@@ -5,6 +5,7 @@
   align-items: center;
   /* padding: 3rem 3rem 0; */
   min-height: 100vh;
+  padding-bottom: 70px;
 }
 
 .description {
@@ -12,11 +13,12 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  max-width: var(--max-width);
+  max-width: calc(var(--max-width) + 40px);
   width: 100%;
   z-index: 2;
-  font-family: var(--font-mono);
+  /* font-family: var(--font-mono); */
   margin: 66px 0 30px 0;
+  padding: 0 20px;
 }
 
 .code {
@@ -294,7 +296,7 @@
   background-position: center center;
   background-repeat: no-repeat;
   background-size: contain;
-  background-image: url("../pages/images/landing/logo_nodde.png");
+  background-image: url("../pages/images/logo_nodde.png");
 }
 
 .home_image_1 {
@@ -315,6 +317,27 @@
 
 .home_image_5 {
   background-image: url("../pages/images/landing/picture5.png");
+}
+
+.footer_content {
+  font-size: 16px;
+}
+
+.footer_images {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 30px;
+  height: 30px;
+  margin: 8px;
+}
+
+.discord_footer_image {
+  background-image: url("../pages/images/footer/discord_footer.svg");
+}
+
+.twitter_footer_image {
+  background-image: url("../pages/images/footer/twitter_footer.svg");
 }
 
 @media screen and (max-width: 900) {
