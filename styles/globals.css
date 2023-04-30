@@ -1,11 +1,12 @@
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
-  --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
-    'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
-    'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+  --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
+    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 
-  --font-co-headline-corp: CoHeadlineCorp;
+  --font-co-headline-corp: co-headline, sans-serif;
+  --font-montserrat: Montserrat, sans-serif;
 
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -24,8 +25,8 @@
     rgba(255, 255, 255, 0)
   );
 
-  --primary-green-color: #DBFCAC;
-  --primary-red-color: #EA5858;
+  --primary-green-color: #dbfcac;
+  --primary-red-color: #ea5858;
   --default-white-color: #f5f5f5;
 
   --tile-start-rgb: 239, 245, 249;
@@ -89,16 +90,15 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+
+  background-image: url("../pages/images/loop_for_bg.png");
+  background-repeat: repeat-y;
+  background-size: 100% auto;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  /*background: linear-gradient(*/
-  /*    to bottom,*/
-  /*    transparent,*/
-  /*    rgb(var(--background-end-rgb))*/
-  /*  )*/
-  /*  rgb(var(--background-start-rgb));*/
+  font-family: var(--font-montserrat);
 }
 
 a {
@@ -106,11 +106,40 @@ a {
   text-decoration: none;
 }
 
-@font-face {
-  font-family: 'CoHeadlineCorp';
-  src: url('../font/CoHeadlineCorp-Bold.ttf');
+h1 {
+  margin: 20px 0;
+  font-size: 48px;
+  font-family: var(--font-co-headline-corp);
 }
 
+h2 {
+  font-size: 32px;
+  font-family: var(--font-co-headline-corp);
+}
+
+h3 {
+  font-size: 21px;
+  font-family: var(--font-co-headline-corp);
+}
+
+@font-face {
+  font-family: "co-headline";
+  src: url("https://use.typekit.net/af/ffcb6d/00000000000000007735fd22/30/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3")
+      format("woff2"),
+    url("https://use.typekit.net/af/ffcb6d/00000000000000007735fd22/30/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3")
+      format("woff"),
+    url("https://use.typekit.net/af/ffcb6d/00000000000000007735fd22/30/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3")
+      format("opentype");
+  font-display: auto;
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: "Montserrat", sans-serif;
+  src: url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+}
 
 /*@media (prefers-color-scheme: dark) {*/
 /*  html {*/

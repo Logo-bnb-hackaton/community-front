@@ -1,197 +1,374 @@
 .main {
-    display: flex;
-    flex-direction: column;
-    /*justify-content: space-between;*/
-    align-items: center;
-    padding: 3rem 3rem 0;
-    min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /*justify-content: space-between;*/
+  align-items: center;
+  /* padding: 3rem 3rem 0; */
+  min-height: 100vh;
+  padding-bottom: 70px;
+  margin-top: 135px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  top: 0;
+  position: fixed;
+  background: linear-gradient(
+    to bottom,
+    white,
+    white,
+    white,
+    white,
+    transparent
+  );
+  z-index: 999;
 }
 
 .description {
-    display: inherit;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.85rem;
-    max-width: var(--max-width);
-    width: 100%;
-    z-index: 2;
-    font-family: var(--font-mono);
+  display: inherit;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  max-width: calc(var(--max-width) + 40px);
+  width: 100%;
+  z-index: 2;
+  margin: 55px 0 30px 0;
+  padding: 0 20px;
 }
 
 .code {
-    font-weight: 700;
-    font-family: var(--font-mono);
+  font-weight: 700;
+  font-family: var(--font-mono);
 }
 
 .grid {
-    width: var(--max-width);
-    max-width: 100%;
-    display: grid;
-    grid-template-columns: 400px auto;
-    grid-template-rows: 400px auto;
-    grid-template-areas:
+  width: var(--max-width);
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 400px auto;
+  grid-template-rows: 400px auto;
+  grid-template-areas:
     "logo description"
     "donate donate";
-    column-gap: 80px;
-    row-gap: 64px;
+  column-gap: 80px;
+  row-gap: 64px;
 }
 
 .card {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    border: none;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border: none;
 }
 
 .card:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .cardDeleteButton {
-    cursor: pointer;
-    position: absolute;
-    right: -10px;
-    top: -15px;
-    /*padding: 5px;*/
-    z-index: 1;
-    color: black;
+  cursor: pointer;
+  position: absolute;
+  right: -10px;
+  top: -15px;
+  /*padding: 5px;*/
+  z-index: 1;
+  color: black;
 }
 
 .addCardButton {
-    width: 80px;
-    height: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.02);
-    border: 1px dashed #d9d9d9;
-    border-radius: 8px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px dashed #d9d9d9;
+  border-radius: 8px;
 }
 
 .cardDeleteButton:hover {
-    transform: scale(1.1);
-    color: red;
+  transform: scale(1.1);
+  color: red;
 }
 
 .center {
-    max-width: var(--max-width);
-    width: 100vw;
-    min-height: 100%;
-    /*position: relative;*/
-    padding: 112px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  max-width: calc(var(--max-width) + 40px);
+  width: 100vw;
+  min-height: 100%;
+  /*position: relative;*/
+  padding: 0 20px;
+  margin: 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .centerWrapper {
-    min-width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 0 4rem;
+  min-width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 0 4rem;
 }
 
 .profileDescription {
-    min-height: 100%;
-    width: 100%;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
 .title {
-    font-family: var(--font-co-headline-corp);
-    font-size: 84px;
-    font-weight: bold;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
+  font-size: 84px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .titleInput {
-    font-size: 50px;
-    font-weight: bold;
-    overflow:hidden;
+  font-size: 50px;
+  font-weight: bold;
+  overflow: hidden;
 }
 
 .lineBreak {
-    white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 
 .donateButton {
-    grid-area: donate;
+  grid-area: donate;
 }
 
 .payButton {
-    height: 5rem;
-    font-family: var(--font-co-headline-corp);
-    line-height: normal;
-    vertical-align: baseline;
-    font-weight: bold;
-    font-size: 2rem;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--primary-green-color);
-    border-radius: 18px;
-    border-style: none;
-    box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
-    box-sizing: border-box;
-    color: #000;
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    flex-shrink: 0;
-    margin: 0;
-    padding: 10px 21px;
-    text-align: center;
-    text-transform: none;
-    transform: scale(1);
-    transition: 0.125s ease;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
+  height: 5rem;
+  line-height: normal;
+  vertical-align: baseline;
+  font-weight: bold;
+  font-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-green-color);
+  border-radius: 18px;
+  border-style: none;
+  box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
+  box-sizing: border-box;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 10px 21px;
+  text-align: center;
+  text-transform: none;
+  transform: scale(1);
+  transition: 0.125s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
 .notSelectedToken {
-    background-color: var(--default-white-color);
+  background-color: var(--default-white-color);
 }
 
 .payButton:hover {
-    transform: scale(1.01);
+  transform: scale(1.01);
 }
 
 .logo {
-    position: relative;
+  position: relative;
 }
 
 .logoDeleteButton {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    padding: 10px;
-    zIndex: 1;
-    color: red;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  padding: 10px;
+  z-index: 1;
+  color: red;
 }
 
 .logoDeleteButton:hover {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .draggerWrapper {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .errorBorder {
-    border: 1px solid red;
-    border-radius: 8px;
+  border: 1px solid red;
+  border-radius: 8px;
 }
 
+.createProfileButton {
+  max-width: var(--max-width);
+  width: 100%;
+  height: 92px;
+  line-height: normal;
+  vertical-align: baseline;
+  font-weight: bold;
+  font-size: 48px;
+  font-family: var(--font-co-headline-corp);
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-green-color);
+  border-radius: 18px;
+  border-style: none;
+  box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
+  box-sizing: border-box;
+  padding: 16px;
+  text-align: center;
+  margin: 20px;
+}
+
+.createProfileButton:hover {
+  font-size: 52px;
+  padding: 10px;
+}
+
+.arrow {
+  background-image: url("../pages/images/landing/arrow_back.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  margin-bottom: 30px;
+  width: 72px;
+  height: 65px;
+  cursor: pointer;
+}
+
+.arrow:hover {
+  transform: scale(1.1);
+}
+
+.welcome_content {
+  font-size: 34px;
+  justify-content: left;
+  align-items: center;
+  width: 100%;
+}
+
+.welcome_content_left_side {
+  max-width: 753px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  flex: 1;
+  float: left;
+  justify-content: left;
+  align-items: center;
+  text-align: justify;
+}
+
+.home_content {
+  font-size: 34px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 32px 0;
+}
+
+.home_content_left_side {
+  max-width: calc(var(--max-width) / 2.5);
+  height: 275px;
+  flex: 1;
+  float: left;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  text-align: justify;
+}
+
+.home_content_right_side {
+  max-width: calc(var(--max-width) / 2.5);
+  height: 275px;
+  flex: 1;
+  float: right;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  text-align: justify;
+}
+
+.home_right_side_text {
+  padding-right: 0px;
+}
+
+.home_image {
+  width: 470px;
+  height: 324px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.logo_nodde {
+  max-width: 578px;
+  width: 100%;
+  height: 113px;
+  margin: 40px 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url("../pages/images/logo_nodde.png");
+}
+
+.home_image_1 {
+  background-image: url("../pages/images/landing/picture1.png");
+}
+
+.home_image_2 {
+  background-image: url("../pages/images/landing/picture2.png");
+}
+
+.home_image_3 {
+  background-image: url("../pages/images/landing/picture3.png");
+}
+
+.home_image_4 {
+  background-image: url("../pages/images/landing/picture4.png");
+}
+
+.home_image_5 {
+  background-image: url("../pages/images/landing/picture5.png");
+}
+
+.footer_content {
+  font-size: 16px;
+}
+
+.footer_images {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 30px;
+  height: 30px;
+  margin: 8px;
+}
+
+.discord_footer_image {
+  background-image: url("../pages/images/footer/discord_footer.svg");
+}
+
+.twitter_footer_image {
+  background-image: url("../pages/images/footer/twitter_footer.svg");
+}
+
+@media screen and (max-width: 900) {
+  .home_content {
+    flex-direction: column;
+  }
+}
 
 /*@media (prefers-reduced-motion) {*/
 /*    .card:hover span {*/
