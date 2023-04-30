@@ -34,7 +34,7 @@ class ProfileError {
 const MAX_DESCRIPTION_LEN = 250;
 
 interface Props {
-    profile: ProfileDTO | undefined;
+    profile: ProfileDTO | null;
     ownerId: string,
     tokens: string[],
 }
@@ -285,12 +285,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         const props: Props = {
             tokens: [],
             ownerId: '',
-            profile: undefined,
+            profile: null,
         }
 
         const tokensPromise = Contract.profile.loadAvailableTokens(profileId).then(tokens => props.tokens = tokens);
 
-        const profilePromise = Api.profile.loadProfile(profileId).then(profile => props.profile = profile);
+        const profilePromise = Api.profile.loadProfile(profileId).then(profile => props.profile = profile ?? null);
 
         const ownerPromise = Contract.profile.loadProfileOwner(profileId).then(ownerId => props.ownerId = ownerId);
 
@@ -302,7 +302,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         console.log(err);
         // todo add redirecting here
         return {
-            props: {profile: undefined, tokens: [], subscriptions: []}
+            props: {profile: null, tokens: [], subscriptions: []}
         };
     }
 };
