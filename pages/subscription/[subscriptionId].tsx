@@ -9,6 +9,7 @@ import * as Api from "@/api";
 import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import SubscriptionBase, {BriefProfile} from "@/components/subscription/SubscriptionBase";
 import Edit from "@/components/subscription/edit/Edit";
+import Footer from "@/components/footer/Footer";
 
 interface Props {
     subscription: UpdateSubscriptionDTO;
@@ -38,6 +39,8 @@ const Subscription: NextPage<Props> = ({subscription, profile}) => {
                         <SubscriptionBase subscription={subscription} profile={profile}/>
                 }
             </div>
+
+            <Footer/>
         </main>
     );
 }

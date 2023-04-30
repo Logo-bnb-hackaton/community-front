@@ -3,6 +3,7 @@ import homeStyles from "@/styles/Home.module.css";
 import Header from "@/components/header/Header";
 import {useRouter} from "next/router";
 import Edit from "@/components/subscription/edit/Edit";
+import Footer from "@/components/footer/Footer";
 
 export default function CreatePage() {
     const router = useRouter();
@@ -18,6 +19,7 @@ export default function CreatePage() {
                 disabled={false}
             />
             <Edit data={undefined} profileId={profileId as string}/>
+            <Footer/>
         </main>
     );
 }

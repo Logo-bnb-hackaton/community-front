@@ -56,9 +56,10 @@ export default function Edit({
 
     const next = async () => {
         if (currentStep === 0) {
-            await saveSubscriptionDraft(topLvlData?.id, topLvlData?.status, baseInfoData);
+            await saveSubscriptionDraft(topLvlData?.id, topLvlData?.status, baseInfoData)
+        } else {
+            setCurrentStep(currentStep + 1);
         }
-        setCurrentStep(currentStep + 1);
     };
 
     const prev = () => {
@@ -66,16 +67,29 @@ export default function Edit({
     };
 
     useEffect(() => {
-        errors && validate(baseInfoData, errors);
-    }, [errors, baseInfoData])
+        errors && isValid(baseInfoData, errors);
+    }, [errors, baseInfoData]);
+
+    const hasChanges = (topLvlData: UpdateSubscriptionDTO, data: BaseInfoData) => {
+        return JSON.stringify(toBaseInfoData(topLvlData)) !== JSON.stringify(data);
+    }
 
     /**
      * Save subscription
      */
-    const saveSubscriptionDraft = async (oldId: string | undefined, status: SubscriptionStatus | undefined, data: BaseInfoData | undefined) => {
+    const saveSubscriptionDraft = async (
+        oldId: string | undefined,
+        status: SubscriptionStatus | undefined,
+        data: BaseInfoData | undefined
+    ) => {
         setIsLoading(true);
         try {
-            if (!validate(data, errors)) return;
+            if (!isValid(data, errors)) return;
+            if (topLvlData && !hasChanges(topLvlData, data!!)) {
+                setCurrentStep(old => old + 1);
+                return;
+            }
+
             const isNewSub = oldId === undefined;
 
             const id: string = isNewSub ? ethers.utils.keccak256(ethers.utils.toUtf8Bytes(uuidv4())) : oldId!!;
@@ -103,12 +117,14 @@ export default function Edit({
             // if (isNewSub) {
             //     await Contract.subscription.createNewSubscriptionByEth(id, profileId, ethersPrice);
             // }
+
+            setCurrentStep(old => old + 1);
         } finally {
             setIsLoading(false);
         }
     }
 
-    const validate = (data: BaseInfoData | undefined, errors: BaseInfoErrors | undefined): boolean => {
+    const isValid = (data: BaseInfoData | undefined, errors: BaseInfoErrors | undefined): boolean => {
         const updatedErrors: BaseInfoErrors = !errors ? {
             title: false,
             description: false,

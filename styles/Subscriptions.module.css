@@ -57,6 +57,7 @@
 
 .subscriptionStatus {
     cursor: pointer;
+    z-index: 1;
     position: absolute;
     width: 40px;
     height: 40px;

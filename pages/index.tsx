@@ -54,7 +54,7 @@ export default function Home() {
     if (isDefinitelyConnected && userProfileId) {
       router.push(`/profile/${userProfileId}`);
     }
-  }, [isDefinitelyConnected, userProfileId]);
+  }, [isDefinitelyConnected, router, userProfileId]);
 
   /**
    * Loading address tokens.
@@ -106,7 +106,7 @@ export default function Home() {
       return;
     }
 
-    setIsMinting(!!safeMintWriteAsync);
+    setIsMinting(old => !old);
 
     safeMintWriteAsync?.()
       .then((data) => {

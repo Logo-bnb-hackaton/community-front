@@ -16,6 +16,7 @@ import {ProfileDTO} from "@/api/dto/profile.dto";
 
 import * as Api from "@/api";
 import * as Contract from "@/contract";
+import Footer from "@/components/footer/Footer";
 
 class ProfileError {
     logo: boolean;
@@ -274,6 +275,8 @@ const Profile: NextPage<Props> = ({profile, ownerId, tokens}) => {
                     <SubscriptionList profileId={profileId as string} subscriptions={getAvailableSubscriptions()}/>
                 }
             </div>
+
+            <Footer/>
         </main>
     );
 }

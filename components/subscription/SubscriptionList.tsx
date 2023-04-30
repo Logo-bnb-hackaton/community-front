@@ -4,13 +4,16 @@ import {CheckOutlined, FormOutlined} from "@ant-design/icons";
 import styles from "@/styles/Subscriptions.module.css";
 import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
 import {useRouter} from "next/router";
+import {NextPage} from "next";
 
 const ROW_COUNT = 3;
 
-export default function SubscriptionList({
-                                          profileId,
-                                          subscriptions
-                                      }: { profileId: string, subscriptions: BriefSubscriptionInfo[] }) {
+interface Props {
+    profileId: string;
+    subscriptions: BriefSubscriptionInfo[];
+}
+
+const SubscriptionList: NextPage<Props> = ({profileId, subscriptions}) => {
 
     const router = useRouter()
 
@@ -24,13 +27,13 @@ export default function SubscriptionList({
                             <div
                                 key={subscription.id}
                                 className={styles.subscriptionWrapper}
-                                onClick={e => router.push(`/subscription/${subscription.id}?profileId=${profileId}`)}
                             >
                                 <Image
                                     src={subscription.previewImage.base64Image!!}
                                     alt={"Subscription logo"}
                                     className={styles.subscriptionImage}
                                     fill
+                                    onClick={e => router.push(`/subscription/${subscription.id}?profileId=${profileId}`)}
                                 />
                                 <p className={`${styles.subscriptionTitle}`}>{subscription.title}</p>
                                 {
@@ -62,3 +65,5 @@ export default function SubscriptionList({
         </div>
     );
 }
+
+export default SubscriptionList;
