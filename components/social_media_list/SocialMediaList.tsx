@@ -1,7 +1,7 @@
 import styles from "@/styles/Home.module.css";
 import Image, {StaticImageData} from "next/image";
 import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
-import {Input, Modal, Select} from "antd";
+import {Input, Modal} from "antd";
 import React, {useState} from "react";
 import youtubeIcon from "@/assets/social_media_logo/youtube.svg";
 import githubIcon from "@/assets/social_media_logo/github.svg";
@@ -13,43 +13,39 @@ import facebookIcon from "@/assets/social_media_logo/facebook.svg";
 import vkIcon from "@/assets/social_media_logo/vk.svg";
 import discordIcon from "@/assets/social_media_logo/discord.svg";
 
-
 const SOCIAL_MEDIA_LINK_SIZE = 6;
 
-export default function SocialMediaList(
+interface Props {
+    socialMediaLinks: SocialMediaLink[];
+    setSocialLinks: Function;
+    edited: boolean;
+    hasError: boolean | undefined;
+}
+
+const SocialMediaList: React.FC<Props> = (
     {
         socialMediaLinks,
         setSocialLinks,
         edited = false,
         hasError = false
-    }: { socialMediaLinks: SocialMediaLink[], setSocialLinks: Function, edited: boolean, hasError: boolean | undefined }
-) {
+    }) => {
 
     const [addSocialLinkMenu, setAddSocialLinkMenu] = useState(false)
 
     const [editedLinkItemId, setEditedLinkItemId] = useState<number | undefined>(undefined);
-    const [newSocialMediaType, setNewSocialMediaType] = useState(SocialMediaType.YouTube)
     const [newSocialMediaLink, setNewSocialMediaLink] = useState("")
 
     const showAddSocialLinkMenu = () => setAddSocialLinkMenu(true)
 
     const externalLinkRegExp = /((http|https):\/\/)(.*)/
-    const prepareUrl = (url: string): string => {
-        if (externalLinkRegExp.test(url)) return url;
-        return `https://${url}`;
-    }
 
     const addNewSocialLink = () => {
-        if (!newSocialMediaType || !newSocialMediaLink || newSocialMediaLink.length == 0) {
+        if (!newSocialMediaLink || newSocialMediaLink.length == 0) {
             console.error("Please fill all fields.")
             return
         }
-        if (!urlValidatorByType(newSocialMediaType).test(newSocialMediaLink)) {
-            console.error("Invalid type and link.")
-            return
-        }
-        let newLink = new SocialMediaLink(newSocialMediaType, staticImageByType(newSocialMediaType), prepareUrl(newSocialMediaLink));
 
+        let newLink = toSocialMediaLink(newSocialMediaLink);
         if (editedLinkItemId !== undefined) {
             console.log(`editing ${editedLinkItemId}`);
             setSocialLinks([...socialMediaLinks.map((item, index) => {
@@ -79,9 +75,8 @@ export default function SocialMediaList(
     }
 
 
-    const showEditSocialLinkMenu = (index: number, type: SocialMediaType, link: string) => {
+    const showEditSocialLinkMenu = (index: number, link: string) => {
         setEditedLinkItemId(index);
-        setNewSocialMediaType(type);
         setNewSocialMediaLink(link);
         setAddSocialLinkMenu(true);
     }
@@ -90,7 +85,6 @@ export default function SocialMediaList(
         setEditedLinkItemId(undefined);
         setAddSocialLinkMenu(false);
         setNewSocialMediaLink("");
-        setNewSocialMediaType(SocialMediaType.YouTube);
     }
 
     return (
@@ -103,12 +97,12 @@ export default function SocialMediaList(
             {socialMediaLinks.map((item, index) =>
                 <div className={styles.card} key={index}>
                     <a href={edited ? '#' : item.link} target={edited ? "" : "_blank"} rel="noopener noreferrer"
-                       onClick={edited ? () => showEditSocialLinkMenu(index, item.type, item.link) : () => {
+                       onClick={edited ? () => showEditSocialLinkMenu(index, item.link) : () => {
                        }}>
                         <Image
                             style={{borderRadius: "20px"}}
                             src={item.icon}
-                            alt={`${item.type} logo`}
+                            alt={`Link logo`}
                             fill
                         />
                     </a>
@@ -143,21 +137,6 @@ export default function SocialMediaList(
                         onCancel={cancelNewSocialLink}
                     >
                         <div style={{display: "flex", flexDirection: "row"}}>
-                            <Select
-                                defaultValue={newSocialMediaType}
-                                value={newSocialMediaType}
-                                style={{width: 120}}
-                                onChange={v => setNewSocialMediaType(v)}
-                                options={
-                                    Object.keys(SocialMediaType).filter((item) => {
-                                        return isNaN(Number(item));
-                                    }).map(item => {
-                                        return {
-                                            value: item, label: item
-                                        }
-                                    })
-                                }
-                            />
                             <Input
                                 value={newSocialMediaLink}
                                 placeholder="Social media link"
@@ -171,16 +150,11 @@ export default function SocialMediaList(
     );
 }
 
-export class SocialMediaLink {
-    type: SocialMediaType;
+export default SocialMediaList;
+
+export interface SocialMediaLink {
     icon: StaticImageData;
     link: string;
-
-    constructor(type: SocialMediaType, icon: StaticImageData, link: string) {
-        this.type = type;
-        this.icon = icon;
-        this.link = link;
-    }
 }
 
 export enum SocialMediaType {
@@ -195,12 +169,18 @@ export enum SocialMediaType {
     Link = "Link",
 }
 
+const baseUrlReg = /((http|https):\/\/)(.*)/
 export const toSocialMediaLink = (url: string): SocialMediaLink => {
-    const type = getType(url);
-    return new SocialMediaLink(type, staticImageByType(type), url);
+    if (!baseUrlReg.test(url)) {
+        url = `https://${url}`;
+    }
+    return {
+        icon: staticImageByType(getTypeByUrl(url)),
+        link: url
+    };
 }
 
-const getType = (url: string): SocialMediaType => {
+const getTypeByUrl = (url: string): SocialMediaType => {
     let it = urlValidatorByTypeMap.entries();
     let entry = it.next();
     while (!entry.done) {

@@ -4,7 +4,6 @@ import {CheckOutlined, FormOutlined} from "@ant-design/icons";
 import styles from "@/styles/Subscriptions.module.css";
 import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
 import {useRouter} from "next/router";
-import {NextPage} from "next";
 
 const ROW_COUNT = 3;
 
@@ -13,7 +12,7 @@ interface Props {
     subscriptions: BriefSubscriptionInfo[];
 }
 
-const SubscriptionList: NextPage<Props> = ({profileId, subscriptions}) => {
+const SubscriptionList: React.FC<Props> = ({profileId, subscriptions}) => {
 
     const router = useRouter()
 

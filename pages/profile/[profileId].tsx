@@ -219,7 +219,6 @@ const Profile: NextPage<Props> = ({profile, ownerId, tokens}) => {
                             }
                         </div>
                         <SocialMediaList
-
                             socialMediaLinks={socialMediaLinks}
                             setSocialLinks={socialLinkHandler}
                             edited={edited && !isLoading}
@@ -238,10 +237,9 @@ const Profile: NextPage<Props> = ({profile, ownerId, tokens}) => {
                                 <Button
                                     key={baseCoin}
                                     disabled={true}
-                                    className={`${styles.donateButton}`}
+                                    className={`${styles.payButton}`}
                                     style={{width: "22%", backgroundColor: "#DBFCAC"}}
-                                    onClick={e => {
-                                    }}
+                                    onClick={e => {}}
                                 >{baseCoin.toUpperCase()}</Button>
                                 {
                                     possibleTokens.map(item => item.symbol).map(symbol =>
