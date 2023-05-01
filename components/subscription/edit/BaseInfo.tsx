@@ -1,12 +1,11 @@
 import ImageUploader from "@/components/imageUploader/ImageUploader";
 import Image from "next/image";
-import discordIcon from "@/assets/social_media_logo/discord.svg";
 import {ConfigProvider, Input, InputNumber, Select} from "antd";
 import React from "react";
 import styles from "@/styles/Subscription.module.css";
 import {baseCoin, possibleTokens} from "@/utils/tokens";
-import {NextPage} from "next";
 import {ImageDto} from "@/api/dto/image.dto";
+import {BriefProfile} from "@/components/subscription/SubscriptionBase";
 
 export interface BaseInfoErrors {
     title: boolean;
@@ -20,13 +19,6 @@ export function hasError(errors: BaseInfoErrors): boolean {
     return errors.title || errors.description || errors.price || errors.base64MainImg || errors.base64PreviewImg;
 }
 
-export interface BriefInfo {
-    id: string | undefined;
-    title: string;
-    previewImageId: string | undefined,
-    previewImageBase64: string | undefined;
-}
-
 export interface BaseInfoData {
     title: string;
     description: string;
@@ -38,13 +30,15 @@ export interface BaseInfoData {
 
 interface Props {
     data: BaseInfoData;
+    profile: BriefProfile,
     setter: (data: BaseInfoData) => void;
     isLoading: boolean;
     errors: BaseInfoErrors | undefined;
 }
 
-const BaseInfo: NextPage<Props> = ({
+const BaseInfo: React.FC<Props> = ({
                                        data,
+                                       profile,
                                        setter,
                                        isLoading,
                                        errors = {
@@ -110,7 +104,7 @@ const BaseInfo: NextPage<Props> = ({
 
                 <div className={styles.eventEditBaseInfoTitleWrapper}>
                     <div className={styles.eventEditBaseInfoLogoWrapper}>
-                        <Image src={discordIcon} alt={"Community logo"} style={{borderRadius: "20px"}} fill/>
+                        <Image src={profile!!.logo!!.base64Image} alt={"Community logo"} style={{borderRadius: "20px"}} fill/>
                     </div>
 
                     <Input

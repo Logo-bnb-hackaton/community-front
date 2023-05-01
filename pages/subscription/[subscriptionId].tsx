@@ -19,7 +19,7 @@ interface Props {
 const Subscription: NextPage<Props> = ({subscription, profile}) => {
 
     const router = useRouter()
-    const {edited, profileId} = router.query
+    const {edited} = router.query
 
     return (
         <main className={homeStyles.main}>
@@ -34,7 +34,7 @@ const Subscription: NextPage<Props> = ({subscription, profile}) => {
             <div className={styles.eventWrapper}>
                 {
                     edited ?
-                        <Edit data={subscription} profileId={profileId as string}/>
+                        <Edit data={subscription} profile={profile}/>
                         :
                         <SubscriptionBase subscription={subscription} profile={profile}/>
                 }

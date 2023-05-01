@@ -11,6 +11,7 @@ import {baseCoin} from "@/utils/tokens";
 
 import * as Api from '@/api'
 import BaseInfo, {BaseInfoData, BaseInfoErrors, hasError} from "@/components/subscription/edit/BaseInfo";
+import {BriefProfile} from "@/components/subscription/SubscriptionBase";
 
 // todo maybe extract it later
 function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
@@ -24,10 +25,12 @@ function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
     }
 }
 
-export default function Edit({
-                                 data: topLvlData,
-                                 profileId
-                             }: { data: UpdateSubscriptionDTO | undefined, profileId: string }) {
+interface Props {
+    data: UpdateSubscriptionDTO | undefined;
+    profile: BriefProfile
+}
+
+const Edit: React.FC<Props> = ({data ,profile}) => {
 
     const router = useRouter();
 
@@ -45,9 +48,9 @@ export default function Edit({
     );
 
     useEffect(() => {
-        if (!topLvlData) return;
-        setBaseInfoData(toBaseInfoData(topLvlData));
-    }, [topLvlData]);
+        if (!data) return;
+        setBaseInfoData(toBaseInfoData(data));
+    }, [data]);
 
     /**
      * Errors are undefined before calling 'next'
@@ -56,7 +59,7 @@ export default function Edit({
 
     const next = async () => {
         if (currentStep === 0) {
-            await saveSubscriptionDraft(topLvlData?.id, topLvlData?.status, baseInfoData)
+            await saveSubscriptionDraft(data?.id, data?.status, baseInfoData)
         } else {
             setCurrentStep(currentStep + 1);
         }
@@ -70,8 +73,8 @@ export default function Edit({
         errors && isValid(baseInfoData, errors);
     }, [errors, baseInfoData]);
 
-    const hasChanges = (topLvlData: UpdateSubscriptionDTO, data: BaseInfoData) => {
-        return JSON.stringify(toBaseInfoData(topLvlData)) !== JSON.stringify(data);
+    const hasChanges = (data: UpdateSubscriptionDTO, baseInfo: BaseInfoData) => {
+        return JSON.stringify(toBaseInfoData(data)) !== JSON.stringify(baseInfo);
     }
 
     /**
@@ -80,12 +83,12 @@ export default function Edit({
     const saveSubscriptionDraft = async (
         oldId: string | undefined,
         status: SubscriptionStatus | undefined,
-        data: BaseInfoData | undefined
+        baseInfo: BaseInfoData | undefined
     ) => {
         setIsLoading(true);
         try {
-            if (!isValid(data, errors)) return;
-            if (topLvlData && !hasChanges(topLvlData, data!!)) {
+            if (!isValid(baseInfo, errors)) return;
+            if (data && !hasChanges(data, baseInfo!!)) {
                 setCurrentStep(old => old + 1);
                 return;
             }
@@ -93,25 +96,25 @@ export default function Edit({
             const isNewSub = oldId === undefined;
 
             const id: string = isNewSub ? ethers.utils.keccak256(ethers.utils.toUtf8Bytes(uuidv4())) : oldId!!;
-            const price = data!!.price.toString();
+            const price = baseInfo!!.price.toString();
             const ethersPrice = ethers.utils.parseEther(price);
 
             await Api.subscription.updateSubscription({
                 id: id,
-                ownerId: profileId!!,
+                ownerId: profile!!.id,
                 status: isNewSub ? 'DRAFT' : status!!,
-                title: data!!.title,
-                description: data!!.description,
+                title: baseInfo!!.title,
+                description: baseInfo!!.description,
                 mainImage: {
-                    id: data?.mainImage?.id,
-                    base64Image: data?.mainImage?.base64Image,
+                    id: baseInfo?.mainImage?.id,
+                    base64Image: baseInfo?.mainImage?.base64Image,
                 },
                 previewImage: {
-                    id: data?.previewImage?.id,
-                    base64Image: data?.previewImage?.base64Image,
+                    id: baseInfo?.previewImage?.id,
+                    base64Image: baseInfo?.previewImage?.base64Image,
                 },
                 price: price,
-                coin: data!!.coin,
+                coin: baseInfo!!.coin,
             });
 
             // if (isNewSub) {
@@ -151,6 +154,7 @@ export default function Edit({
             title: 'Step 1',
             content: <BaseInfo
                 data={baseInfoData}
+                profile={profile}
                 setter={setBaseInfoData}
                 isLoading={isLoading}
                 errors={errors}/>,
@@ -185,14 +189,14 @@ export default function Edit({
                 <div className={styles.eventButtonWrapper}>
                     {currentStep < steps.length - 1 && (
                         <Button disabled={isLoading} type="primary" onClick={() => next()}>
-                            {topLvlData?.id ? "Update" : "Create"} {isLoading && <LoadingOutlined/>}
+                            {data?.id ? "Update" : "Create"} {isLoading && <LoadingOutlined/>}
                         </Button>
                     )}
                     {currentStep === steps.length - 1 && (
                         <Button disabled={isLoading} type="primary"
                                 onClick={() => {
                                     message.success('Processing complete!');
-                                    router.push(`/profile/${profileId}`);
+                                    router.push(`/profile/${data!!.id}`);
                                 }}>
                             Done
                         </Button>
@@ -207,3 +211,5 @@ export default function Edit({
         </div>
     );
 }
+
+export default Edit;
