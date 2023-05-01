@@ -1,5 +1,5 @@
-import {Button, InputNumber, Modal, Result, Select, Steps} from "antd";
-import styles from "@/styles/Home.module.css";
+import {Button, ConfigProvider, InputNumber, Modal, Result, Steps} from "antd";
+import styles from "@/styles/Donate.module.css";
 import React, {useEffect, useState} from "react";
 import {erc20ABI, useAccount, useBalance, useContractReads} from "wagmi";
 import {StepProps} from "antd/es/steps";
@@ -7,8 +7,10 @@ import {ResultStatusType} from "antd/es/result";
 import {LoadingOutlined} from "@ant-design/icons";
 import {BigNumber, ethers} from "ethers";
 import {prepareWriteContract, waitForTransaction, writeContract, WriteContractPreparedArgs} from "@wagmi/core";
-import {MAIN_NFT_ADDRESS, PUBLIC_DONATION_ABI, PUBLIC_DONATION_ADDRESS} from "@/constants";
+import {PUBLIC_DONATION_ABI, PUBLIC_DONATION_ADDRESS} from "@/constants";
 import {addressBySymbol, baseCoin} from "@/utils/tokens";
+import {SegmentedValue} from "rc-segmented";
+
 
 const defaultDonateSteps: StepProps[] = [
     {
@@ -43,15 +45,21 @@ const getBnbDonateSteps = () => JSON.parse(bnbDonateStepsJson);
 const tokenDonateStepsJson = JSON.stringify(defaultDonateSteps);
 const getTokenDonateSteps = () => JSON.parse(tokenDonateStepsJson);
 
+const defaultBaseCoinDonateSizes = ['0.05', '0.1', '0.2'];
+const defaultUsdTokenDonateSizes = ['10', '20', '50'];
+
 export interface Token {
     symbol: string;
     address: `0x${string}`;
 }
 
-export default function Donate({
-                                   profileId,
-                                   availableTokens
-                               }: { profileId: string | undefined, availableTokens: string[] }) {
+interface Props {
+    profileId: string | undefined;
+    availableTokens: string[];
+}
+
+const Donate: React.FC<Props> = ({profileId, availableTokens}) => {
+
     const {address} = useAccount();
     const {data: baseBalanceResponse} = useBalance({
         address: address
@@ -64,10 +72,18 @@ export default function Donate({
         return getBnbDonateSteps();
     }
 
+    const getDonateSizeOptions = (coin: string) => {
+        if (coin === baseCoin) {
+            return defaultBaseCoinDonateSizes;
+        }
+        return defaultUsdTokenDonateSizes;
+    }
+
     const [isDonateMenuOpen, setIsDonateMenuOpen] = useState(false);
     const [isDonating, setIsDonating] = useState(false);
     const [donateCoin, setDonateCoin] = useState<string>(baseCoin);
-    const [donateSize, setDonateSize] = useState<string>("0.001");
+    const [donateSizeOptions, setDonateSizeOptions] = useState<string[]>(defaultBaseCoinDonateSizes);
+    const [donateSize, setDonateSize] = useState<string>(defaultBaseCoinDonateSizes[0]);
     const [currentDonateStep, setCurrentDonateStep] = useState<number>(0);
     const [donateSteps, setDonateSteps] = useState<StepProps[]>(getDonateSteps(donateCoin))
     const [donateResult, setDonateResult] = useState<{ status: ResultStatusType, title: string } | undefined>(undefined);
@@ -77,6 +93,7 @@ export default function Donate({
         setIsDonateMenuOpen(true)
     };
     const closeDonateMenu = () => {
+        setIsDonating(false);
         setIsDonateMenuOpen(false);
         setCurrentDonateStep(0);
         setDonateSteps(getDonateSteps(donateCoin));
@@ -93,16 +110,12 @@ export default function Donate({
                         item.icon = <LoadingOutlined/>
                     }
                 } else if (index < stepIndex) {
+                    item.status = 'finish';
                     item.icon = undefined;
                 }
                 return item;
             })]
         );
-    }
-
-    const setCoin = (value: string) => {
-        setDonateCoin(value);
-        setDonateSteps(getDonateSteps(value));
     }
 
     /**
@@ -140,6 +153,20 @@ export default function Donate({
         const value = ethers.utils.formatEther(balance);
         // console.log(`Max token value for ${donateCoin} is ${value}`);
         return value.toString();
+    }
+
+    const onCoinChange = (coin: string) => {
+        setDonateResult(undefined);
+        setDonateCoin(coin);
+        setDonateSteps(getDonateSteps(coin));
+        const sizes = getDonateSizeOptions(coin);
+        setDonateSizeOptions(sizes);
+        setDonateSize(sizes[0]);
+    }
+
+    const onSizeChange = (value: SegmentedValue) => {
+        setDonateResult(undefined);
+        setDonateSize(value.toString());
     }
 
     /**
@@ -181,7 +208,6 @@ export default function Donate({
         }
         // console.log(`${tokenAddress} and ${tokenAmount}`);
 
-
         const donateTokenConfig = async () => prepareWriteContract({
             address: PUBLIC_DONATION_ADDRESS,
             abi: PUBLIC_DONATION_ABI,
@@ -197,7 +223,7 @@ export default function Donate({
                 address: tokenAddress!!,
                 abi: erc20ABI,
                 functionName: 'approve',
-                args: [MAIN_NFT_ADDRESS, tokenAmount]
+                args: [PUBLIC_DONATION_ADDRESS, tokenAmount]
 
             });
             const approveResponse = await writeContract(spendingConfig);
@@ -247,70 +273,116 @@ export default function Donate({
         }
     }
 
-    /**
-     * Components
-     */
-    const availableCoinsSelector = () => {
-        return (
-            <Select defaultValue={baseCoin} style={{width: 100}} onChange={setCoin} disabled={isDonating}>
-                <Select.Option key={baseCoin} value={baseCoin}>{baseCoin}</Select.Option>
-                {
-                    availableTokens.map(symbol => {
-                            return (
-                                <Select.Option key={symbol} value={symbol}>{symbol}</Select.Option>
-                            );
-                        }
-                    )
-                }
-            </Select>
-        );
-    }
-
     return (
         <>
             <Button
-                className={`${styles.payButton} ${styles.donateButton}`}
+                className={`${styles.donateButton} ${styles.donateButtonGrid}`}
                 style={{width: "100%", height: "100px"}}
                 onClick={openDonateMenu}
             >DONATE</Button>
-            <Modal
-                width={"50vw"}
-                title="Donate"
-                centered
-                open={isDonateMenuOpen}
-                onOk={donate}
-                okButtonProps={{disabled: isDonating || donateSize === ""}}
-                cancelButtonProps={{disabled: isDonating}}
-                onCancel={closeDonateMenu}
-                okText={"Donate"}
-            >
-
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <Steps
-                        style={{padding: "30px 10px"}}
-                        size={"small"}
-                        items={donateSteps}
-                        current={currentDonateStep}
-                    />
-                    <InputNumber
-                        type="number"
-                        controls={false}
-                        disabled={isDonating}
-                        value={donateSize}
-                        max={getMaxValue()}
-                        addonAfter={availableCoinsSelector()}
-                        placeholder="Please enter a donation amount"
-                        onChange={value => setDonateSize(value ? value.toString() : "")}
-                    />
-
-                    {donateResult &&
-                        <Result
-                            status={donateResult.status}
-                            title={donateResult.title}
-                        />
+            <ConfigProvider
+                theme={{
+                    components: {
+                        Modal: {
+                            paddingContentHorizontalLG: 44,
+                            paddingMD: 44,
+                            fontSizeLG: 20,
+                            borderRadiusLG: 20
+                        },
                     }
-                </div>
-            </Modal>
+                }}
+            >
+                <Modal
+                    width={'900px'}
+                    centered
+                    open={isDonateMenuOpen}
+                    okText={"Donate"}
+                    onOk={donate}
+                    okButtonProps={{
+                        disabled: isDonating || donateSize === "" || Number.parseFloat(donateSize) === 0.0,
+                        className: `${styles.donateModelDoneButton} ${styles.donateModalOkButton} `
+                    }}
+                    cancelButtonProps={{
+                        className: `${styles.donateModelDoneButton} ${styles.donateModalCancelButton}`
+                    }}
+                    onCancel={closeDonateMenu}
+                >
+
+                    <div style={{display: "flex", flexDirection: "column"}}>
+                        <Steps
+                            style={{padding: "30px 10px"}}
+                            size={"small"}
+                            items={donateSteps}
+                            current={currentDonateStep}
+                        />
+                        <div>
+                            <h3>Select a donation coin.</h3>
+                            <div className={styles.donateInnerRow}>
+                                {
+                                    [baseCoin, ...availableTokens].map(coin => {
+                                        return (
+                                            <Button
+                                                disabled={isDonating}
+                                                key={coin}
+                                                value={coin}
+                                                onClick={e => onCoinChange(coin)}
+                                                className={`
+                                        ${styles.donateInnerButton}
+                                        ${coin === donateCoin ? styles.activeCoin : styles.notActiveCoin}
+                                        `}
+                                            >
+                                                {coin.toUpperCase()}
+                                            </Button>
+                                        );
+                                    })
+                                }
+                            </div>
+                        </div>
+                        <div>
+                            <h3>Select a donation amount or input your own.</h3>
+                            <div className={styles.donateInnerRow}>
+                                {
+                                    donateSizeOptions.map(size => {
+                                        return (
+                                            <Button
+                                                disabled={isDonating}
+                                                key={size}
+                                                value={size}
+                                                onClick={e => onSizeChange(size)}
+                                                className={`
+                                        ${styles.donateInnerButton}
+                                        ${size === donateSize ? styles.activeCoin : styles.notActiveCoin}
+                                        `}
+                                            >
+                                                {size}
+                                            </Button>
+                                        );
+                                    })
+                                }
+
+                                <InputNumber
+                                    className={styles.donateInnerInput}
+                                    type="number"
+                                    controls={false}
+                                    disabled={isDonating}
+                                    value={donateSize}
+                                    max={getMaxValue()}
+                                    onChange={value => setDonateSize(value ? value.toString() : "0")}
+                                />
+                            </div>
+
+                        </div>
+                        {donateResult &&
+                            <Result
+                                status={donateResult.status}
+                                title={donateResult.title}
+                            />
+                        }
+                    </div>
+                </Modal>
+            </ConfigProvider>
         </>
     );
 }
+
+export default Donate;

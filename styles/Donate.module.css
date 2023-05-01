@@ -1,0 +1,110 @@
+.donateButtonGrid {
+    grid-area: donate;
+}
+
+.donateButton {
+    height: 5rem;
+    line-height: normal;
+    vertical-align: baseline;
+    font-weight: bold;
+    font-size: 2rem;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-green-color);
+    border-radius: 18px;
+    border-style: none;
+    box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
+    box-sizing: border-box;
+    color: #000;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 10px 21px;
+    text-align: center;
+    text-transform: none;
+    transform: scale(1);
+    transition: 0.125s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.donateButton:hover:enabled {
+    color: #000;
+    transform: scale(1.01);
+}
+
+.donateInnerButton {
+    color: #000;
+    width: 185px;
+    height: 57px;
+    border-radius: 14px;
+    border: none !important;
+    font-family: var(--font-co-headline-corp);
+    font-weight: bold;
+    font-size: 21px;
+}
+
+.donateInnerButton:hover:enabled {
+    color: #000 !important;
+    border: none !important;
+    transform: scale(1.05);
+    transition: none !important;
+}
+
+.donateInnerRow {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+}
+
+.donateModalWrapper {
+    padding: 44px 52px;
+}
+
+.activeCoin {
+    background: var(--primary-green-color);
+}
+
+.notActiveCoin {
+    background: var(--default-white-color);
+}
+
+.donateModelDoneButton {
+    width: 247px;
+    height: 57px;
+    color: #000;
+    font-family: var(--font-co-headline-corp);
+    font-size: 21px;
+}
+
+.donateModalOkButton {
+    background-color: var(--primary-green-color);
+}
+
+.donateModalOkButton:hover:enabled {
+    color: #000 !important;;
+    background-color: var(--primary-green-color) !important;
+    transform: scale(1.05);
+}
+
+.donateModalCancelButton {
+    margin-right: 10px;
+}
+
+.donateModalCancelButton:hover {
+    color: #000 !important;;
+    transform: scale(1.05);
+    border-color: #d9d9d9 !important;
+}
+
+.donateInnerInput {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    width: 185px;
+}

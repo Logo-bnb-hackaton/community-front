@@ -238,7 +238,7 @@ const Profile: NextPage<Props> = ({profile, ownerId, tokens}) => {
                                 <Button
                                     key={baseCoin}
                                     disabled={true}
-                                    className={`${styles.payButton}`}
+                                    className={`${styles.donateButton}`}
                                     style={{width: "22%", backgroundColor: "#DBFCAC"}}
                                     onClick={e => {
                                     }}
