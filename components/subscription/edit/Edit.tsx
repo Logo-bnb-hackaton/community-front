@@ -1,5 +1,5 @@
 import styles from "@/styles/Subscription.module.css";
-import {Button, message} from "antd";
+import {message} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
@@ -13,6 +13,7 @@ import * as Api from '@/api'
 import BaseInfo, {BaseInfoData, BaseInfoErrors, hasError} from "@/components/subscription/edit/BaseInfo";
 import {BriefProfile} from "@/components/subscription/SubscriptionBase";
 import Integration from "@/components/subscription/integration/Integration";
+import CustomButton from "@/components/customButton/CustomButton";
 
 // todo maybe extract it later
 function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
@@ -181,9 +182,14 @@ const Edit: React.FC<Props> = ({data, profile}) => {
                 <div>{steps[currentStep].content}</div>
 
                 <div className={styles.eventButtonWrapper}>
-                    {currentStep === 0 && <Button disabled={isLoading} type="primary" onClick={() => next()}>
-                        {data?.id ? "Update" : "Create"} {isLoading && <LoadingOutlined/>}
-                    </Button>
+                    {currentStep === 0 &&
+                        <CustomButton
+                            type={"small"}
+                            color={"green"}
+                            disabled={isLoading}
+                            onClick={next}>
+                            {data?.id ? "Update" : "Create"} {isLoading && <LoadingOutlined/>}
+                        </CustomButton>
                     }
                 </div>
             </div>

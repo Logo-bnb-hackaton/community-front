@@ -1,8 +1,9 @@
 import React, {ReactNode, useState} from "react";
-import {Button, ConfigProvider, Input, Select} from "antd";
+import {ConfigProvider, Input, Select} from "antd";
 import styles from "@/styles/Subscription.module.css";
 import Image from "next/image";
 import heroIcon from "@/assets/Hero.png";
+import CustomButton from "@/components/customButton/CustomButton";
 
 enum Platform {
     Telegram = "Telegram",
@@ -210,20 +211,33 @@ const Integration: React.FC<Props> = ({previousCallback, doneCallback}) => {
                 {steps[currentStep]}
                 <div className={styles.eventButtonWrapper} style={{marginTop: '217px'}}>
 
-                    <Button disabled={isLoading} style={{margin: '0 8px'}} onClick={() => prev()}>
-                        Previous
-                    </Button>
+                    <CustomButton
+                        type={"small"}
+                        color={"gray"}
+                        disabled={isLoading}
+                        style={{margin: '0 10px'}}
+                        onClick={prev}
+                    >
+                        Back
+                    </CustomButton>
 
                     {currentStep < steps.length - 1 && (
-                        <Button disabled={isLoading} type="primary" onClick={() => next()}>
+                        <CustomButton
+                            type={"small"}
+                            color={"green"}
+                            disabled={isLoading}
+                            onClick={next}>
                             Next
-                        </Button>
+                        </CustomButton>
                     )}
                     {currentStep === steps.length - 1 && (
-                        <Button disabled={isLoading} type="primary"
-                                onClick={doneCallback}>
+                        <CustomButton
+                            type={"small"}
+                            color={"green"}
+                            disabled={isLoading}
+                            onClick={doneCallback}>
                             Done
-                        </Button>
+                        </CustomButton>
                     )}
                 </div>
             </div>
