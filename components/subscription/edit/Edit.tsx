@@ -172,8 +172,6 @@ const Edit: React.FC<Props> = ({data, profile}) => {
         },
     ];
 
-    console.log(currentStep);
-
     return (
         <div className={styles.eventWrapper}>
             <div style={{width: "100%"}}>
@@ -182,6 +180,15 @@ const Edit: React.FC<Props> = ({data, profile}) => {
                 <div>{steps[currentStep].content}</div>
 
                 <div className={styles.eventButtonWrapper}>
+                    <CustomButton
+                        style={{marginRight: '20px'}}
+                        type={"small"}
+                        color={"gray"}
+                        disabled={isLoading}
+                        onClick={() => router.push(`/profile/${profile!!.id}`)}>
+                        Back to profile
+                    </CustomButton>
+
                     {currentStep === 0 &&
                         <CustomButton
                             type={"small"}

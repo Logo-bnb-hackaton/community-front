@@ -150,7 +150,7 @@ const BaseInfo: React.FC<Props> = ({
                             disabled={isLoading}
                             className={`${styles.eventEditBaseInfoDescription} ${getErrorClassName(errors.description)}`}
                             // can't move it to classname, because it doesn't work
-                            style={{resize: "none", height: "100vh",}}
+                            style={{resize: "none", height: "100vh", fontFamily: "var(--font-montserrat)"}}
                             placeholder={"Add description"}
                             value={data.description}
                             onChange={e => setter({...data, description: e.target.value})}

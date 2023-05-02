@@ -1,22 +1,19 @@
-import { useRouter } from "next/router";
+import {useRouter} from "next/router";
 import styles from "@/styles/Home.module.css";
 import Logo from "@/components/logo/Logo";
 import ReactMarkdown from "react-markdown";
-import SocialMediaList, {
-  SocialMediaLink,
-  toSocialMediaLink,
-} from "@/components/social_media_list/SocialMediaList";
-import React, { useEffect, useState } from "react";
+import SocialMediaList, {SocialMediaLink, toSocialMediaLink,} from "@/components/social_media_list/SocialMediaList";
+import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
-import { Button, Input } from "antd";
+import {Input} from "antd";
 import CustomButton from "@/components/customButton/CustomButton";
-import { useAccount } from "wagmi";
+import {useAccount} from "wagmi";
 import Donate from "@/components/donate/donate";
-import { FileAddOutlined, LoadingOutlined } from "@ant-design/icons";
-import { GetServerSidePropsContext, NextPage } from "next";
-import { addressBySymbol, baseCoin, possibleTokens } from "@/utils/tokens";
+import {FileAddOutlined, LoadingOutlined} from "@ant-design/icons";
+import {GetServerSidePropsContext, NextPage} from "next";
+import {addressBySymbol, baseCoin, possibleTokens} from "@/utils/tokens";
 import SubscriptionList from "@/components/subscription/SubscriptionList";
-import { ProfileDTO } from "@/api/dto/profile.dto";
+import {ProfileDTO} from "@/api/dto/profile.dto";
 
 import * as Api from "@/api";
 import * as Contract from "@/contract";
@@ -307,21 +304,17 @@ const Profile: NextPage<Props> = ({ profile, ownerId, tokens }) => {
           }
         </div>
         {editAvailable && !edited && (
-          <Button
+          <CustomButton
             disabled={!isConnected}
-            className={`${styles.payButton}`}
-            style={{
-              width: "100%",
-              height: "100px",
-              backgroundColor: "#f5f5f5",
-              marginTop: "48px",
-            }}
+            type={"wide"}
+            color={"gray"}
+            style={{marginTop: "48px"}}
             onClick={() =>
               router.push(`/subscription/create?profileId=${profileId}`)
             }
           >
             Add subscription <FileAddOutlined />
-          </Button>
+          </CustomButton>
         )}
         {profile && !edited && getAvailableSubscriptions().length !== 0 && (
           <SubscriptionList

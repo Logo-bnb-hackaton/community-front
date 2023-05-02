@@ -151,7 +151,8 @@ export default function SubscriptionBase({
                 style={{
                     margin: '70px 0',
                     width: '100%',
-                    fontSize: '24px'
+                    fontSize: '24px',
+                    whiteSpace: 'pre-wrap',
                 }}
             >
                 {subscription.description}
