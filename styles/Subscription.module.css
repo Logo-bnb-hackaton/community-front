@@ -95,3 +95,76 @@
 .eventEditBaseInfoDescription {
     padding: 42px;
 }
+
+.integrationFlowWrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+}
+
+.integrationTokenInput {
+    margin-top: 32px;
+    width: 720px;
+    height: 64px;
+    font-size: 16px;
+    font-family: var(--font-montserrat);
+}
+
+.integrationStepWrapper {
+    padding-top: 32px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    height: 100%;
+}
+
+.integrationStepIndex {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+    font-family: var(--font-co-headline-corp);
+    font-weight: bold;
+    border: 1px solid #000000;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.integrationStepContentWrapper {
+    margin-left: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+}
+
+.integrationStepTitleWrapper {
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.integrationStepDescriptionWrapper {
+    position: relative;
+    width: 940px;
+    padding: 18px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    border-radius: 14px;
+    border: 3px solid #B7B7B7;
+}
+
+.integrationStepHero {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    bottom: -153px;
+    right: -72px;
+}

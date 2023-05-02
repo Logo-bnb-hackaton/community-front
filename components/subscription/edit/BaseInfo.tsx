@@ -86,7 +86,7 @@ const BaseInfo: React.FC<Props> = ({
                         borderRadius: 20,
                         paddingSM: 24,
                         fontSize: 24,
-                        fontFamily: 'CoHeadlineCorp',
+                        fontFamily: 'co-headline',
                     }
                 }}
             >
