@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -134,11 +136,6 @@ h3 {
   font-style: normal;
   font-weight: 700;
   font-stretch: normal;
-}
-
-@font-face {
-  font-family: "Montserrat", sans-serif;
-  src: url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 }
 
 /*@media (prefers-color-scheme: dark) {*/

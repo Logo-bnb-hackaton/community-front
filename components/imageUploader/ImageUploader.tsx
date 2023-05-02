@@ -78,11 +78,11 @@ export default function ImageUploader(
                     <p className="ant-upload-drag-icon">
                         {isImgLoading ? <LoadingOutlined/> : <FileAddOutlined style={{color: "#000"}}/>}
                     </p>
-                    <p style={{fontSize: "16px", fontFamily: 'CoHeadlineCorp'}}>{description}</p>
+                    <p style={{fontSize: "16px", fontFamily: 'co-headline'}}>{description}</p>
                     <p style={{
                         paddingTop: "24px",
                         fontSize: "16px",
-                        fontFamily: 'CoHeadlineCorp',
+                        fontFamily: 'co-headline',
                         color: "#837F7F"
                     }}>{sizeText}</p>
                 </Upload.Dragger>

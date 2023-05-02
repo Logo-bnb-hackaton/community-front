@@ -1,5 +1,5 @@
 import styles from "@/styles/Subscription.module.css";
-import {Button, message, Steps} from "antd";
+import {message} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
@@ -12,6 +12,8 @@ import {baseCoin} from "@/utils/tokens";
 import * as Api from '@/api'
 import BaseInfo, {BaseInfoData, BaseInfoErrors, hasError} from "@/components/subscription/edit/BaseInfo";
 import {BriefProfile} from "@/components/subscription/SubscriptionBase";
+import Integration from "@/components/subscription/integration/Integration";
+import CustomButton from "@/components/customButton/CustomButton";
 
 // todo maybe extract it later
 function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
@@ -30,7 +32,7 @@ interface Props {
     profile: BriefProfile
 }
 
-const Edit: React.FC<Props> = ({data ,profile}) => {
+const Edit: React.FC<Props> = ({data, profile}) => {
 
     const router = useRouter();
 
@@ -151,7 +153,7 @@ const Edit: React.FC<Props> = ({data ,profile}) => {
      */
     const steps = [
         {
-            title: 'Step 1',
+            title: 'Step 1: Subscription editing',
             content: <BaseInfo
                 data={baseInfoData}
                 profile={profile}
@@ -160,52 +162,35 @@ const Edit: React.FC<Props> = ({data ,profile}) => {
                 errors={errors}/>,
         },
         {
-            title: 'Step 2',
-            content: <p>Tg integration</p>,
+            title: 'Step 2: Integration setup',
+            content: <Integration
+                previousCallback={() => prev()}
+                doneCallback={() => {
+                    message.success('Processing complete!');
+                    router.push(`/profile/${data!!.id}`);
+                }}/>,
         },
     ];
 
-    const items = steps.map((item) => (
-        {
-            key: item.title,
-            title: item.title,
-            className: styles.eventStepTitle
-        }
-    ));
+    console.log(currentStep);
 
     return (
         <div className={styles.eventWrapper}>
             <div style={{width: "100%"}}>
-                <p className={styles.eventEditTitle}>SUBSCRIPTION EDITING</p>
-                <Steps
-                    size="default"
-                    className={styles.eventSteps}
-                    current={currentStep}
-                    items={items}
-                />
+                <p className={styles.eventEditTitle}>{steps[currentStep].title}</p>
 
                 <div>{steps[currentStep].content}</div>
 
                 <div className={styles.eventButtonWrapper}>
-                    {currentStep < steps.length - 1 && (
-                        <Button disabled={isLoading} type="primary" onClick={() => next()}>
+                    {currentStep === 0 &&
+                        <CustomButton
+                            type={"small"}
+                            color={"green"}
+                            disabled={isLoading}
+                            onClick={next}>
                             {data?.id ? "Update" : "Create"} {isLoading && <LoadingOutlined/>}
-                        </Button>
-                    )}
-                    {currentStep === steps.length - 1 && (
-                        <Button disabled={isLoading} type="primary"
-                                onClick={() => {
-                                    message.success('Processing complete!');
-                                    router.push(`/profile/${data!!.id}`);
-                                }}>
-                            Done
-                        </Button>
-                    )}
-                    {currentStep > 0 && (
-                        <Button disabled={isLoading} style={{margin: '0 8px'}} onClick={() => prev()}>
-                            Previous
-                        </Button>
-                    )}
+                        </CustomButton>
+                    }
                 </div>
             </div>
         </div>

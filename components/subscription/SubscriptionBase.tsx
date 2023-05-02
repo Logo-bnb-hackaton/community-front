@@ -50,7 +50,7 @@ export default function SubscriptionBase({
                     justifyContent: 'space-between',
                     alignItems: "center",
                     fontSize: '32px',
-                    fontFamily: 'CoHeadlineCorp',
+                    fontFamily: 'co-headline',
                 }}
             >
                 <div
@@ -109,7 +109,7 @@ export default function SubscriptionBase({
                 style={{
                     paddingTop: '24px',
                     fontSize: '48px',
-                    fontFamily: 'CoHeadlineCorp',
+                    fontFamily: 'co-headline',
                 }}>
                 <p>{subscription.title}</p>
             </div>
@@ -131,7 +131,7 @@ export default function SubscriptionBase({
                     border: "none",
                     borderRadius: '20px',
                     fontSize: '48px',
-                    fontFamily: 'CoHeadlineCorp',
+                    fontFamily: 'co-headline',
                 }}>
                     SUBSCRIBE 7,5 USDT
                 </Button>
