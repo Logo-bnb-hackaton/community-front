@@ -1,14 +1,23 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import React, {useEffect, useRef, useState} from "react";
-import {useRouter} from "next/router";
-import {useAccount, useContractRead, useContractWrite, usePrepareContractWrite,} from "wagmi";
+import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import {
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+} from "wagmi";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
-import {Button} from "antd";
-import {MAIN_NFT_ABI, MAIN_NFT_ADDRESS, WAIT_BLOCK_CONFIRMATIONS,} from "@/constants";
-import {BigNumber} from "ethers";
-import {waitForTransaction} from "@wagmi/core";
+import CustomButton from "@/components/customButton/CustomButton";
+import {
+  MAIN_NFT_ABI,
+  MAIN_NFT_ADDRESS,
+  WAIT_BLOCK_CONFIRMATIONS,
+} from "@/constants";
+import { BigNumber } from "ethers";
+import { waitForTransaction } from "@wagmi/core";
 
 export default function Home() {
   const router = useRouter();
@@ -106,7 +115,7 @@ export default function Home() {
       return;
     }
 
-    setIsMinting(old => !old);
+    setIsMinting((old) => !old);
 
     safeMintWriteAsync?.()
       .then((data) => {
@@ -174,20 +183,30 @@ export default function Home() {
             <div className={styles.welcome_content_left_side}>
               <h1>Welcome to</h1>
               <div id="logo_nodde" className={styles.logo_nodde}></div>
-              <p>Create a closed sessions for training, streams, and other events,
-              as well as receive donations from subscribers.</p>
+              <p>
+                Create a closed sessions for training, streams, and other
+                events, as well as receive donations from subscribers.
+              </p>
             </div>
           </div>
 
-          <Button
-            className={styles.createProfileButton}
-            loading={isMinting}
+          <CustomButton
+            type="wide"
             onClick={mint}
             disabled={!isDefinitelyConnected}
+            style={{ height: "92", fontSize: "48px" }}
           >
             Create a profile
-          </Button>
-          <h1>Build you own community</h1>
+          </CustomButton>
+          <p
+            style={{
+              margin: "40px 20px 0 0",
+              fontFamily: "var(--font-montserrat)",
+              fontSize: "48px",
+            }}
+          >
+            Build you own community
+          </p>
           <div
             id="arrow"
             className={styles.arrow}
@@ -212,14 +231,18 @@ export default function Home() {
             </div>
             <div className={styles.home_content_right_side}>
               <div className={styles.home_right_side_text}>
-                <p>Click the "Create Profile" button and pay the registration fee</p>
+                <p>
+                  Click the "Create Profile" button and pay the registration fee
+                </p>
               </div>
             </div>
           </div>
           <div className={styles.home_content}>
             <div className={styles.home_content_left_side}>
-              <p>Fill out your profile, including your community name, photos,
-              description, and other details</p>
+              <p>
+                Fill out your profile, including your community name, photos,
+                description, and other details
+              </p>
             </div>
             <div className={styles.home_content_right_side}>
               <div
@@ -250,14 +273,14 @@ export default function Home() {
             </div>
           </div>
 
-          <Button
-            className={styles.createProfileButton}
-            loading={isMinting}
+          <CustomButton
+            type="wide"
             onClick={mint}
             disabled={!isDefinitelyConnected}
+            style={{ height: "92", fontSize: "48px" }}
           >
             Create a profile
-          </Button>
+          </CustomButton>
         </div>
 
         <Footer />
