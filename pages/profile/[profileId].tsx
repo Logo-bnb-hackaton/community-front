@@ -281,48 +281,48 @@ const Profile: NextPage<Props> = ({ profile, ownerId, tokens }) => {
               hasError={profileError && profileError.socialMediaLinks}
             />
           </div>
-          {edited ? (
-            <div
-              style={{
-                gridArea: "donate",
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <CustomButton
-                key={baseCoin}
-                disabled={true}
-                style={{ backgroundColor: "var(--primary-green-color)" }}
-                onClick={(e) => {}}
-              >
-                {baseCoin.toUpperCase()}
-              </CustomButton>
-              {possibleTokens
-                .map((item) => item.symbol)
-                .map((symbol) => (
-                  <CustomButton
-                    disabled={isLoading}
-                    key={symbol}
-                    color={
-                      availableTokens.find((t) => t === symbol) === undefined
-                        ? "gray"
-                        : "green"
-                    }
-                    onClick={(e) => enableOrDisableToken(symbol)}
-                  >
-                    {symbol.toUpperCase()}{" "}
-                    {symbol === processingToken ? <LoadingOutlined /> : ""}
-                  </CustomButton>
-                ))}
-            </div>
-          ) : (
-            <Donate
-              profileId={profileId as string}
-              availableTokens={availableTokens}
-            />
-          )}
         </div>
+        {edited ? (
+          <div
+            style={{
+              gridArea: "donate",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <CustomButton
+              key={baseCoin}
+              disabled={true}
+              style={{ backgroundColor: "var(--primary-green-color)" }}
+              onClick={(e) => {}}
+            >
+              {baseCoin.toUpperCase()}
+            </CustomButton>
+            {possibleTokens
+              .map((item) => item.symbol)
+              .map((symbol) => (
+                <CustomButton
+                  disabled={isLoading}
+                  key={symbol}
+                  color={
+                    availableTokens.find((t) => t === symbol) === undefined
+                      ? "gray"
+                      : "green"
+                  }
+                  onClick={(e) => enableOrDisableToken(symbol)}
+                >
+                  {symbol.toUpperCase()}{" "}
+                  {symbol === processingToken ? <LoadingOutlined /> : ""}
+                </CustomButton>
+              ))}
+          </div>
+        ) : (
+          <Donate
+            profileId={profileId as string}
+            availableTokens={availableTokens}
+          />
+        )}
         {editAvailable && !edited && (
           <CustomButton
             disabled={!isConnected}

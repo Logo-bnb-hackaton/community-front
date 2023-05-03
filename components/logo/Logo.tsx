@@ -1,5 +1,6 @@
 import React from "react";
 import ImageUploader from "@/components/imageUploader/ImageUploader";
+import styles from "@/styles/Home.module.css";
 
 // todo add logic with editable
 export default function Logo({
@@ -17,12 +18,9 @@ export default function Logo({
 }) {
   return (
     <div
+      className={styles.logoProfile}
       style={{
         gridArea: "logo",
-        position: "relative",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
         cursor: edited ? "pointer" : "auto",
       }}
     >

@@ -46,13 +46,15 @@
   width: var(--max-width);
   max-width: 100%;
   display: grid;
-  grid-template-columns: 380px auto;
+  /* grid-template-columns: 380px auto;
   grid-template-rows: 380px auto;
   grid-template-areas:
     "logo description"
-    "donate donate";
+    "donate donate"; */
   column-gap: 80px;
   row-gap: 64px;
+  display: flex;
+  margin-bottom: 64px;
 }
 
 .socialMediaLinksContainer {
@@ -218,6 +220,18 @@
   transform: scale(1.05);
 }
 
+.logoProfile {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 380px;
+  min-height: 380px;
+  width: 380px;
+  height: 380px;
+  align-self: center;
+}
+
 .logo {
   position: relative;
 }
@@ -378,9 +392,19 @@
   background-image: url("../pages/images/footer/twitter_footer.svg");
 }
 
-@media screen and (max-width: 900) {
+@media screen and (max-width: 900px) {
   .home_content {
     flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 1140px) {
+  .grid {
+    flex-direction: column;
+  }
+
+  .socialMediaLinksContainer {
+    margin-top: 30px;
   }
 }
 
