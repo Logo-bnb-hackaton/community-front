@@ -55,7 +55,7 @@
   row-gap: 64px;
 }
 
-.social_media_links_container {
+.socialMediaLinksContainer {
   display: flex;
   flex-direction: row;
   align-items: center;

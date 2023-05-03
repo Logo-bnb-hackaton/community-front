@@ -93,7 +93,7 @@ const SocialMediaList: React.FC<Props> = ({
   };
 
   return (
-    <div className={styles.social_media_links_container}>
+    <div className={styles.socialMediaLinksContainer}>
       {socialMediaLinks.map((item, index) => (
         <div className={styles.card} key={index}>
           <a
