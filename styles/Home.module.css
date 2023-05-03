@@ -109,7 +109,7 @@
 }
 
 .cardDeleteButton:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
   color: red;
 }
 
@@ -215,7 +215,7 @@
 }
 
 .payButton:hover {
-  transform: scale(1.01);
+  transform: scale(1.05);
 }
 
 .logo {
@@ -232,7 +232,7 @@
 }
 
 .logoDeleteButton:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .draggerWrapper {
@@ -254,11 +254,11 @@
   width: 72px;
   height: 65px;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.125s ease;
 }
 
 .arrow:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .welcome_content {
@@ -363,6 +363,11 @@
   width: 30px;
   height: 30px;
   margin: 8px;
+  transition: 0.125s ease;
+}
+
+.footer_images:hover {
+  transform: scale(1.05);
 }
 
 .discord_footer_image {
