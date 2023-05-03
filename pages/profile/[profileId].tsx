@@ -1,19 +1,22 @@
-import {useRouter} from "next/router";
+import { useRouter } from "next/router";
 import styles from "@/styles/Home.module.css";
 import Logo from "@/components/logo/Logo";
 import ReactMarkdown from "react-markdown";
-import SocialMediaList, {SocialMediaLink, toSocialMediaLink,} from "@/components/social_media_list/SocialMediaList";
-import React, {useEffect, useState} from "react";
+import SocialMediaList, {
+  SocialMediaLink,
+  toSocialMediaLink,
+} from "@/components/social_media_list/SocialMediaList";
+import React, { useEffect, useState } from "react";
 import Header from "@/components/header/Header";
-import {Input} from "antd";
+import { Input } from "antd";
 import CustomButton from "@/components/customButton/CustomButton";
-import {useAccount} from "wagmi";
+import { useAccount } from "wagmi";
 import Donate from "@/components/donate/donate";
-import {FileAddOutlined, LoadingOutlined} from "@ant-design/icons";
-import {GetServerSidePropsContext, NextPage} from "next";
-import {addressBySymbol, baseCoin, possibleTokens} from "@/utils/tokens";
+import { FileAddOutlined, LoadingOutlined } from "@ant-design/icons";
+import { GetServerSidePropsContext, NextPage } from "next";
+import { addressBySymbol, baseCoin, possibleTokens } from "@/utils/tokens";
 import SubscriptionList from "@/components/subscription/SubscriptionList";
-import {ProfileDTO} from "@/api/dto/profile.dto";
+import { ProfileDTO } from "@/api/dto/profile.dto";
 
 import * as Api from "@/api";
 import * as Contract from "@/contract";
@@ -243,72 +246,89 @@ const Profile: NextPage<Props> = ({ profile, ownerId, tokens }) => {
                 onChange={titleInputHandler}
               />
             ) : (
-              <p className={styles.title}>{title}</p>
+              <h1>{title}</h1>
             )}
 
-                        <div style={{maxWidth: "100%", maxHeight: "100%"}}>
-                            {
-                                edited ?
-                                    <Input.TextArea
-                                        disabled={isLoading}
-                                        status={profileError && profileError.description ? "error" : ""}
-                                        value={description}
-                                        onChange={descriptionInputHandler}
-                                        autoSize={{minRows: 6, maxRows: 6}}
-                                        placeholder={`Community description. Max length is ${MAX_DESCRIPTION_LEN} characters.`}
-                                    /> :
-                                    <ReactMarkdown className={styles.lineBreak}>{description}</ReactMarkdown>
-                            }
-                        </div>
-                        <SocialMediaList
-
-                            socialMediaLinks={socialMediaLinks}
-                            setSocialLinks={socialLinkHandler}
-                            edited={edited && !isLoading}
-                            hasError={profileError && profileError.socialMediaLinks}
-                        />
-
-                    </div>
-                    {
-                        edited ?
-                            <div style={{
-                                gridArea: "donate",
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between"
-                            }}>
-                                <CustomButton
-                                    key={baseCoin}
-                                    disabled={true}
-                                    style={{ backgroundColor: "var(--primary-green-color)" }}
-                                    onClick={e => {
-                                    }}
-                                >{baseCoin.toUpperCase()}</CustomButton>
-                                {
-                                    possibleTokens.map(item => item.symbol).map(symbol =>
-                                        <CustomButton
-                                            disabled={isLoading}
-                                            key={symbol}
-                                            color={
-                                                availableTokens.find((t) => t === symbol) === undefined
-                                                  ? "gray"
-                                                  : "green"}
-                                            onClick={e => enableOrDisableToken(symbol)}
-                                        >{symbol.toUpperCase()} {symbol === processingToken ?
-                                            <LoadingOutlined/> : ""}</CustomButton>
-                                    )
-                                }
-                            </div>
-                            :
-                            <Donate profileId={profileId as string} availableTokens={availableTokens}/>
-          }
+            <div
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                textAlign: "justify",
+              }}
+            >
+              {edited ? (
+                <Input.TextArea
+                  disabled={isLoading}
+                  status={
+                    profileError && profileError.description ? "error" : ""
+                  }
+                  className={styles.descriptionInput}
+                  value={description}
+                  onChange={descriptionInputHandler}
+                  autoSize={{ minRows: 6, maxRows: 6 }}
+                  placeholder={`Community description. Max length is ${MAX_DESCRIPTION_LEN} characters.`}
+                />
+              ) : (
+                <ReactMarkdown className={styles.lineBreak}>
+                  {description}
+                </ReactMarkdown>
+              )}
+            </div>
+            <SocialMediaList
+              socialMediaLinks={socialMediaLinks}
+              setSocialLinks={socialLinkHandler}
+              edited={edited && !isLoading}
+              hasError={profileError && profileError.socialMediaLinks}
+            />
+          </div>
+          {edited ? (
+            <div
+              style={{
+                gridArea: "donate",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <CustomButton
+                key={baseCoin}
+                disabled={true}
+                style={{ backgroundColor: "var(--primary-green-color)" }}
+                onClick={(e) => {}}
+              >
+                {baseCoin.toUpperCase()}
+              </CustomButton>
+              {possibleTokens
+                .map((item) => item.symbol)
+                .map((symbol) => (
+                  <CustomButton
+                    disabled={isLoading}
+                    key={symbol}
+                    color={
+                      availableTokens.find((t) => t === symbol) === undefined
+                        ? "gray"
+                        : "green"
+                    }
+                    onClick={(e) => enableOrDisableToken(symbol)}
+                  >
+                    {symbol.toUpperCase()}{" "}
+                    {symbol === processingToken ? <LoadingOutlined /> : ""}
+                  </CustomButton>
+                ))}
+            </div>
+          ) : (
+            <Donate
+              profileId={profileId as string}
+              availableTokens={availableTokens}
+            />
+          )}
         </div>
         {editAvailable && !edited && (
           <CustomButton
             disabled={!isConnected}
             type={"wide"}
             color={"gray"}
-            style={{marginTop: "48px"}}
+            style={{ marginTop: "48px" }}
             onClick={() =>
               router.push(`/subscription/create?profileId=${profileId}`)
             }
