@@ -259,6 +259,13 @@
   border-radius: 8px;
 }
 
+.donateArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .arrow {
   background-image: url("../pages/images/landing/arrow_back.png");
   background-position: center center;
@@ -403,8 +410,20 @@
     flex-direction: column;
   }
 
+  .grid * {
+    margin: 10px 0;
+  }
+
   .socialMediaLinksContainer {
     margin-top: 30px;
+  }
+
+  .donateArea {
+    flex-direction: column;
+  }
+
+  .donateArea * {
+    margin: 10px 0;
   }
 }
 

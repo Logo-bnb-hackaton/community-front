@@ -284,11 +284,9 @@ const Profile: NextPage<Props> = ({ profile, ownerId, tokens }) => {
         </div>
         {edited ? (
           <div
+          className={styles.donateArea}
             style={{
               gridArea: "donate",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
             }}
           >
             <CustomButton
