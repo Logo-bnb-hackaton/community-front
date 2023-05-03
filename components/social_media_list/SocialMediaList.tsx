@@ -121,7 +121,7 @@ const SocialMediaList: React.FC<Props> = ({
           )}
         </div>
       ))}
-      {socialMediaLinks.length < SOCIAL_MEDIA_LINK_SIZE && edited && (
+      {socialMediaLinks.length <= SOCIAL_MEDIA_LINK_SIZE && edited && (
         <>
           {Array(SOCIAL_MEDIA_LINK_SIZE - socialMediaLinks.length)
             .fill(0)
@@ -194,7 +194,7 @@ const getTypeByUrl = (url: string): SocialMediaType => {
   while (!entry.done) {
     const type = entry.value[0];
     const regExp = entry.value[1];
-    if (regExp.test(url)) return type;
+    if (regExp.test(url.toLocaleLowerCase())) return type;
     entry = it.next();
   }
   return SocialMediaType.Link;
@@ -237,7 +237,7 @@ const urlValidatorByTypeMap: Map<SocialMediaType, RegExp> = new Map([
   ],
   [SocialMediaType.Facebook, /((http|https):\/\/)?(www\.)?facebook\.com\/(.*)/],
   [SocialMediaType.Vk, /((http|https):\/\/)?(www\.)?vk\.com\/(.*)/],
-  [SocialMediaType.Discord, /((http|https):\/\/)?(www\.)?discord\.gg\/(.*)/],
+  [SocialMediaType.Discord, /((http|https):\/\/)?(www\.)?discord\.(gg|com)\/(.*)/],
   [SocialMediaType.Link, defaultRegExp],
 ]);
 
