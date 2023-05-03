@@ -1,9 +1,10 @@
 import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import Image from "next/image";
 import telegramIcon from "@/assets/social_media_logo/telegram.svg";
-import {Button} from "antd";
-import {ShareAltOutlined} from "@ant-design/icons";
+import {DeleteOutlined, EditOutlined, ShareAltOutlined} from "@ant-design/icons";
 import {useRouter} from "next/router";
+import CustomButton from "@/components/customButton/CustomButton";
+import React from "react";
 
 export interface BriefProfile {
     id: string,
@@ -19,6 +20,8 @@ export default function SubscriptionBase({
                                              profile
                                          }: { subscription: UpdateSubscriptionDTO, profile: BriefProfile }) {
     const router = useRouter()
+
+    const isOwner = () => subscription.ownerId === profile.id;
 
     return (
         <div
@@ -44,7 +47,7 @@ export default function SubscriptionBase({
 
             <div
                 style={{
-                    paddingTop: '64px',
+                    paddingTop: '32px',
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: 'space-between',
@@ -107,51 +110,63 @@ export default function SubscriptionBase({
 
             <div
                 style={{
-                    paddingTop: '24px',
-                    fontSize: '48px',
-                    fontFamily: 'co-headline',
-                }}>
-                <p>{subscription.title}</p>
-            </div>
-
-            <div
-                style={{
-                    marginTop: '48px',
+                    paddingTop: '30px',
                     display: "flex",
-                    flexDirection: 'row',
+                    flexDirection: "row",
                     justifyContent: "space-between",
-                    gap: '0 24px',
-                    height: '100px',
-                }}
-            >
-                <Button style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: '#DBFCAC',
-                    border: "none",
-                    borderRadius: '20px',
-                    fontSize: '48px',
-                    fontFamily: 'co-headline',
+                    alignItems: "center",
                 }}>
-                    SUBSCRIBE 7,5 USDT
-                </Button>
-                <Button
-                    style={{
-                        width: '100px',
-                        height: '100%',
-                        backgroundColor: '#F5F5F5',
-                        border: "none",
-                        borderRadius: '20px',
-                    }}>
-                    <ShareAltOutlined style={{fontSize: '50px'}}/>
-                </Button>
+                <p style={{fontSize: '48px', fontFamily: 'co-headline'}}>
+                    {subscription.title}
+                </p>
+                <div>
+                    <CustomButton
+                        color={"gray"}
+                        style={{minWidth: '55px', height: '55px', marginRight: `${isOwner() ? '16px' : '0'}`}}
+                        onClick={() => {
+                            console.log(`share ${subscription.id}`)
+                        }}
+                    >
+                        <ShareAltOutlined style={{width: '25px'}}/>
+                    </CustomButton>
+                    {isOwner() && <CustomButton
+                        color={"gray"}
+                        style={{minWidth: '55px', height: '55px', marginRight: '16px'}}
+                        onClick={() => router.push(`/subscription/${subscription.id}?edited=true&profileId=${profile.id}`)}
+                    >
+                        <EditOutlined style={{width: '25px'}}/>
+                    </CustomButton>
+                    }
+                    {isOwner() && <CustomButton
+                        color={"gray"}
+                        style={{minWidth: '55px', height: '55px', border: '2px solid #EA5858'}}
+                        // todo fix it
+                        onClick={() => {
+                            console.log(`delete ${subscription.id}`)
+                        }}
+                    >
+                        <DeleteOutlined style={{width: '25px', color: '#EA5858'}}/>
+                    </CustomButton>
+                    }
+                </div>
+            </div>
+
+            <div style={{marginTop: '30px'}}>
+                <CustomButton
+                    type="wide"
+                    color={"green"}
+                    onClick={() => {
+                    }}
+                >
+                    Subscribe {subscription.price} {subscription.coin.toUpperCase()}
+                </CustomButton>
             </div>
 
             <div
                 style={{
-                    margin: '70px 0',
+                    margin: '50px 0',
                     width: '100%',
-                    fontSize: '24px',
+                    fontSize: '21px',
                     whiteSpace: 'pre-wrap',
                 }}
             >
