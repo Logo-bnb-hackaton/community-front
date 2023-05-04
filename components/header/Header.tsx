@@ -45,20 +45,13 @@ export default function Header({
             </a>
           )}
         </div>
-        <div style={{ display: "flex", flexDirection: "row" }}>
+        <div style={{ display: "flex", flexDirection: "row", height: "60px" }}>
           {editAvailable && (
             <div style={{ width: "60px", height: "60px", marginRight: "24px" }}>
               <Button
+                className={styles.saveBtnFromHeader}
                 disabled={disabled}
                 onClick={edited ? onSaveHandle : onEditHandle}
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  border: "none",
-                  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                  borderRadius: "10px",
-                  padding: "0",
-                }}
               >
                 {edited ? (
                   "Save"

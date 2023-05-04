@@ -11,6 +11,7 @@ import {
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import CustomButton from "@/components/customButton/CustomButton";
+import CustomAlert from "@/components/alert/CustomAlert";
 import {
   MAIN_NFT_ABI,
   MAIN_NFT_ADDRESS,
@@ -157,8 +158,23 @@ export default function Home() {
     }
   };
 
+  const [showAlert, setShowAlert] = useState(false);
+  const handleAlerShow = () => {
+    setShowAlert(true);
+  };
+
+  const handleAlertClose = () => {
+    setShowAlert(false);
+  };
+
   return (
     <>
+      {showAlert && (
+        <CustomAlert type="warning" onClose={handleAlertClose}>
+          Firstly, connect your wallet to the platform
+        </CustomAlert>
+      )}
+
       <Head>
         <title>Nodde community</title>
         <meta
@@ -189,11 +205,9 @@ export default function Home() {
               </p>
             </div>
           </div>
-
           <CustomButton
             type="wide"
-            onClick={mint}
-            disabled={!isDefinitelyConnected}
+            onClick={!isDefinitelyConnected ? handleAlerShow : mint}
             style={{ height: "92", fontSize: "48px" }}
           >
             Create a profile
@@ -275,8 +289,7 @@ export default function Home() {
 
           <CustomButton
             type="wide"
-            onClick={mint}
-            disabled={!isDefinitelyConnected}
+            onClick={!isDefinitelyConnected ? handleAlerShow : mint}
             style={{ height: "92", fontSize: "48px" }}
           >
             Create a profile
