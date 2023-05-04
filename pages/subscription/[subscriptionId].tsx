@@ -29,6 +29,8 @@ const Subscription: NextPage<Props> = ({subscription, profile}) => {
                 edited={false}
                 setEdited={undefined}
                 disabled={false}
+                base64Logo={profile.logo.base64Image}
+                profileId={profile.id!!}
             />
 
             <div className={styles.eventWrapper}>
