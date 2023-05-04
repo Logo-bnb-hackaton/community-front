@@ -1,24 +1,15 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
-import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-} from "wagmi";
+import React, {useEffect, useRef, useState} from "react";
+import {useRouter} from "next/router";
+import {useAccount, useContractRead, useContractWrite, usePrepareContractWrite,} from "wagmi";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import CustomButton from "@/components/customButton/CustomButton";
 import CustomAlert from "@/components/alert/CustomAlert";
-import {
-  MAIN_NFT_ABI,
-  MAIN_NFT_ADDRESS,
-  WAIT_BLOCK_CONFIRMATIONS,
-} from "@/constants";
-import { BigNumber } from "ethers";
-import { waitForTransaction } from "@wagmi/core";
+import {MAIN_NFT_ABI, MAIN_NFT_ADDRESS, WAIT_BLOCK_CONFIRMATIONS,} from "@/constants";
+import {BigNumber} from "ethers";
+import {waitForTransaction} from "@wagmi/core";
 
 export default function Home() {
   const router = useRouter();
@@ -192,6 +183,9 @@ export default function Home() {
           setEdited={undefined}
           disabled={false}
           showLogo={isSticky}
+          profileId={userProfileId?.toString()}
+          // todo fix it
+          base64Logo={undefined}
         />
 
         <div className={styles.center}>
