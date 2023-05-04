@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
 :root {
-  --max-width: 1100px;
+  --max-width: 1050px;
   --border-radius: 12px;
   --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
@@ -10,7 +10,8 @@
   --font-co-headline-corp: co-headline, sans-serif;
   --font-montserrat: Montserrat, sans-serif;
 
-  --foreground-rgb: 0, 0, 0;
+  --foreground-headers-rgb: rgba(0, 0, 0, 1);
+  --foreground-rgb: rgb(55, 55, 55);
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 
@@ -112,16 +113,19 @@ h1 {
   margin: 20px 0;
   font-size: 48px;
   font-family: var(--font-co-headline-corp);
+  color: var(--foreground-headers-rgb);
 }
 
 h2 {
   font-size: 32px;
   font-family: var(--font-co-headline-corp);
+  color: var(--foreground-headers-rgb);
 }
 
 h3 {
   font-size: 21px;
   font-family: var(--font-co-headline-corp);
+  color: var(--foreground-headers-rgb);
 }
 
 @font-face {
