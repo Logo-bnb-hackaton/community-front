@@ -11,6 +11,7 @@ import {
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import CustomButton from "@/components/customButton/CustomButton";
+import CustomAlert from "@/components/alert/CustomAlert";
 import {
   MAIN_NFT_ABI,
   MAIN_NFT_ADDRESS,
@@ -18,6 +19,8 @@ import {
 } from "@/constants";
 import { BigNumber } from "ethers";
 import { waitForTransaction } from "@wagmi/core";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { LoadingOutlined } from "@ant-design/icons";
 
 export default function Home() {
   const router = useRouter();
@@ -30,6 +33,7 @@ export default function Home() {
   );
   const [isSticky, setIsSticky] = useState(false);
   const arrowRef = useRef<HTMLDivElement>(null);
+  const { openConnectModal } = useConnectModal();
 
   // It's a workaround,
   // details - https://ethereum.stackexchange.com/questions/133612/error-hydration-failed-because-the-initial-ui-does-not-match-what-was-rendered
@@ -59,11 +63,11 @@ export default function Home() {
     }
   }, [priceToMintData, isPriceToMintDataSuccess]);
 
-  useEffect(() => {
-    if (isDefinitelyConnected && userProfileId) {
-      router.push(`/profile/${userProfileId}`);
-    }
-  }, [isDefinitelyConnected, router, userProfileId]);
+  // useEffect(() => {
+  //   if (isDefinitelyConnected && userProfileId) {
+  //     router.push(`/profile/${userProfileId}`);
+  //   }
+  // }, [isDefinitelyConnected, router, userProfileId]);
 
   /**
    * Loading address tokens.
@@ -157,8 +161,23 @@ export default function Home() {
     }
   };
 
+  const [showAlert, setShowAlert] = useState(false);
+  const handleAlerShow = () => {
+    setShowAlert(true);
+  };
+
+  const handleAlertClose = () => {
+    setShowAlert(false);
+  };
+
   return (
     <>
+      {showAlert && (
+        <CustomAlert type="warning" onClose={handleAlertClose}>
+          Firstly, connect your wallet to the platform
+        </CustomAlert>
+      )}
+
       <Head>
         <title>Nodde community</title>
         <meta
@@ -176,6 +195,9 @@ export default function Home() {
           setEdited={undefined}
           disabled={false}
           showLogo={isSticky}
+          profileId={userProfileId?.toString()}
+          // todo fix it
+          base64Logo={undefined}
         />
 
         <div className={styles.center}>
@@ -183,106 +205,63 @@ export default function Home() {
             <div className={styles.welcome_content_left_side}>
               <h1>Welcome to</h1>
               <div id="logo_nodde" className={styles.logo_nodde}></div>
-              <p>
-                Create a closed sessions for training, streams, and other
-                events, as well as receive donations from subscribers.
-              </p>
+            </div>
+            <div className={styles.welcome_content_right_side}>
+              <div className={styles.home_image_0}></div>
             </div>
           </div>
-
-          <CustomButton
-            type="wide"
-            onClick={mint}
-            disabled={!isDefinitelyConnected}
-            style={{ height: "92", fontSize: "48px" }}
-          >
-            Create a profile
-          </CustomButton>
           <p
             style={{
-              margin: "40px 20px 0 0",
-              fontFamily: "var(--font-montserrat)",
-              fontSize: "48px",
+              marginBottom: "76px",
+              fontSize: "32px",
             }}
           >
-            Build you own community
+            Create a closed sessions for training, streams, and other events, as
+            well as receive donations from subscribers.
           </p>
+          <h1>Build you own community</h1>
           <div
             id="arrow"
             className={styles.arrow}
             onClick={handleClick}
             ref={arrowRef}
           ></div>
-          <div className={styles.home_content}>
-            <div className={styles.home_content_left_side}>
-              <p>Firstly, connect your wallet to the platform</p>
-            </div>
-            <div className={styles.home_content_right_side}>
-              <div
-                className={`${styles.home_image} ${styles.home_image_1}`}
-              ></div>
-            </div>
-          </div>
-          <div className={styles.home_content}>
-            <div className={styles.home_content_left_side}>
-              <div
-                className={`${styles.home_image} ${styles.home_image_2}`}
-              ></div>
-            </div>
-            <div className={styles.home_content_right_side}>
-              <div className={styles.home_right_side_text}>
-                <p>
-                  Click the "Create Profile" button and pay the registration fee
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className={styles.home_content}>
-            <div className={styles.home_content_left_side}>
-              <p>
-                Fill out your profile, including your community name, photos,
-                description, and other details
-              </p>
-            </div>
-            <div className={styles.home_content_right_side}>
-              <div
-                className={`${styles.home_image} ${styles.home_image_3}`}
-              ></div>
-            </div>
-          </div>
-          <div className={styles.home_content}>
-            <div className={styles.home_content_left_side}>
-              <div
-                className={`${styles.home_image} ${styles.home_image_4}`}
-              ></div>
-            </div>
-            <div className={styles.home_content_right_side}>
-              <div className={styles.home_right_side_text}>
-                <p>Select the currencies for donations</p>
-              </div>
-            </div>
-          </div>
-          <div className={styles.home_content}>
-            <div className={styles.home_content_left_side}>
-              <p>Click the "Save" button to complete the registration</p>
-            </div>
-            <div className={styles.home_content_right_side}>
-              <div
-                className={`${styles.home_image} ${styles.home_image_5}`}
-              ></div>
-            </div>
-          </div>
-
-          <CustomButton
-            type="wide"
-            onClick={mint}
-            disabled={!isDefinitelyConnected}
-            style={{ height: "92", fontSize: "48px" }}
+          <p
+            style={{
+              marginTop: "76px",
+              marginBottom: "80px",
+              fontSize: "32px",
+              textAlign: "center",
+            }}
           >
-            Create a profile
+            To use platform connect you wallet firstly
+          </p>
+          <CustomButton
+            color="white"
+            onClick={openConnectModal}
+            style={{ width: "324px", fontSize: "21px" }}
+            disabled={isDefinitelyConnected}
+          >
+            🌈 Connect wallet
+          </CustomButton>
+          <p
+            style={{
+              margin: "96px 0",
+              fontFamily: "var(--font-montserrat)",
+              fontSize: "32px",
+            }}
+          >
+            Create your NFT profile
+          </p>
+          <CustomButton
+            color="white"
+            onClick={!isDefinitelyConnected ? handleAlerShow : mint}
+            style={{ width: "324px", fontSize: "21px", marginBottom: "176px" }}
+            disabled={isMinting || !isDefinitelyConnected}
+          >
+            {isMinting ? <LoadingOutlined /> : "🚀"} Create a profile
           </CustomButton>
         </div>
-
         <Footer />
       </main>
     </>
