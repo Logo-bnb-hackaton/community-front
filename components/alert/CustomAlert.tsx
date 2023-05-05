@@ -19,7 +19,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   children,
   onClose,
 }) => {
-  const [animate, setAnimate] = useState(true);
+  const [animate, setAnimate] = useState(false);
   setTimeout(() => setAnimate(false), 500);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -49,6 +49,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
       {
         <div className={styles.alert_background} onClick={handleClick}>
           <div
+            className={styles.alert_animate}
+          ><div
             className={styles.container + (animate ? ` ${styles.animate}` : "")}
           >
             <div className={styles.parent_alert}>
@@ -62,6 +64,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
               </button>
             </div>
           </div>
+        </div>
         </div>
       }
     </>
