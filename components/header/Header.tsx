@@ -2,7 +2,8 @@ import styles from "@/styles/Home.module.css";
 import WalletButton from "@/components/wallet/WalletButton";
 import React from "react";
 import CustomButton from "@/components/customButton/CustomButton";
-import {FormOutlined} from "@ant-design/icons";
+import Image from "next/image";
+import EditSvg from "@/assets/svg_icon/edit_square.svg";
 
 export default function Header({
                                    saveCallback = undefined,
@@ -56,13 +57,14 @@ export default function Header({
                                 minWidth: "55px", height: "55px",
                                 padding: "0 16px ", margin: '0 12px',
                                 backgroundColor: '#fff',
+                                display: 'flex', justifyContent: 'center', alignItems: 'center'
                             }}
                             type="small"
                             color={"gray"}
                             disabled={disabled}
                             onClick={edited ? onSaveHandle : onEditHandle}
                         >
-                            {edited ? "Save" : <FormOutlined style={{fontSize: "20px"}}/>}
+                            {edited ? "Save" : <Image src={EditSvg} alt={"Edit icon"} width={20} height={20}/>}
                         </CustomButton>
                     )}
                     <WalletButton profileId={profileId} base64Logo={base64Logo}/>

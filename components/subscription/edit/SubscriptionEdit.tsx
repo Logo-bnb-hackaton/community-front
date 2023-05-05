@@ -11,9 +11,10 @@ import {baseCoin} from "@/utils/tokens";
 
 import * as Api from '@/api'
 import BaseInfo, {BaseInfoData, BaseInfoErrors, hasError} from "@/components/subscription/edit/BaseInfo";
-import {BriefProfile} from "@/components/subscription/SubscriptionBase";
+import {BriefProfile} from "@/components/subscription/Subscription";
 import Integration from "@/components/subscription/integration/Integration";
 import CustomButton from "@/components/customButton/CustomButton";
+import {hasChanges} from "@/utils/compare";
 
 // todo maybe extract it later
 function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
@@ -32,7 +33,7 @@ interface Props {
     profile: BriefProfile
 }
 
-const Edit: React.FC<Props> = ({data, profile}) => {
+const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
 
     const router = useRouter();
 
@@ -75,10 +76,6 @@ const Edit: React.FC<Props> = ({data, profile}) => {
         errors && isValid(baseInfoData, errors);
     }, [errors, baseInfoData]);
 
-    const hasChanges = (data: UpdateSubscriptionDTO, baseInfo: BaseInfoData) => {
-        return JSON.stringify(toBaseInfoData(data)) !== JSON.stringify(baseInfo);
-    }
-
     /**
      * Save subscription
      */
@@ -90,7 +87,7 @@ const Edit: React.FC<Props> = ({data, profile}) => {
         setIsLoading(true);
         try {
             if (!isValid(baseInfo, errors)) return;
-            if (data && !hasChanges(data, baseInfo!!)) {
+            if (data && !hasChanges(toBaseInfoData(data), baseInfo!!)) {
                 setCurrentStep(old => old + 1);
                 return;
             }
@@ -119,6 +116,7 @@ const Edit: React.FC<Props> = ({data, profile}) => {
                 coin: baseInfo!!.coin,
             });
 
+            // todo uncomment it later
             // if (isNewSub) {
             //     await Contract.subscription.createNewSubscriptionByEth(id, profileId, ethersPrice);
             // }
@@ -205,4 +203,4 @@ const Edit: React.FC<Props> = ({data, profile}) => {
     );
 }
 
-export default Edit;
+export default SubscriptionEdit;

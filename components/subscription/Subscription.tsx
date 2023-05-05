@@ -16,7 +16,7 @@ export interface BriefProfile {
     }
 }
 
-export default function SubscriptionBase({
+export default function Subscription({
                                              subscription,
                                              profile
                                          }: { subscription: UpdateSubscriptionDTO, profile: BriefProfile }) {

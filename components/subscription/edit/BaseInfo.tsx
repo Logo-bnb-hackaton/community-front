@@ -5,7 +5,7 @@ import React from "react";
 import styles from "@/styles/Subscription.module.css";
 import {baseCoin, possibleTokens} from "@/utils/tokens";
 import {ImageDto} from "@/api/dto/image.dto";
-import {BriefProfile} from "@/components/subscription/SubscriptionBase";
+import {BriefProfile} from "@/components/subscription/Subscription";
 
 export interface BaseInfoErrors {
     title: boolean;
@@ -59,11 +59,13 @@ const BaseInfo: React.FC<Props> = ({
      */
     const availableCoinsSelector = () => {
         return (
-            <Select disabled={isLoading}
-                    defaultValue={baseCoin}
-                    style={{width: 200}}
-                    onChange={value => setter({...data, coin: value})
-                    }>
+            <Select
+                bordered={false}
+                disabled={isLoading}
+                defaultValue={baseCoin}
+                style={{width: 200, color: '#000 !important'}}
+                onChange={value => setter({...data, coin: value})
+                }>
                 <Select.Option key={baseCoin} value={baseCoin}>{baseCoin}</Select.Option>
                 {
                     possibleTokens.map(token => {
@@ -83,18 +85,21 @@ const BaseInfo: React.FC<Props> = ({
                 theme={{
                     token: {
                         controlHeight: 64,
-                        borderRadius: 20,
+                        borderRadius: 14,
                         paddingSM: 24,
                         fontSize: 24,
                         fontFamily: 'co-headline',
-                    }
+                        colorPrimaryHover: '#fff',
+                        colorBorder: '#fff',
+                        colorFillAlter: '#fff',
+                    },
                 }}
             >
                 <div className={styles.eventEditBaseInfoMainImageWrapper}>
                     <ImageUploader
                         disabled={isLoading}
                         description={"Add main picture"}
-                        sizeText={"1100 x 450 px"}
+                        sizeText={"1050 x 320 px"}
                         hasError={errors.base64MainImg}
                         edited={true}
                         base64Img={data?.mainImage?.base64Image}
@@ -104,12 +109,13 @@ const BaseInfo: React.FC<Props> = ({
 
                 <div className={styles.eventEditBaseInfoTitleWrapper}>
                     <div className={styles.eventEditBaseInfoLogoWrapper}>
-                        <Image src={profile!!.logo!!.base64Image} alt={"Community logo"} style={{borderRadius: "20px"}} fill/>
+                        <Image src={profile!!.logo!!.base64Image} alt={"Community logo"} style={{borderRadius: "20px"}}
+                               fill/>
                     </div>
 
                     <Input
                         disabled={isLoading}
-                        className={`${styles.eventEditBaseInfoTitle} ${getErrorClassName(errors.title)}`}
+                        className={`${styles.inputShadow} ${styles.eventEditBaseInfoTitle} ${getErrorClassName(errors.title)}`}
                         placeholder={"Add title"}
                         value={data.title}
                         onChange={e => setter({...data, title: e.target.value})}
@@ -121,20 +127,20 @@ const BaseInfo: React.FC<Props> = ({
                         <ImageUploader
                             disabled={isLoading}
                             description={"Add main picture"}
-                            sizeText={"350 x 450 px"}
+                            sizeText={"300 x 410 px"}
                             hasError={errors.base64PreviewImg}
                             edited={true}
                             base64Img={data?.previewImage?.base64Image}
                             setBase64Img={img => setter({...data, previewImage: {id: undefined, base64Image: img}})}
                         />
                     </div>
-
                     <div className={styles.eventEditBaseInfoDescriptionWrapper}>
                         <div className={styles.eventEditBaseInfoPriceWrapper}>
                             <InputNumber
+                                bordered={false}
                                 className={`${getErrorClassName(errors.price)}`}
                                 disabled={isLoading}
-                                style={{width: "100%"}}
+                                style={{width: "100%", borderRadius: 14, boxShadow: '0 4px 20px rgba(0,0,0,0.1)'}}
                                 type="number"
                                 controls={false}
                                 value={data.price}
@@ -147,10 +153,11 @@ const BaseInfo: React.FC<Props> = ({
 
                         {/* todo don't use bold font here */}
                         <Input.TextArea
+                            bordered={false}
                             disabled={isLoading}
                             className={`${styles.eventEditBaseInfoDescription} ${getErrorClassName(errors.description)}`}
                             // can't move it to classname, because it doesn't work
-                            style={{resize: "none", height: "100vh", fontFamily: "var(--font-montserrat)"}}
+                            style={{resize: "none", height: "100vh", fontFamily: "var(--font-montserrat)", boxShadow: '0 4px 20px rgba(0,0,0,0.1)'}}
                             placeholder={"Add description"}
                             value={data.description}
                             onChange={e => setter({...data, description: e.target.value})}
