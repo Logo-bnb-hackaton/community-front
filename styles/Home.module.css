@@ -77,14 +77,17 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 32px;
+  gap: 34px;
   /* justify-content: left; */
+}
+
+.cardSize {
+  width: 75px;
+  height: 75px;
 }
 
 .card {
   position: relative;
-  width: 80px;
-  height: 80px;
   border: none;
 }
 
@@ -109,8 +112,6 @@
 }
 
 .addCardButton {
-  width: 80px;
-  height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -159,6 +160,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 32px;
   overflow: visible;
 }
 
@@ -183,15 +185,19 @@
   border: 1px solid black !important;
   border-radius: 20px;
   font-size: 16px;
-  padding: 20px;
+  padding: 10px 15px;
   background-color: transparent;
-  height: 144px;
+  min-height: 119px !important;
+  height: 119px !important;
 }
 
 .lineBreak {
   white-space: pre-wrap;
   font-size: 21px;
   margin: 0;
+  overflow: hidden;
+  min-height: 119px !important;
+  height: 119px !important;
 }
 
 .lineBreak * {
@@ -241,10 +247,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 380px;
-  min-height: 380px;
-  width: 380px;
-  height: 380px;
+  min-width: 350px;
+  min-height: 350px;
+  width: 350px;
+  height: 350px;
   align-self: center;
 }
 
@@ -254,8 +260,8 @@
 
 .logoDeleteButton {
   position: absolute;
-  right: 15px;
-  top: 15px;
+  right: -30px;
+  top: -30px;
   padding: 10px;
   z-index: 1;
   color: red;
@@ -276,6 +282,12 @@
 }
 
 .donateArea {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.donateButtonsWrapper {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

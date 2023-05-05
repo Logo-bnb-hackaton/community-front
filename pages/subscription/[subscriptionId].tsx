@@ -7,8 +7,8 @@ import {GetServerSidePropsContext, NextPage} from "next";
 
 import * as Api from "@/api";
 import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
-import SubscriptionBase, {BriefProfile} from "@/components/subscription/SubscriptionBase";
-import Edit from "@/components/subscription/edit/Edit";
+import Subscription, {BriefProfile} from "@/components/subscription/Subscription";
+import SubscriptionEdit from "@/components/subscription/edit/SubscriptionEdit";
 import Footer from "@/components/footer/Footer";
 
 interface Props {
@@ -16,8 +16,7 @@ interface Props {
     profile: BriefProfile
 }
 
-const Subscription: NextPage<Props> = ({subscription, profile}) => {
-
+const SubscriptionPage: NextPage<Props> = ({subscription, profile}) => {
     const router = useRouter()
     const {edited} = router.query
 
@@ -36,9 +35,9 @@ const Subscription: NextPage<Props> = ({subscription, profile}) => {
             <div className={styles.eventWrapper}>
                 {
                     edited ?
-                        <Edit data={subscription} profile={profile}/>
+                        <SubscriptionEdit data={subscription} profile={profile}/>
                         :
-                        <SubscriptionBase subscription={subscription} profile={profile}/>
+                        <Subscription subscription={subscription} profile={profile}/>
                 }
             </div>
 
@@ -90,4 +89,4 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     }
 };
 
-export default Subscription;
+export default SubscriptionPage;
