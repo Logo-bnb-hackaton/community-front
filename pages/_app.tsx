@@ -1,28 +1,31 @@
 import '@/styles/globals.css'
 import "@rainbow-me/rainbowkit/styles.css";
-import type { AppProps } from 'next/app'
-import { StyleProvider } from '@ant-design/cssinjs';
+import type {AppProps} from 'next/app'
+import {StyleProvider} from '@ant-design/cssinjs';
 
-import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { bscTestnet } from "@wagmi/chains";
-import { getDefaultWallets, RainbowKitProvider, createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
-import { RainbowKitSiweNextAuthProvider, GetSiweMessageOptions } from '@rainbow-me/rainbowkit-siwe-next-auth';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
-import { publicProvider } from '@wagmi/core/providers/public'
-import { create } from 'domain';
-import { SiweMessage } from 'siwe';
+import {configureChains, createClient, WagmiConfig} from "wagmi";
+import {bscTestnet} from "@wagmi/chains";
+import {
+    createAuthenticationAdapter,
+    getDefaultWallets,
+    RainbowKitAuthenticationProvider,
+    RainbowKitProvider
+} from '@rainbow-me/rainbowkit';
+import {alchemyProvider} from 'wagmi/providers/alchemy';
+import {publicProvider} from '@wagmi/core/providers/public'
+import {SiweMessage} from 'siwe';
+import {useState} from "react";
+import {AuthenticationStatus} from "@rainbow-me/rainbowkit/dist/components/RainbowKitProvider/AuthenticationContext";
+import axios from "@/core/axios";
 
 let chains = [bscTestnet];
-const { provider } = configureChains(
-    chains,
-    [
-        alchemyProvider({ apiKey: process.env.ALCHEMY_ID!! }),
-        publicProvider()
-    ]
-);
+const {provider} = configureChains(chains, [
+    alchemyProvider({apiKey: process.env.ALCHEMY_ID!!}),
+    publicProvider()
+]);
 // todo maybe add more wallets
 // doc https://www.rainbowkit.com/docs/custom-wallet-list
-const { connectors } = getDefaultWallets({
+const {connectors} = getDefaultWallets({
     appName: 'Nodde',
     chains
 });
@@ -31,13 +34,19 @@ const wagmiClient = createClient({
     connectors: connectors,
     provider,
 });
-const getSiweMessageOptions: GetSiweMessageOptions = () => {
-    statement: 'Sign in to Nodde'
-};
+
+
 const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async function (): Promise<string> {
-        const response = await fetch('/api/nonce')
-        return await response.text()
+        const response = axios({
+            method: 'get',
+            url: '/api/nonce'
+        })
+        return (await response.then(res => {
+            console.log('api/nonce response');
+            console.log(res.data);
+            return res;
+        })).data.text()
     },
     createMessage: function (args: { nonce: string; address: string; chainId: number; }): unknown {
         return new SiweMessage({
@@ -56,8 +65,8 @@ const authenticationAdapter = createAuthenticationAdapter({
     verify: async function (args: { message: unknown; signature: string; }): Promise<boolean> {
         const signInResponse = await fetch('/api/sign-in', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: args.message, signature: args.signature });
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: args.message, signature: args.signature}),
         });
 
         return Boolean(signInResponse.ok);
@@ -67,15 +76,22 @@ const authenticationAdapter = createAuthenticationAdapter({
     }
 })
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({Component, pageProps}: AppProps) {
+
+    // loading | unathenticated | authenticated
+    const [authStatus, setAuthStatus] = useState<AuthenticationStatus>('unauthenticated');
+
     return (
         <StyleProvider hashPriority="low">
             <WagmiConfig client={wagmiClient}>
-                <RainbowKitSiweNextAuthProvider adapter={authenticationAdapter}>
+                <RainbowKitAuthenticationProvider
+                    adapter={authenticationAdapter}
+                    status={authStatus}
+                >
                     <RainbowKitProvider chains={chains}>
                         <Component {...pageProps} />
                     </RainbowKitProvider>
-                </RainbowKitSiweNextAuthProvider>
+                </RainbowKitAuthenticationProvider>
             </WagmiConfig>
         </StyleProvider>
     )
