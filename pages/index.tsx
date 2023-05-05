@@ -212,7 +212,7 @@ export default function Home() {
               fontSize: "32px",
             }}
           >
-            Create a closed sessions for training, streams, and other events, as
+            Create closed sessions for training, streams, and other events, as
             well as receive donations from subscribers.
           </p>
           <h1>Build you own community</h1>
