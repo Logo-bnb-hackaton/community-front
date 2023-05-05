@@ -160,15 +160,15 @@ export default function Home() {
           .finally(() => {
             // after minting we have to receive token by user again.
             tokenOfOwnerByIndexRefetch();
+            redirectClick();
           });
       })
       .catch((err) => {
         console.error(err);
         setError(err.message);
-      })
-      .finally(() => {
+        
         setIsMinting(false);
-      });
+      })
   };
 
   useEffect(() => {
@@ -321,7 +321,7 @@ export default function Home() {
                 }}
                 disabled={!pageIsReady}
               >
-                {!pageIsReady ? <LoadingOutlined /> : "🚀"} Go to your profile
+                {!pageIsReady ? <LoadingOutlined /> : "🚀"} Let's go right now
               </CustomButton>
             </div>
           )}
