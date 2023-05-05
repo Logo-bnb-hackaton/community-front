@@ -94,6 +94,7 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
 
+  /* background-image: url("../pages/images/loop_for_bg.png"); */
   background-repeat: repeat-y;
   background-size: 100% auto;
 }
