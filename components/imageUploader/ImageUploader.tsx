@@ -11,17 +11,28 @@ const getBase64 = (img: RcFile, callback: (url: string) => void) => {
     reader.readAsDataURL(img);
 };
 
-export default function ImageUploader(
-    {
-        disabled, description, sizeText, hasError, edited, base64Img, setBase64Img
-    }: {
-        disabled: boolean, description: string, sizeText: string, hasError: boolean, edited: boolean,
-        base64Img: string | undefined, setBase64Img: (img: string | undefined) => void,
-    }
-) {
+interface Props {
+    disabled: boolean;
+    description: string;
+    sizeText: string;
+    hasError: boolean;
+    edited: boolean,
+    base64Img: string | undefined;
+    setBase64Img: ((img: string | undefined) => void) | undefined;
+}
+
+const ImageUploader: React.FC<Props> = ({
+                                            disabled,
+                                            description,
+                                            sizeText,
+                                            hasError,
+                                            edited,
+                                            base64Img,
+                                            setBase64Img
+                                        }) => {
     const [isImgLoading, setIsImgLoading] = useState(false);
 
-    const deleteButtonHandler = (e: SyntheticEvent<any>) => setBase64Img(undefined);
+    const deleteButtonHandler = (e: SyntheticEvent<any>) => setBase64Img!!(undefined);
 
     const beforeUpload = (file: RcFile) => {
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -36,7 +47,7 @@ export default function ImageUploader(
         if (isJpgOrPng && isLt2M) {
             getBase64(file, (url) => {
                 setIsImgLoading(false);
-                setBase64Img(url);
+                setBase64Img!!(url);
             });
         }
         return false;
@@ -46,7 +57,7 @@ export default function ImageUploader(
         <>
             {base64Img &&
                 <>
-                    <Image src={base64Img} alt={"Community logo"} style={{borderRadius: "30px"}} fill/>
+                    <Image src={base64Img} alt={"Community logo"} style={{borderRadius: "14px"}} fill/>
 
                     {edited && !disabled &&
                         <div className={styles.logoDeleteButton} onClick={deleteButtonHandler}>
@@ -68,10 +79,10 @@ export default function ImageUploader(
                         flexDirection: "column",
                         justifyContent: "center",
                         alignItems: "center",
-                        backgroundColor: '#f5f5f5',
+                        backgroundColor: '#fff',
                         border: '1px dashed',
                         borderColor: hasError ? 'red' : 'black',
-                        borderRadius: '20px'
+                        borderRadius: '14px'
                     }}
                     className={`${styles.draggerWrapper} ${hasError ? styles.errorBorder : ""}`}
                 >
@@ -90,3 +101,5 @@ export default function ImageUploader(
         </>
     );
 }
+
+export default ImageUploader;

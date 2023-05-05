@@ -37,7 +37,7 @@
 
 .eventEditBaseInfoMainImageWrapper {
     width: 100%;
-    height: 450px;
+    height: 320px;
     position: relative;
 }
 
@@ -46,7 +46,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 42px 0;
+    padding: 64px 0;
     gap: 0 24px;
 }
 
@@ -66,13 +66,13 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 0 42px;
-    max-height: 450px;
+    gap: 0 64px;
+    max-height: 430px;
 }
 
 .eventEditBaseInfoPreviewImageWrapper {
-    min-width: 350px;
-    height: 450px;
+    min-width: 300px;
+    height: 410px;
     position: relative;
 }
 
@@ -90,6 +90,11 @@
     flex-direction: row;
     justify-content: space-between;
     gap: 32px;
+}
+
+.inputShadow {
+    /*border: none;*/
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
 .eventEditBaseInfoDescription {

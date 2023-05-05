@@ -1,10 +1,10 @@
 import React from "react";
 import homeStyles from "@/styles/Home.module.css";
 import Header from "@/components/header/Header";
-import Edit from "@/components/subscription/edit/Edit";
+import SubscriptionEdit from "@/components/subscription/edit/SubscriptionEdit";
 import Footer from "@/components/footer/Footer";
 import {GetServerSidePropsContext, NextPage} from "next";
-import {BriefProfile} from "@/components/subscription/SubscriptionBase";
+import {BriefProfile} from "@/components/subscription/Subscription";
 import * as Api from "@/api";
 import {ProfileDTO} from "@/api/dto/profile.dto";
 
@@ -13,7 +13,6 @@ interface Props {
 }
 
 const CreatePage: NextPage<Props> = ({profile}) => {
-    console.log(profile);
     return (
         <main className={homeStyles.main}>
             <Header
@@ -22,8 +21,10 @@ const CreatePage: NextPage<Props> = ({profile}) => {
                 edited={false}
                 setEdited={undefined}
                 disabled={false}
+                profileId={profile.id}
+                base64Logo={profile.logo.base64Image}
             />
-            <Edit data={undefined} profile={profile}/>
+            <SubscriptionEdit data={undefined} profile={profile}/>
             <Footer/>
         </main>
     );
