@@ -3,6 +3,7 @@ import styles from "@/styles/Home.module.css";
 import styles_header from "@/styles/Header.module.css";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   useAccount,
   useContractRead,
@@ -33,8 +34,10 @@ export default function Home() {
     undefined
   );
   const [isSticky, setIsSticky] = useState(false);
+  const [pageIsReady, setPageIsReady] = useState(false);
   const arrowRef = useRef<HTMLDivElement>(null);
   const { openConnectModal } = useConnectModal();
+  const [error, setError] = useState<string>("");
 
   // It's a workaround,
   // details - https://ethereum.stackexchange.com/questions/133612/error-hydration-failed-because-the-initial-ui-does-not-match-what-was-rendered
@@ -64,11 +67,17 @@ export default function Home() {
     }
   }, [priceToMintData, isPriceToMintDataSuccess]);
 
-  // useEffect(() => {
-  //   if (isDefinitelyConnected && userProfileId) {
-  //     router.push(`/profile/${userProfileId}`);
-  //   }
-  // }, [isDefinitelyConnected, router, userProfileId]);
+  useEffect(() => {
+    if (isDefinitelyConnected && userProfileId) {
+      router.prefetch(`/profile/${userProfileId}`);
+      setPageIsReady(true);
+    }
+  }, [isDefinitelyConnected, userProfileId]);
+
+  const redirectClick = () => {
+    setPageIsReady(false);
+    router.push(`/profile/${userProfileId}`);
+  };
 
   /**
    * Loading address tokens.
@@ -112,7 +121,19 @@ export default function Home() {
   });
 
   const [isMinting, setIsMinting] = useState(false);
-  const { writeAsync: safeMintWriteAsync } = useContractWrite(safeMintConfig);
+  const {
+    writeAsync: safeMintWriteAsync,
+    error: safeMintWriteError,
+    status: safeMintStatus,
+  } = useContractWrite(safeMintConfig);
+
+  useEffect(() => {
+    if (safeMintWriteError) {
+      console.log(safeMintWriteError.message);
+      setError(safeMintWriteError.message);
+    }
+    console.log(safeMintStatus);
+  }, [safeMintWriteError, safeMintStatus]);
 
   const mint = async () => {
     if (!priceToMint) {
@@ -138,8 +159,10 @@ export default function Home() {
       })
       .catch((err) => {
         console.error(err);
-        setIsMinting(false);
+        setError(err.message);
       });
+
+    setIsMinting(false);
   };
 
   useEffect(() => {
@@ -176,6 +199,12 @@ export default function Home() {
       {showAlert && (
         <CustomAlert type="warning" onClose={handleAlertClose}>
           Firstly, connect your wallet to the platform
+        </CustomAlert>
+      )}
+
+      {error && (
+        <CustomAlert type="error" onClose={() => setError("")}>
+          {error}
         </CustomAlert>
       )}
 
@@ -222,41 +251,74 @@ export default function Home() {
             onClick={handleClick}
             ref={arrowRef}
           ></div>
-          <p
-            style={{
-              marginTop: "76px",
-              marginBottom: "80px",
-              fontSize: "32px",
-              textAlign: "center",
-            }}
-          >
-            To use platform connect you wallet firstly
-          </p>
-          <CustomButton
-            color="white"
-            onClick={openConnectModal}
-            style={{ width: "324px", fontSize: "21px" }}
-            disabled={isDefinitelyConnected}
-          >
-            🌈 Connect wallet
-          </CustomButton>
-          <p
-            style={{
-              margin: "96px 0",
-              fontFamily: "var(--font-montserrat)",
-              fontSize: "32px",
-            }}
-          >
-            Create your NFT profile
-          </p>
-          <CustomButton
-            color="white"
-            onClick={!isDefinitelyConnected ? handleAlerShow : mint}
-            style={{ width: "324px", fontSize: "21px", marginBottom: "176px" }}
-            disabled={isMinting || !isDefinitelyConnected}
-          >
-            {isMinting ? <LoadingOutlined /> : "🚀"} Create a profile
-          </CustomButton>
+          {!isDefinitelyConnected && (
+            <div className={styles.section_wrapper}>
+              <p
+                style={{
+                  marginBottom: "80px",
+                  fontSize: "32px",
+                }}
+              >
+                To use platform connect you wallet firstly
+              </p>
+              <CustomButton
+                color="white"
+                onClick={openConnectModal}
+                style={{ width: "324px", fontSize: "21px" }}
+                disabled={isDefinitelyConnected}
+              >
+                🌈 Connect wallet
+              </CustomButton>
+            </div>
+          )}
+          {isDefinitelyConnected && !userProfileId && (
+            <div className={styles.section_wrapper}>
+              <p
+                style={{
+                  marginBottom: "80px",
+                  fontSize: "32px",
+                }}
+              >
+                Create your NFT profile
+              </p>
+              <CustomButton
+                color="white"
+                onClick={!isDefinitelyConnected ? handleAlerShow : mint}
+                style={{
+                  width: "324px",
+                  fontSize: "21px",
+                  marginBottom: "176px",
+                }}
+                disabled={isMinting || !isDefinitelyConnected}
+              >
+                {isMinting ? <LoadingOutlined /> : "🚀"} Create a profile
+              </CustomButton>
+            </div>
+          )}
+          {isDefinitelyConnected && userProfileId && (
+            <div className={styles.section_wrapper}>
+              <p
+                style={{
+                  marginBottom: "80px",
+                  fontSize: "32px",
+                }}
+              >
+                Set your profile
+              </p>
+              <CustomButton
+                color="white"
+                onClick={redirectClick}
+                style={{
+                  width: "324px",
+                  fontSize: "21px",
+                  marginBottom: "176px",
+                }}
+                disabled={!pageIsReady}
+              >
+                {!pageIsReady ? <LoadingOutlined /> : "🚀"} Go to your profile
+              </CustomButton>
+            </div>
+          )}
         </div>
         <Footer />
       </main>

@@ -12,7 +12,7 @@
   width: 100vw;
   min-height: 100%;
   padding: 0 20px;
-  margin: 0 0;
+  margin-bottom: 160px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -229,6 +229,20 @@
   }
 }
 
+.section_wrapper {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: justify;
+}
+
+.section {
+  width: 100%;
+  height: 100vh;
+}
 
 /*@media (prefers-reduced-motion) {*/
 /*    .card:hover span {*/
