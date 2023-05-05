@@ -65,17 +65,19 @@ const Profile: React.FC<Props> = ({
         </div>
       </div>
       <Donate profileId={baseData.id} availableTokens={tokens} />
-      <CustomButton
-        disabled={!isConnected}
-        type={"wide"}
-        color={"gray"}
-        style={{ marginTop: "48px" }}
-        onClick={() =>
-          router.push(`/subscription/create?profileId=${baseData.id}`)
-        }
-      >
-        Add subscription <FileAddOutlined />
-      </CustomButton>
+      {editAvailable && (
+        <CustomButton
+          disabled={!isConnected}
+          type={"wide"}
+          color={"gray"}
+          style={{ marginTop: "48px" }}
+          onClick={() =>
+            router.push(`/subscription/create?profileId=${baseData.id}`)
+          }
+        >
+          Add subscription <FileAddOutlined />
+        </CustomButton>
+      )}
       <SubscriptionList
         profileId={baseData.id}
         subscriptions={getAvailableSubscriptions()}

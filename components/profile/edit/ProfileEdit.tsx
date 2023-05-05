@@ -105,6 +105,9 @@ const ProfileEdit: React.FC<Props> = ({
             disabled={isLoading}
             status={errors?.title ? "error" : ""}
             className={styles.titleInput}
+            style={{
+              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+            }}
             placeholder="Community name"
             value={profile.title}
             onChange={(e) => titleInputHandler(e.target.value)}
@@ -121,6 +124,9 @@ const ProfileEdit: React.FC<Props> = ({
               disabled={isLoading}
               status={errors?.description ? "error" : ""}
               className={styles.descriptionInput}
+              style={{
+                boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+              }}
               value={profile.description}
               onChange={(e) => descriptionInputHandler(e.target.value)}
               autoSize={{ minRows: 6, maxRows: 6 }}

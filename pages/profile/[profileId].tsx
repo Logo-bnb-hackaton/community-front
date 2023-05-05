@@ -79,7 +79,10 @@ const ProfilePage: NextPage<Props> = ({ profile, ownerAddress, tokens }) => {
   }, [ownerAddress, isConnected, address, profile, router]);
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile) {
+      setEdited(true);
+      return;
+    }
     setBaseData(fromProfileDTO(profile));
   }, [profile, profileId]);
 

@@ -3,7 +3,6 @@ import styles from "@/styles/Home.module.css";
 import styles_header from "@/styles/Header.module.css";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import {
   useAccount,
   useContractRead,
@@ -14,6 +13,12 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import CustomButton from "@/components/customButton/CustomButton";
 import CustomAlert from "@/components/alert/CustomAlert";
+import ProfileEdit from "@/components/profile/edit/ProfileEdit";
+import { ImageDto } from "@/api/dto/image.dto";
+import { ProfileDTO } from "@/api/dto/profile.dto";
+import * as Api from "@/api";
+import * as Contract from "@/contract";
+import EditeProfileButton from "@/components/profile/EditeProfileButton";
 import {
   MAIN_NFT_ABI,
   MAIN_NFT_ADDRESS,
@@ -101,6 +106,15 @@ export default function Home() {
   useEffect(() => {
     if (isTokenOfOwnerByIndexSuccess) {
       setUserProfileId(tokenOfOwnerByIndexData as number);
+      if (userProfileId) {
+        Contract.profile
+          .loadAvailableTokens(userProfileId.toString())
+          .then((tokens) => setTokens(tokens));
+
+        Api.profile
+          .loadProfile(userProfileId.toString())
+          .then((profile) => setProfile(profile ?? null));
+      }
     } else {
       setUserProfileId(undefined);
     }
@@ -138,6 +152,12 @@ export default function Home() {
   const mint = async () => {
     if (!priceToMint) {
       console.error("Can't load mint price.");
+      setError("Can't load mint price.");
+      return;
+    }
+
+    if (!safeMintWriteAsync) {
+      setError("Insufficient funds in your wallet.");
       return;
     }
 
@@ -160,9 +180,10 @@ export default function Home() {
       .catch((err) => {
         console.error(err);
         setError(err.message);
+      })
+      .finally(() => {
+        setIsMinting(false);
       });
-
-    setIsMinting(false);
   };
 
   useEffect(() => {
@@ -194,6 +215,59 @@ export default function Home() {
     setShowAlert(false);
   };
 
+  const MAX_DESCRIPTION_LEN = 150;
+  const [profile, setProfile] = useState<ProfileDTO>();
+  const [tokens, setTokens] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [baseData, setBaseData] = useState<BaseProfile>();
+  const [profileError, setProfileError] = useState<ProfileError | undefined>(
+    undefined
+  );
+  const [edited, setEdited] = useState(false);
+
+  useEffect(() => {
+    const hasLogoError = !baseData?.logo?.base64Image;
+    const hasTitleError = !baseData?.title;
+    const hasDescriptionError =
+      !baseData?.description ||
+      baseData?.description.length > MAX_DESCRIPTION_LEN;
+    const hasSocialLinksError = baseData?.socialMediaLinks.length === 0;
+
+    setProfileError({
+      logo: hasLogoError,
+      title: hasTitleError,
+      description: hasDescriptionError,
+      socialMediaLinks: hasSocialLinksError,
+    });
+  }, [baseData]);
+
+  const saveCallback = async () => {
+    console.log("Save profile callback....");
+    try {
+      setIsLoading(true);
+      if (hasError(profileError)) {
+        return;
+      }
+
+      if (!profile && userProfileId) {
+        await Api.profile.updateProfile({
+          id: userProfileId.toString(),
+          title: baseData!!.title,
+          description: baseData!!.description,
+          logo: baseData!!.logo,
+          socialMediaLinks: baseData!!.socialMediaLinks,
+        });
+      }
+
+      setProfileError(undefined);
+    } catch (e) {
+      console.error(`Catch error during updating profile. Error: ${e}`);
+    } finally {
+      setIsLoading(false);
+      redirectClick();
+    }
+  };
+
   return (
     <>
       {showAlert && (
@@ -223,7 +297,16 @@ export default function Home() {
           profileId={userProfileId?.toString()}
           // todo fix it
           base64Logo={undefined}
-        />
+        >
+          {!profile && userProfileId && (
+            <EditeProfileButton
+              saveCallback={saveCallback}
+              edited={edited}
+              setEdited={setEdited}
+              disabled={isLoading}
+            />
+          )}
+        </Header>
 
         <div className={styles.center}>
           <div className={styles.welcome_content}>
@@ -319,9 +402,42 @@ export default function Home() {
               </CustomButton>
             </div>
           )}
+          {!profile && userProfileId && (
+            <ProfileEdit
+              id={userProfileId.toString()}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+              profile={baseData}
+              setProfile={setBaseData}
+              errors={profileError}
+              tokens={tokens}
+            />
+          )}
         </div>
         <Footer />
       </main>
     </>
   );
+}
+
+export interface ProfileError {
+  logo: boolean;
+  title: boolean;
+  description: boolean;
+  socialMediaLinks: boolean;
+}
+
+const hasError = (error: ProfileError | undefined) => {
+  return (
+    error &&
+    (error.logo || error.title || error.description || error.socialMediaLinks)
+  );
+};
+
+export interface BaseProfile {
+  id: string;
+  title: string;
+  description: string;
+  logo: ImageDto;
+  socialMediaLinks: string[];
 }
