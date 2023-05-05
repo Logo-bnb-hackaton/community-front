@@ -7,6 +7,18 @@
   padding-top: 135px;
 }
 
+.center {
+  max-width: calc(var(--max-width) + 40px);
+  width: 100vw;
+  min-height: 100%;
+  padding: 0 20px;
+  margin: 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .description {
   display: inherit;
   justify-content: space-between;
@@ -24,151 +36,11 @@
   font-family: var(--font-mono);
 }
 
-.grid {
-  width: var(--max-width);
-  max-width: 100%;
-  display: grid;
-  /* grid-template-columns: 380px auto;
-  grid-template-rows: 380px auto;
-  grid-template-areas:
-    "logo description"
-    "donate donate"; */
-  column-gap: 80px;
-  row-gap: 64px;
-  display: flex;
-  margin-bottom: 64px;
-}
-
-.socialMediaLinksContainer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 34px;
-  /* justify-content: left; */
-}
-
-.cardSize {
-  width: 75px;
-  height: 75px;
-}
-
-.card {
-  position: relative;
-  border: none;
-}
-
-.cardImage {
-  border-radius: 20px;
-  cursor: pointer;
-  transition: 0.125s ease;
-}
-
-.cardImage:hover {
-  transform: scale(1.03);
-}
-
-.cardDeleteButton {
-  cursor: pointer;
-  position: absolute;
-  right: -10px;
-  top: -15px;
-  /*padding: 5px;*/
-  z-index: 1;
-  color: black;
-}
-
-.addCardButton {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.02);
-  border: 1px dashed #d9d9d9;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: 0.125s ease;
-}
-
-.addCardButton:hover {
-  transform: scale(1.03);
-}
-
-.cardDeleteButton:hover {
-  transform: scale(1.03);
-  color: red;
-}
-
-.center {
-  max-width: calc(var(--max-width) + 40px);
-  width: 100vw;
-  min-height: 100%;
-  /*position: relative;*/
-  padding: 0 20px;
-  margin: 0 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.centerWrapper {
-  min-width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 0 4rem;
-}
-
-.profileDescription {
-  min-height: 100%;
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 32px;
-  overflow: visible;
-}
-
 .title {
   font-size: 84px;
   font-weight: bold;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.titleInput {
-  overflow: hidden;
-  border: 1px solid black !important;
-  border-radius: 20px;
-  font-size: 48px;
-  font-family: var(--font-co-headline-corp);
-  background-color: transparent;
-}
-
-.descriptionInput {
-  overflow: hidden;
-  border: 1px solid black !important;
-  border-radius: 20px;
-  font-size: 16px;
-  padding: 10px 15px;
-  background-color: transparent;
-  min-height: 119px !important;
-  height: 119px !important;
-}
-
-.lineBreak {
-  white-space: pre-wrap;
-  font-size: 21px;
-  margin: 0;
-  overflow: hidden;
-  min-height: 119px !important;
-  height: 119px !important;
-}
-
-.lineBreak * {
-  font-size: inherit;
-  margin: inherit;
 }
 
 .payButton {
@@ -206,58 +78,6 @@
 
 .payButton:hover {
   transform: scale(1.03);
-}
-
-.logoProfile {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 350px;
-  min-height: 350px;
-  width: 350px;
-  height: 350px;
-  align-self: center;
-}
-
-.logo {
-  position: relative;
-}
-
-.logoDeleteButton {
-  position: absolute;
-  right: -30px;
-  top: -30px;
-  padding: 10px;
-  z-index: 1;
-  color: red;
-}
-
-.logoDeleteButton:hover {
-  transform: scale(1.03);
-}
-
-.draggerWrapper {
-  width: 100%;
-  height: 100%;
-}
-
-.errorBorder {
-  border: 1px solid red;
-  border-radius: 8px;
-}
-
-.donateArea {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.donateButtonsWrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
 }
 
 .arrow {
@@ -409,27 +229,6 @@
   }
 }
 
-@media screen and (max-width: 1140px) {
-  .grid {
-    flex-direction: column;
-  }
-
-  .grid * {
-    margin: 10px 0;
-  }
-
-  .socialMediaLinksContainer {
-    margin-top: 30px;
-  }
-
-  .donateArea {
-    flex-direction: column;
-  }
-
-  .donateArea * {
-    margin: 10px 0;
-  }
-}
 
 /*@media (prefers-reduced-motion) {*/
 /*    .card:hover span {*/
