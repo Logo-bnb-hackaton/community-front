@@ -1,5 +1,6 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
+import styles_header from "@/styles/Header.module.css";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import {
@@ -189,11 +190,6 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <Header
-          saveCallback={undefined}
-          editAvailable={false}
-          edited={false}
-          setEdited={undefined}
-          disabled={false}
           showLogo={isSticky}
           profileId={userProfileId?.toString()}
           // todo fix it
@@ -204,7 +200,7 @@ export default function Home() {
           <div className={styles.welcome_content}>
             <div className={styles.welcome_content_left_side}>
               <h1>Welcome to</h1>
-              <div id="logo_nodde" className={styles.logo_nodde}></div>
+              <div id="logo_nodde" className={styles_header.logo_nodde}></div>
             </div>
             <div className={styles.welcome_content_right_side}>
               <div className={styles.home_image_0}></div>
