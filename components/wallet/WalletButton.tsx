@@ -66,7 +66,7 @@ export default function WalletButton({profileId, base64Logo}: { profileId?: stri
 
     const dynamicContent = () => {
         if (!isConnected) {
-            return <ConnectButton/>
+            return <ConnectButton />
         }
         return (
             <Dropdown
