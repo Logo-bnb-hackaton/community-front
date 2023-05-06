@@ -109,7 +109,7 @@ const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
                     description: baseData!!.description,
                     logo: baseData!!.logo,
                     socialMediaLinks: baseData!!.socialMediaLinks,
-                });
+                }, undefined);
             }
 
             setEdited(false);
@@ -162,6 +162,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         console.log(ctx.req.headers);
 
         const profileId = ctx.params!!.profileId as string;
+        const cookie = ctx.req.headers.cookie
 
         const props: Props = {
             tokens: [],
@@ -174,7 +175,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             .then((tokens) => (props.tokens = tokens));
 
         const profilePromise = Api.profile
-            .loadProfile(profileId)
+            .loadProfile(profileId, cookie)
             .then((profile) => (props.profile = profile ?? null));
 
         const ownerPromise = Contract.profile

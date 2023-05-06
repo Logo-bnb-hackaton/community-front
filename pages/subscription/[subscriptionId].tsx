@@ -59,13 +59,14 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         }
 
         const subscriptionId = ctx.query!!.subscriptionId as string;
+        const cookie = ctx.req.headers.cookie
 
         console.log(`loading sub: ${subscriptionId}`);
         let subscription;
-        const subscriptionPromise = Api.subscription.loadSubscription(subscriptionId).then(data => subscription = data);
+        const subscriptionPromise = Api.subscription.loadSubscription(subscriptionId, cookie).then(data => subscription = data);
         console.log(`loading profile: ${profileId}`);
         let profile;
-        const profilePromise = await Api.profile.loadProfile(profileId)
+        const profilePromise = await Api.profile.loadProfile(profileId, cookie)
             .then(data => ({id: data.id, title: data.title, logo: data.logo}))
             .then(data => profile = data);
 

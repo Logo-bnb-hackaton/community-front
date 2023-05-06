@@ -40,13 +40,14 @@ export default function App({Component, pageProps}: AppProps) {
     const authenticationAdapter = createAuthenticationAdapter({
         getNonce: async function (): Promise<string> {
             try {
-                const response = axios({
+                const response =  axios({
                     method: 'get',
                     url: '/api/nonce',
                 });
-                const nonce = (await response).data;
-                console.log(`nonce: ${nonce}`);
-                return nonce;
+                const res = (await response);
+                console.log(`nonce: ${res.data}`);
+                console.log(`get nonce response ${response}`);
+                return res.data;
             } catch (e) {
                 console.log('catch nonce error');
                 console.log(e);
@@ -79,6 +80,7 @@ export default function App({Component, pageProps}: AppProps) {
                 data: JSON.stringify({message: args.message, signature: args.signature}),
             }).then(response => {
                 console.log('verify');
+                console.log(`verify response ${response}`)
                 console.log(response.data);
                 const verified = response.data.ok as boolean;
                 console.log(verified);
