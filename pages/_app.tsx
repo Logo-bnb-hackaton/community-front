@@ -16,7 +16,7 @@ import {publicProvider} from '@wagmi/core/providers/public'
 import {SiweMessage} from 'siwe';
 import {useState} from "react";
 import {AuthenticationStatus} from "@rainbow-me/rainbowkit/dist/components/RainbowKitProvider/AuthenticationContext";
-import axios from "@/core/axios";
+import {internalClient} from "@/core/axios";
 
 let chains = [bscTestnet];
 const {provider} = configureChains(chains, [
@@ -40,14 +40,14 @@ export default function App({Component, pageProps}: AppProps) {
     const authenticationAdapter = createAuthenticationAdapter({
         getNonce: async function (): Promise<string> {
             try {
-                const response =  axios({
+                const response = internalClient({
                     method: 'get',
-                    url: '/api/nonce',
+                    url: '/api/auth/nonce',
                 });
-                const res = (await response);
-                console.log(`nonce: ${res.data}`);
+                const nonce = (await response).data;
+                console.log(`nonce: ${nonce}`);
                 console.log(`get nonce response ${response}`);
-                return res.data;
+                return nonce;
             } catch (e) {
                 console.log('catch nonce error');
                 console.log(e);
@@ -73,9 +73,9 @@ export default function App({Component, pageProps}: AppProps) {
 
         verify: async function (args: { message: unknown; signature: string; }) {
             setAuthStatus('loading');
-            return axios({
+            return internalClient({
                 method: 'POST',
-                url: '/api/sign_in',
+                url: '/api/auth/signIn',
                 headers: {'Content-Type': 'application/json'},
                 data: JSON.stringify({message: args.message, signature: args.signature}),
             }).then(response => {
@@ -97,9 +97,10 @@ export default function App({Component, pageProps}: AppProps) {
         },
 
         signOut: async function (): Promise<void> {
-            await axios({
-                method: 'post',
-                url: '/api/sign_out'
+            await internalClient({
+                method: 'POST',
+                url: '/api/auth/signOut',
+                headers: {'Content-Type': 'application/json'},
             }).finally(() => setAuthStatus('unauthenticated'));
         }
     });

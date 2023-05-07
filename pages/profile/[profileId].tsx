@@ -163,6 +163,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
         const profileId = ctx.params!!.profileId as string;
         const cookie = ctx.req.headers.cookie
+        console.log(`cookie: ${cookie}`);
 
         const props: Props = {
             tokens: [],

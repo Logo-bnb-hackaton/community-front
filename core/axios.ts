@@ -1,26 +1,35 @@
 import axios from "axios";
 
 // todo fix it before commit
-const useLocalBack = false;
+const useLocalBack = true;
 const localhost = 'http://localhost:4000';
 // const awsUrl = 'https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev';
 const awsUrl = 'https://zcos2vb20k.execute-api.us-east-1.amazonaws.com/dev';
 const BACKEND_BASE_URL = useLocalBack ? localhost : awsUrl;
 
-
-const instance = axios.create({
+const externalClient = axios.create({
     baseURL: BACKEND_BASE_URL,
     withCredentials: true,
 });
 
-instance.interceptors.request.use(request => {
-    console.log('Starting Request', JSON.stringify(request, null, 2))
+externalClient.interceptors.request.use(request => {
+    try {
+        console.log('Starting Request', JSON.stringify(request))
+    } catch (e) {
+        console.log(`Can't parse request, error: ${e}`);
+    }
     return request
 })
 
-instance.interceptors.response.use(response => {
-    console.log('Response:', JSON.stringify(response, null, 2))
+externalClient.interceptors.response.use(response => {
+    try {
+        console.log('Response:', JSON.stringify(response))
+    } catch (e) {
+        console.log(`Can't parse response, error: ${e}`);
+    }
     return response
 })
 
-export default instance;
+export const internalClient = axios.create({withCredentials: true})
+
+export default externalClient;
