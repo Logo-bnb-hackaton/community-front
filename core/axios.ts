@@ -1,13 +1,11 @@
 import axios from "axios";
 
-// todo fix it before commit
 const useLocalBack = true;
 const localhost = 'http://localhost:4000';
-// const awsUrl = 'https://jr6v17son2.execute-api.us-east-1.amazonaws.com/dev';
 const awsUrl = 'https://zcos2vb20k.execute-api.us-east-1.amazonaws.com/dev';
 const BACKEND_BASE_URL = useLocalBack ? localhost : awsUrl;
 
-const externalClient = axios.create({
+export const externalClient = axios.create({
     baseURL: BACKEND_BASE_URL,
     withCredentials: true,
 });
@@ -31,5 +29,3 @@ externalClient.interceptors.response.use(response => {
 })
 
 export const internalClient = axios.create({withCredentials: true})
-
-export default externalClient;

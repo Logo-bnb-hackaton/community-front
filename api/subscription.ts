@@ -1,9 +1,9 @@
-import axios from "@/core/axios";
+import {externalClient} from "@/core/axios";
 import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import {ResponseDto} from "@/api/dto/response.dto";
 
 export const updateSubscription = async (data: UpdateSubscriptionDTO, cookie: any): Promise<void> => {
-    return axios({
+    return externalClient({
         method: 'post',
         url: `/subscription/update`,
         data: data,
@@ -14,7 +14,7 @@ export const updateSubscription = async (data: UpdateSubscriptionDTO, cookie: an
 }
 
 export const loadSubscription = async (id: string, cookie: any): Promise<UpdateSubscriptionDTO> => {
-    const response: ResponseDto<UpdateSubscriptionDTO> = (await axios({
+    const response: ResponseDto<UpdateSubscriptionDTO> = (await externalClient({
         method: 'post',
         url: '/subscription/',
         data: {

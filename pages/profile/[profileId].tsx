@@ -158,12 +158,8 @@ const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {
-        console.log('req.headers.cookie');
-        console.log(ctx.req.headers);
-
         const profileId = ctx.params!!.profileId as string;
         const cookie = ctx.req.headers.cookie
-        console.log(`cookie: ${cookie}`);
 
         const props: Props = {
             tokens: [],

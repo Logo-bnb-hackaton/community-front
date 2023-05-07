@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import cookieWrapper from "@/pages/api/auth/utils";
+import cookieWrapper from "@/pages/api/utils";
 
 export default async function signIn(
     req: NextApiRequest,

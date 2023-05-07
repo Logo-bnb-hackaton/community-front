@@ -1,9 +1,9 @@
-import axios from "@/core/axios";
+import {externalClient} from "@/core/axios";
 import {ProfileDTO, UpdateProfileDTO} from "@/api/dto/profile.dto";
 import {ResponseDto} from "@/api/dto/response.dto";
 
 export const loadProfile = async (profileId: string, cookie: any = undefined): Promise<ProfileDTO> => {
-    const response: ResponseDto<ProfileDTO> = (await axios({
+    const response: ResponseDto<ProfileDTO> = (await externalClient({
         method: 'post',
         url: '/profile/',
         data: {
@@ -18,7 +18,7 @@ export const loadProfile = async (profileId: string, cookie: any = undefined): P
 }
 
 export const updateProfile = async (data: UpdateProfileDTO, cookie: any): Promise<void> => {
-    return axios({
+    return externalClient({
         method: 'post',
         url: '/profile/update',
         data: data,
