@@ -1,18 +1,20 @@
 import {ConnectButton, useAccountModal} from '@rainbow-me/rainbowkit';
-import {useAccount} from "wagmi";
 import Image from "next/image";
 import React, {useEffect, useRef, useState} from "react";
-import discordIcon from "@/assets/social_media_logo/discord.svg";
+import heroIcon from "@/assets/Hero.png";
 import {MenuOutlined} from "@ant-design/icons";
 import {Dropdown, MenuProps} from "antd";
 import {useRouter} from "next/router";
 import CustomButton from "@/components/customButton/CustomButton";
 
-export default function WalletButton({profileId, base64Logo}: { profileId?: string, base64Logo?: string }) {
+interface Props {
+    profileId?: string;
+    base64Logo?: string;
+}
 
+const WalletButton: React.FC<Props> = ({profileId, base64Logo}) => {
 
     const router = useRouter();
-    const {isConnected} = useAccount();
     const {openAccountModal} = useAccountModal();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -41,22 +43,26 @@ export default function WalletButton({profileId, base64Logo}: { profileId?: stri
 
     const items: MenuProps['items'] = [
         {
-            key: '1',
+            key: 'profile-menu-1',
+            disabled: !profileId,
             label: (
-                <div key={"menu-item-1"}
-                     style={{fontSize: '14px', fontFamily: 'co-headline', padding: '10px'}}
-                     onClick={() => router.push(`/profile/${profileId!!}`)}
+                <div
+                    style={{fontSize: '14px', fontFamily: 'co-headline', padding: '10px'}}
+                    onClick={() => {
+                        if (!profileId) return;
+                        router.push(`/profile/${profileId!!}`);
+                    }}
                 >
                     Profile
                 </div>
             ),
         },
         {
-            key: '2',
+            key: 'profile-menu-2',
             label: (
-                <div key={"menu-item-2"}
-                     style={{fontSize: '14px', fontFamily: 'co-headline', padding: '10px'}}
-                     onClick={openAccountModal}
+                <div
+                    style={{fontSize: '14px', fontFamily: 'co-headline', padding: '10px'}}
+                    onClick={openAccountModal}
                 >
                     Wallet
                 </div>
@@ -64,45 +70,80 @@ export default function WalletButton({profileId, base64Logo}: { profileId?: stri
         },
     ];
 
-    const dynamicContent = () => {
-        if (!isConnected) {
-            return <ConnectButton />
-        }
-        return (
-            <Dropdown
-                menu={{items}}
-                placement="bottomRight"
-                arrow={false}
-                open={isOpen}
-                dropdownRender={body => <div ref={wrapperRef}>{body}</div>}
-            >
-                <CustomButton onClick={openCloseMenu} style={{
-                    backgroundColor: '#fff',
-                    height: '56px',
-                    minWidth: '100px',
-                    position: "relative",
-                    display: 'flex',
-                    justifyContent: "center",
-                    alignItems: "center",
-                    padding: '8px'
-                }}>
-                    <MenuOutlined style={{fontSize: '24px', marginRight: '8px'}}/>
-                    <Image
-                        width={40}
-                        height={40}
-                        style={{borderRadius: '50%'}}
-                        // todo fix it, use some default logo
-                        src={base64Logo ? base64Logo : discordIcon}
-                        alt={`Profile logo`}
-                    />
-                </CustomButton>
-            </Dropdown>
-        );
-    }
-
     return (
-        <>
-            {dynamicContent()}
-        </>
+        <ConnectButton.Custom>
+            {({
+                  account,
+                  chain,
+                  openAccountModal,
+                  openChainModal,
+                  openConnectModal,
+                  authenticationStatus,
+                  mounted,
+              }) => {
+                // Note: If your app doesn't use authentication, you
+                // can remove all 'authenticationStatus' checks
+                const ready = mounted && authenticationStatus !== 'loading';
+                const connected =
+                    ready &&
+                    account &&
+                    chain &&
+                    (!authenticationStatus ||
+                        authenticationStatus === 'authenticated');
+
+                return (
+                    <div
+                        {...(!ready && {
+                            'aria-hidden': true,
+                            'style': {
+                                opacity: 0,
+                                pointerEvents: 'none',
+                                userSelect: 'none',
+                            },
+                        })}
+                    >
+                        {(() => {
+                            if (!connected) {
+                                return (
+                                    <ConnectButton/>
+                                );
+                            }
+                            return (
+                                <Dropdown
+                                    menu={{items}}
+                                    placement="bottomRight"
+                                    arrow={false}
+                                    open={isOpen}
+                                    dropdownRender={body => <div ref={wrapperRef}>{body}</div>}
+                                >
+                                    <CustomButton onClick={openCloseMenu} style={{
+                                        backgroundColor: '#fff',
+                                        height: '56px',
+                                        minWidth: '100px',
+                                        position: "relative",
+                                        display: 'flex',
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        padding: '8px'
+                                    }}>
+                                        <MenuOutlined style={{fontSize: '24px', marginRight: '8px'}}/>
+                                        <Image
+                                            width={40}
+                                            height={40}
+                                            style={{borderRadius: '50%'}}
+                                            // todo fix it, use some default logo
+                                            src={base64Logo ? base64Logo : heroIcon}
+                                            alt={`Profile logo`}
+                                        />
+                                    </CustomButton>
+                                </Dropdown>
+                            );
+                        })()}
+                    </div>
+                );
+            }}
+        </ConnectButton.Custom>
     );
 }
+
+export default WalletButton;

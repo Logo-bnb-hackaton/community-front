@@ -35,6 +35,10 @@ const wagmiClient = createClient({
     provider,
 });
 
+export interface AuthProps {
+    authStatus: AuthenticationStatus
+}
+
 export default function App({Component, pageProps}: AppProps) {
 
     const authenticationAdapter = createAuthenticationAdapter({
@@ -106,7 +110,7 @@ export default function App({Component, pageProps}: AppProps) {
     });
 
     // loading | unathenticated | authenticated
-    const [authStatus, setAuthStatus] = useState<AuthenticationStatus>('unauthenticated');
+    const [authStatus, setAuthStatus] = useState<AuthenticationStatus>(pageProps?.authStatus ?? 'unauthenticated');
 
     return (
         <StyleProvider hashPriority="low">

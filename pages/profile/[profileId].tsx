@@ -13,6 +13,9 @@ import Profile from "@/components/profile/Profile";
 import * as Api from "@/api";
 import * as Contract from "@/contract";
 import {hasChanges} from "@/utils/compare";
+import {getAuthStatus} from "@/utils/getAuthStatus";
+import {getAuthCookie} from "@/utils/cookie";
+import {AuthProps} from "@/pages/_app";
 
 export interface ProfileError {
     logo: boolean;
@@ -45,7 +48,7 @@ const fromProfileDTO = (dto: ProfileDTO): BaseProfile => {
 
 const MAX_DESCRIPTION_LEN = 250;
 
-interface Props {
+interface Props extends AuthProps {
     profile?: ProfileDTO;
     ownerAddress: string;
     tokens: string[];
@@ -159,9 +162,9 @@ const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {
         const profileId = ctx.params!!.profileId as string;
-        const cookie = ctx.req.headers.cookie
 
         const props: Props = {
+            authStatus: getAuthStatus(ctx),
             tokens: [],
             ownerAddress: "",
             profile: undefined,
@@ -172,7 +175,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             .then((tokens) => (props.tokens = tokens));
 
         const profilePromise = Api.profile
-            .loadProfile(profileId, cookie)
+            .loadProfile(profileId, getAuthCookie(ctx))
             .then((profile) => (props.profile = profile ?? null));
 
         const ownerPromise = Contract.profile

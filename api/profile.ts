@@ -2,7 +2,7 @@ import {externalClient} from "@/core/axios";
 import {ProfileDTO, UpdateProfileDTO} from "@/api/dto/profile.dto";
 import {ResponseDto} from "@/api/dto/response.dto";
 
-export const loadProfile = async (profileId: string, cookie: any = undefined): Promise<ProfileDTO> => {
+export const loadProfile = async (profileId: string, cookie: any): Promise<ProfileDTO> => {
     const response: ResponseDto<ProfileDTO> = (await externalClient({
         method: 'post',
         url: '/profile/',

@@ -10,8 +10,10 @@ import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import Subscription, {BriefProfile} from "@/components/subscription/Subscription";
 import SubscriptionEdit from "@/components/subscription/edit/SubscriptionEdit";
 import Footer from "@/components/footer/Footer";
+import {AuthProps} from "@/pages/_app";
+import {getAuthStatus} from "@/utils/getAuthStatus";
 
-interface Props {
+interface Props extends AuthProps{
     subscription: UpdateSubscriptionDTO;
     profile: BriefProfile
 }
@@ -74,6 +76,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
         return {
             props: {
+                authStatus: getAuthStatus(ctx),
                 subscription: subscription,
                 profile: profile
             }

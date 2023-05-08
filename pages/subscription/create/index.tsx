@@ -7,8 +7,11 @@ import {GetServerSidePropsContext, NextPage} from "next";
 import {BriefProfile} from "@/components/subscription/Subscription";
 import * as Api from "@/api";
 import {ProfileDTO} from "@/api/dto/profile.dto";
+import {getAuthCookie} from "@/utils/cookie";
+import {getAuthStatus, isAuth} from "@/utils/getAuthStatus";
+import {AuthProps} from "@/pages/_app";
 
-interface Props {
+interface Props extends AuthProps {
     profile: BriefProfile
 }
 
@@ -33,8 +36,17 @@ const CreatePage: NextPage<Props> = ({profile}) => {
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {
         const profileId = ctx.query!!.profileId as string;
+        const authStatus = getAuthStatus(ctx);
+        if (!isAuth(authStatus)) {
+            return {
+                redirect: {
+                    destination: `/profile/${profileId}`,
+                    permanent: false,
+                },
+            }
+        }
 
-        const profile = await Api.profile.loadProfile(profileId).then(res => {
+        const profile = await Api.profile.loadProfile(profileId, getAuthCookie(ctx)).then(res => {
             const data = res as ProfileDTO
             return {
                 id: data.id,
@@ -42,6 +54,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
                 logo: data.logo
             } as BriefProfile
         });
+
         if (!profile) {
             return {
                 redirect: {
@@ -53,6 +66,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
         return {
             props: {
+                authStatus: authStatus,
                 profile: profile,
             }
         };
