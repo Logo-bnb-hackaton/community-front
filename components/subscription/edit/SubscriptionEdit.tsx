@@ -16,6 +16,7 @@ import {BriefProfile} from "@/components/subscription/Subscription";
 import Integration from "@/components/subscription/integration/Integration";
 import CustomButton from "@/components/customButton/CustomButton";
 import {hasChanges} from "@/utils/compare";
+import {ChatBindingStatus} from "@/api/dto/integration.dto";
 
 // todo maybe extract it later
 function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
@@ -121,6 +122,7 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
             }
 
             // todo uncomment it later
+            // todo fix logic later
             // if (isNewSub || lastDbData?.status === 'DRAFT') {
             //     await Contract.subscription.createNewSubscriptionByEth(id, profile!!.id, ethersPrice);
             //     await Api.subscription.updateSubscriptionStatus({id: id, status: 'UNPUBLISHED'});
@@ -128,8 +130,12 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
             //     await Contract.subscription.updateSubscriptionTokenAndPrice(profile!!.id, ethersPrice);
             // }
 
-            setCurrentStep(old => old + 1);
+            const chatDTO = await Api.integration.getChat(id);
+            if (chatDTO.status === ChatBindingStatus.NOT_BINDED) {
+                setCurrentStep(old => old + 1);
+            }
         } catch (e) {
+            console.error(e);
             console.error(`Catch error during updating subscription.`);
         } finally {
             setIsLoading(false);
@@ -175,7 +181,7 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
                 previousCallback={() => prev()}
                 doneCallback={() => {
                     message.success('Processing complete!');
-                    router.push(`/profile/${data!!.id}`);
+                    router.push(`/subscription/${lastDbData!!.id}`);
                 }}/>,
         },
     ];

@@ -11,3 +11,13 @@ export const bindTelegram = async (subscriptionId: `0x${string}`, code: string):
         },
     })).data as TgIntegrationDTO;
 }
+
+export const getChat = async (subscriptionId: `0x${string}`): Promise<TgChatDTO> => {
+    return (await internalClient({
+        method: 'post',
+        url: `/api/integration/telegramChat`,
+        data: {
+            subscriptionId: subscriptionId,
+        },
+    })).data as TgChatDTO;
+}
