@@ -74,6 +74,11 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
         await Promise.all([subscriptionPromise, profilePromise]);
 
+        console.log({
+            authStatus: getAuthStatus(ctx),
+            subscription: subscription,
+            profile: profile
+        })
         return {
             props: {
                 authStatus: getAuthStatus(ctx),

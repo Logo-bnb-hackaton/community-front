@@ -1,21 +1,16 @@
-import { ConfigProvider, Grid, InputNumber, Modal, Result, Steps } from "antd";
+import {ConfigProvider, InputNumber, Modal, Result, Steps} from "antd";
 import CustomButton from "@/components/customButton/CustomButton";
 import styles from "@/styles/Donate.module.css";
-import React, { useEffect, useState } from "react";
-import { erc20ABI, useAccount, useBalance, useContractReads } from "wagmi";
-import { StepProps } from "antd/es/steps";
-import { ResultStatusType } from "antd/es/result";
-import { LoadingOutlined } from "@ant-design/icons";
-import { BigNumber, ethers } from "ethers";
-import {
-  prepareWriteContract,
-  waitForTransaction,
-  writeContract,
-  WriteContractPreparedArgs,
-} from "@wagmi/core";
-import { PUBLIC_DONATION_ABI, PUBLIC_DONATION_ADDRESS } from "@/constants";
-import { addressBySymbol, baseCoin } from "@/utils/tokens";
-import { SegmentedValue } from "rc-segmented";
+import React, {useEffect, useState} from "react";
+import {erc20ABI, useAccount, useBalance, useContractReads} from "wagmi";
+import {StepProps} from "antd/es/steps";
+import {ResultStatusType} from "antd/es/result";
+import {LoadingOutlined} from "@ant-design/icons";
+import {BigNumber, ethers} from "ethers";
+import {prepareWriteContract, waitForTransaction, writeContract, WriteContractPreparedArgs,} from "@wagmi/core";
+import {PUBLIC_DONATION_ABI, PUBLIC_DONATION_ADDRESS} from "@/constants";
+import {addressBySymbol, baseCoin} from "@/utils/tokens";
+import {SegmentedValue} from "rc-segmented";
 
 const defaultDonateSteps: StepProps[] = [
   {
@@ -24,12 +19,12 @@ const defaultDonateSteps: StepProps[] = [
     icon: undefined,
   },
   {
-    title: "Approving spending cap",
+    title: "Approve spending",
     status: "wait",
     icon: undefined,
   },
   {
-    title: "Approving transaction",
+    title: "Approve transaction",
     status: "wait",
     icon: undefined,
   },

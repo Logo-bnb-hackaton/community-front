@@ -1,15 +1,20 @@
-import {externalClient} from "@/core/axios";
-import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
+import {externalClient, internalClient} from "@/core/axios";
+import {UpdateSubscriptionDTO, UpdateSubscriptionStatusDTO} from "@/api/dto/subscription.dto";
 import {ResponseDto} from "@/api/dto/response.dto";
 
-export const updateSubscription = async (data: UpdateSubscriptionDTO, cookie: any): Promise<void> => {
-    return externalClient({
+export const updateSubscription = async (data: UpdateSubscriptionDTO): Promise<void> => {
+    return internalClient({
         method: 'post',
-        url: `/subscription/update`,
+        url: `/api/subscription/update`,
         data: data,
-        headers: {
-            Cookie: cookie
-        }
+    });
+}
+
+export const updateSubscriptionStatus = async (data: UpdateSubscriptionStatusDTO): Promise<void> => {
+    return internalClient({
+        method: 'post',
+        url: `/api/subscription/updateStatus`,
+        data: data,
     });
 }
 

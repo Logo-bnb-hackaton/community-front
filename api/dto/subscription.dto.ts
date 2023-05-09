@@ -12,6 +12,11 @@ export interface UpdateSubscriptionDTO {
     coin: string;
 }
 
+export interface UpdateSubscriptionStatusDTO {
+    id: string;
+    status: SubscriptionStatus;
+}
+
 export interface BriefSubscriptionInfo {
     id: string;
     status: SubscriptionStatus,

@@ -5,8 +5,8 @@ import {externalClient} from "@/core/axios";
 export default async function cookieWrapper(
     req: NextApiRequest,
     res: NextApiResponse,
-    axiosConfig: AxiosRequestConfig
-) {
+    axiosConfig: AxiosRequestConfig,
+): Promise<string> {
     const response = await externalClient({
         ...axiosConfig,
         headers: {
@@ -14,11 +14,12 @@ export default async function cookieWrapper(
             'Content-Type': 'application/json',
             Cookie: req.headers.cookie
         }
-    })
+    });
 
     const cookie = (response.headers as AxiosHeaders).get('set-cookie') as string[];
 
     res.status(200)
         .setHeader("Set-Cookie", cookie)
         .json(response.data);
+    return response.data;
 }

@@ -4,36 +4,56 @@ import styles from "@/styles/Subscription.module.css";
 import Image from "next/image";
 import heroIcon from "@/assets/Hero.png";
 import CustomButton from "@/components/customButton/CustomButton";
+import * as Api from '@/api'
 
 enum Platform {
     Telegram = "Telegram",
 }
 
 interface Props {
+    subscriptionId: `0x${string}`,
     previousCallback: () => void;
     doneCallback: () => void;
 }
 
-const Integration: React.FC<Props> = ({previousCallback, doneCallback}) => {
+const Integration: React.FC<Props> = ({subscriptionId, previousCallback, doneCallback}) => {
 
     const [currentStep, setCurrentStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
     const [platform, setPlatform] = useState<string>(Platform.Telegram.toString());
-    const [token, setToken] = useState<string>('');
-    const [tokenError, setTokenError] = useState(false);
+    const [code, setCode] = useState<string>('');
+    const [tokenErrorMsg, setTokenErrorMsg] = useState<string | undefined>(undefined);
 
     const next = async () => {
-        if (currentStep === 3 && !isTokenValid(token)) {
-            setTokenError(true);
+        if (currentStep === 3) {
+            if (!isCodeValid(code)) {
+                setTokenErrorMsg('Please enter token!');
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+                console.log(`Bind tg: ${subscriptionId}, ${code}`)
+                const res = await Api.integration.bindTelegram(subscriptionId, code);
+                console.log(res);
+                if (res.error?.message !== undefined) {
+                    setTokenErrorMsg(res.error!!.message);
+                    return;
+                }
+            } finally {
+                setIsLoading(false);
+            }
+            setCurrentStep(currentStep + 1);
             return;
+        } else {
+            setTokenErrorMsg(undefined);
+            setCurrentStep(currentStep + 1);
         }
-        setTokenError(false);
-        setCurrentStep(currentStep + 1);
     };
 
     const prev = () => {
-        setTokenError(false);
+        setTokenErrorMsg(undefined);
         if (currentStep === 0) {
             previousCallback();
             return;
@@ -41,13 +61,13 @@ const Integration: React.FC<Props> = ({previousCallback, doneCallback}) => {
         setCurrentStep(currentStep - 1);
     };
 
-    const onTokenChange = (token: string) => {
-        setToken(token);
-        setTokenError(!isTokenValid(token));
+    const onCodeChange = (token: string) => {
+        setCode(token);
+        setTokenErrorMsg(!isCodeValid(token) ? 'Please enter token!' : undefined);
 
     }
 
-    const isTokenValid = (token: string): boolean => {
+    const isCodeValid = (token: string): boolean => {
         return token !== undefined && token !== null && token.trim().length !== 0;
     }
 
@@ -142,18 +162,18 @@ const Integration: React.FC<Props> = ({previousCallback, doneCallback}) => {
         const child = (<>
             <Input
                 placeholder={'Add Telegram Token'}
-                onChange={e => onTokenChange(e.target.value)}
+                onChange={e => onCodeChange(e.target.value)}
                 className={styles.integrationTokenInput}
-                style={{borderColor: tokenError ? 'red' : ''}}
+                style={{borderColor: tokenErrorMsg ? 'red' : ''}}
             />
-            {tokenError && <div style={{color: "red", fontSize: '12px', marginTop: '12px'}}>Please enter token!</div>}
+            {tokenErrorMsg && <div style={{color: "red", fontSize: '12px', marginTop: '12px'}}>{tokenErrorMsg}</div>}
         </>);
         return (
             <>
                 {
                     generateStep(
                         5,
-                        'Enter the token code on the platform',
+                        'Enter the code code on the platform',
                         [
                             'Copy the code received from @Nodde_Bot.',
                             'Enter the copied code in the "Telegram Token" field.'
@@ -173,7 +193,7 @@ const Integration: React.FC<Props> = ({previousCallback, doneCallback}) => {
                         6,
                         `Verify ${platform} information`,
                         [
-                            `Your ${platform} code is '${token}' `
+                            `Your ${platform} code is '${code}' `
                         ]
                     )
                 }
