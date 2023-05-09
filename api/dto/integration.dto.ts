@@ -6,7 +6,7 @@ interface TgIntegrationDTO {
     } | undefined
 }
 
-interface TgChatDTO {
+export interface TgChatDTO {
     status: ChatBindingStatus,
     chat: {
         title: string,

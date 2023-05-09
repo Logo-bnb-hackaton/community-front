@@ -1,23 +1,26 @@
-import React, {ReactNode, useState} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import {ConfigProvider, Input, Select} from "antd";
 import styles from "@/styles/Subscription.module.css";
 import CustomButton from "@/components/customButton/CustomButton";
-import * as Api from '@/api'
+import * as Api from "@/api";
+import {TgChatDTO} from "@/api/dto/integration.dto";
 
 enum Platform {
     Telegram = "Telegram",
 }
 
 interface Props {
+    topLvlChat: TgChatDTO | undefined,
     subscriptionId: `0x${string}`,
     previousCallback: () => void;
     doneCallback: () => void;
 }
 
 const TgBotName = 'Nodde_Bot';
-const SavingStep = 1;
+const savingStepIndex = 1;
+const finalStepIndex = 2;
 
-const Integration: React.FC<Props> = ({subscriptionId, previousCallback, doneCallback}) => {
+const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallback, doneCallback}) => {
 
     const [currentStep, setCurrentStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -25,28 +28,17 @@ const Integration: React.FC<Props> = ({subscriptionId, previousCallback, doneCal
     const [platform, setPlatform] = useState<string>(Platform.Telegram.toString());
     const [code, setCode] = useState<string>('');
     const [tokenErrorMsg, setTokenErrorMsg] = useState<string | undefined>(undefined);
+    const [chat, setChat] = useState<TgChatDTO | undefined>(undefined);
+
+    useEffect(() => {
+        if (!topLvlChat) return;
+        setCurrentStep(finalStepIndex);
+        setChat(topLvlChat);
+    }, [topLvlChat]);
 
     const next = async () => {
-        if (currentStep === SavingStep) {
-            if (!isCodeValid(code)) {
-                setTokenErrorMsg('Please enter token!');
-                return;
-            }
-
-            try {
-                setIsLoading(true);
-                const bindRes = await Api.integration.bindTelegram(subscriptionId, code);
-                if (bindRes.error?.message !== undefined) {
-                    setTokenErrorMsg(bindRes.error!!.message);
-                    return;
-                }
-
-                console.log("Loading tg chat info...");
-                const tgChatRes = await Api.integration.getChat(subscriptionId);
-                console.log(tgChatRes);
-            } finally {
-                setIsLoading(false);
-            }
+        if (currentStep === savingStepIndex) {
+            await bindTelegram();
         } else {
             setTokenErrorMsg(undefined);
         }
@@ -55,7 +47,7 @@ const Integration: React.FC<Props> = ({subscriptionId, previousCallback, doneCal
 
     const prev = () => {
         setTokenErrorMsg(undefined);
-        if (currentStep === 0) {
+        if (currentStep === 0 || chat) {
             previousCallback();
             return;
         }
@@ -70,6 +62,25 @@ const Integration: React.FC<Props> = ({subscriptionId, previousCallback, doneCal
 
     const isCodeValid = (token: string): boolean => {
         return token !== undefined && token !== null && token.trim().length !== 0;
+    }
+
+    const bindTelegram = async () => {
+        if (!isCodeValid(code)) {
+            setTokenErrorMsg('Please enter token!');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const bindRes = await Api.integration.bindTelegram(subscriptionId, code);
+            if (bindRes.error?.message !== undefined) {
+                setTokenErrorMsg(bindRes.error!!.message);
+                return;
+            }
+            setChat(await Api.integration.getChat(subscriptionId));
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     /**
@@ -153,8 +164,12 @@ const Integration: React.FC<Props> = ({subscriptionId, previousCallback, doneCal
     const thirdStep = () => {
         return (
             <>
-                <p>Your Tg code: ${code}</p>
-                <p>WIP: add tg chat information!</p>
+                {chat &&
+                    <>
+                        <p>Telegram chat name: {chat!!.chat.title}</p>
+                        <a href={chat!!.chat.link} target="_blank">Tg chat link</a>
+                    </>
+                }
             </>
         );
     }

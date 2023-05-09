@@ -12,9 +12,8 @@ export interface UpdateSubscriptionDTO {
     coin: string;
 }
 
-export interface UpdateSubscriptionStatusDTO {
+export interface SubscriptionBeforePayDTO {
     id: string;
-    status: SubscriptionStatus;
 }
 
 export interface BriefSubscriptionInfo {
@@ -25,4 +24,10 @@ export interface BriefSubscriptionInfo {
     previewImage: ImageDto,
 }
 
-export type SubscriptionStatus = 'DRAFT' | 'UNPUBLISHED' | 'PUBLISHED';
+export type SubscriptionStatus =
+    'DRAFT' |
+    'NOT_PAID' |
+    'BEFORE_PAY' |
+    'UNPUBLISHED' |
+    'PUBLISHED'
+    ;

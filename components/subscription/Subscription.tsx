@@ -1,11 +1,14 @@
-import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
+import {SubscriptionStatus, UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import Image from "next/image";
 import telegramIcon from "@/assets/social_media_logo/telegram.svg";
-import {DeleteOutlined, EditOutlined, ShareAltOutlined} from "@ant-design/icons";
+import {DeleteOutlined, EditOutlined, LoadingOutlined, ShareAltOutlined} from "@ant-design/icons";
 import {useRouter} from "next/router";
 import CustomButton from "@/components/customButton/CustomButton";
 import React, {useState} from "react";
 import {Input, Modal} from "antd";
+import {ethers} from "ethers";
+import * as Api from "@/api";
+import * as Contract from "@/contract";
 
 export interface BriefProfile {
     id: string,
@@ -17,12 +20,13 @@ export interface BriefProfile {
 }
 
 export default function Subscription({
-                                             subscription,
-                                             profile
-                                         }: { subscription: UpdateSubscriptionDTO, profile: BriefProfile }) {
+                                         subscription,
+                                         profile
+                                     }: { subscription: UpdateSubscriptionDTO, profile: BriefProfile }) {
     const router = useRouter()
 
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const openCloseModal = () => setIsShareModalOpen(prev => !prev);
 
@@ -35,6 +39,63 @@ export default function Subscription({
                 : '';
 
         return `${origin}${router.asPath}`;
+    }
+
+
+    const getButtonText = (status: SubscriptionStatus) => {
+        switch (status) {
+            case "DRAFT":
+                return 'Continue editing';
+            case "NOT_PAID":
+                return 'Pay';
+            case "BEFORE_PAY":
+                return 'Check payment';
+            case "UNPUBLISHED":
+                return 'Publish';
+            case "PUBLISHED":
+                return 'Unpublish';
+        }
+    }
+
+    const executeBaseOnSatus = (status: SubscriptionStatus) => {
+        switch (status) {
+            case "DRAFT":
+                routeToEditing();
+                return;
+            case "NOT_PAID":
+                pay();
+                return;
+            case "BEFORE_PAY":
+                checkPayment();
+                return;
+            case "UNPUBLISHED":
+                return 'Publish';
+            case "PUBLISHED":
+                return 'Unpublish';
+        }
+    }
+
+    const routeToEditing = () => {
+        router.push(`/subscription/${subscription.id}?edited=true&profileId=${profile.id}`);
+    }
+
+    const pay = async () => {
+        try {
+            setIsLoading(true);
+
+            const ethersPrice = ethers.utils.parseEther(subscription.price);
+
+            await Api.subscription.beforePay({id: subscription.id});
+            await Contract.subscription.createNewSubscriptionByEth(subscription.id, profile!!.id, ethersPrice);
+            await Api.subscription.afterPay({id: subscription.id});
+
+            router.replace(router.asPath);
+        } catch (e) {
+            console.error('Catch error during pay');
+            console.error(e);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -144,7 +205,7 @@ export default function Subscription({
                     {isOwner() && <CustomButton
                         color={"gray"}
                         style={{minWidth: '55px', height: '55px', marginRight: '16px'}}
-                        onClick={() => router.push(`/subscription/${subscription.id}?edited=true&profileId=${profile.id}`)}
+                        onClick={routeToEditing}
                     >
                         <EditOutlined style={{width: '32px'}}/>
                     </CustomButton>
@@ -164,14 +225,27 @@ export default function Subscription({
             </div>
 
             <div style={{marginTop: '30px'}}>
-                <CustomButton
-                    type="wide"
-                    color={"green"}
-                    onClick={() => {
-                    }}
-                >
-                    Subscribe {subscription.price} {subscription.coin.toUpperCase()}
-                </CustomButton>
+                {!isOwner() &&
+                    <CustomButton
+                        type="wide"
+                        color={"green"}
+                        onClick={() => {
+                        }}
+                    >
+                        Subscribe {subscription.price} {subscription.coin.toUpperCase()}
+                    </CustomButton>
+                }
+                {
+                    isOwner() &&
+                    <CustomButton
+                        disabled={isLoading}
+                        type="wide"
+                        color={"green"}
+                        onClick={() => executeBaseOnSatus(subscription.status)}
+                    >
+                        {getButtonText(subscription.status)} {isLoading && <LoadingOutlined/>}
+                    </CustomButton>
+                }
             </div>
 
             <div

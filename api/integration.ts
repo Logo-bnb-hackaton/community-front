@@ -1,4 +1,5 @@
 import {internalClient} from "@/core/axios";
+import {TgChatDTO} from "@/api/dto/integration.dto";
 
 
 export const bindTelegram = async (subscriptionId: `0x${string}`, code: string): Promise<TgIntegrationDTO> => {

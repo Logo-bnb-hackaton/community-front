@@ -16,7 +16,7 @@ import {BriefProfile} from "@/components/subscription/Subscription";
 import Integration from "@/components/subscription/integration/Integration";
 import CustomButton from "@/components/customButton/CustomButton";
 import {hasChanges} from "@/utils/compare";
-import {ChatBindingStatus} from "@/api/dto/integration.dto";
+import {ChatBindingStatus, TgChatDTO} from "@/api/dto/integration.dto";
 
 // todo maybe extract it later
 function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
@@ -54,6 +54,7 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
             coin: baseCoin,
         }
     );
+    const [chat, setChat] = useState<TgChatDTO | undefined>(undefined);
 
     useEffect(() => {
         if (!data) return;
@@ -97,7 +98,6 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
             const isNewSub = oldId === undefined;
             const id: string = isNewSub ? ethers.utils.keccak256(ethers.utils.toUtf8Bytes(uuidv4())) : oldId!!;
             const price = baseInfo!!.price.toString();
-            const ethersPrice = ethers.utils.parseEther(price);
 
             if (lastDbData && hasChanges(toBaseInfoData(lastDbData), baseInfo!!)) {
                 const request: UpdateSubscriptionDTO = {
@@ -121,19 +121,11 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
                 setLastDbData(request);
             }
 
-            // todo uncomment it later
-            // todo fix logic later
-            // if (isNewSub || lastDbData?.status === 'DRAFT') {
-            //     await Contract.subscription.createNewSubscriptionByEth(id, profile!!.id, ethersPrice);
-            //     await Api.subscription.updateSubscriptionStatus({id: id, status: 'UNPUBLISHED'});
-            // } else if (price !== lastDbData?.price!!.toString()) {
-            //     await Contract.subscription.updateSubscriptionTokenAndPrice(profile!!.id, ethersPrice);
-            // }
-
-            const chatDTO = await Api.integration.getChat(id);
-            if (chatDTO.status === ChatBindingStatus.NOT_BINDED) {
-                setCurrentStep(old => old + 1);
+            const chat = await Api.integration.getChat(id);
+            if (chat.status === ChatBindingStatus.BINDED) {
+                setChat(chat);
             }
+            setCurrentStep(old => old + 1);
         } catch (e) {
             console.error(e);
             console.error(`Catch error during updating subscription.`);
@@ -177,11 +169,12 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
         {
             title: 'Step 2: Integration setup',
             content: <Integration
+                topLvlChat={chat}
                 subscriptionId={data!!.id as `0x${string}`} //todo fix late
                 previousCallback={() => prev()}
                 doneCallback={() => {
                     message.success('Processing complete!');
-                    router.push(`/subscription/${lastDbData!!.id}`);
+                    router.push(`/subscription/${lastDbData.id}?profileId=${profile.id}`);
                 }}/>,
         },
     ];

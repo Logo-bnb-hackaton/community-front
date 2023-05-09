@@ -7,7 +7,7 @@ export default async function update(
 ) {
     await cookieWrapper(req, res, {
         method: 'post',
-        url: `/subscription/update-status`,
+        url: `/subscription/before-pay`,
         data: req.body as string,
     });
 };
