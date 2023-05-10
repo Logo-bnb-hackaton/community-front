@@ -1,5 +1,5 @@
 import {externalClient, internalClient} from "@/core/axios";
-import {SubscriptionBeforePayDTO, UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
+import {SubscriptionBeforePayDTO, SubscriptionStatus, UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import {ResponseDto} from "@/api/dto/response.dto";
 
 export const updateSubscription = async (data: UpdateSubscriptionDTO): Promise<void> => {
@@ -10,17 +10,25 @@ export const updateSubscription = async (data: UpdateSubscriptionDTO): Promise<v
     });
 }
 
-export const beforePay = async (data: SubscriptionBeforePayDTO): Promise<void> => {
+export const processPayment = async (data: SubscriptionBeforePayDTO): Promise<SubscriptionStatus> => {
+    return (await internalClient({
+        method: 'post',
+        url: `/api/subscription/processPayment`,
+        data: data,
+    })).data.status;
+}
+
+export const publish = async (data: SubscriptionBeforePayDTO): Promise<void> => {
     return internalClient({
         method: 'post',
-        url: `/api/subscription/beforePay`,
+        url: `/api/subscription/publish`,
         data: data,
     });
 }
-export const afterPay = async (data: SubscriptionBeforePayDTO): Promise<void> => {
+export const unpublish = async (data: SubscriptionBeforePayDTO): Promise<void> => {
     return internalClient({
         method: 'post',
-        url: `/api/subscription/afterPay`,
+        url: `/api/subscription/unpublish`,
         data: data,
     });
 }

@@ -49,8 +49,6 @@ export default function App({Component, pageProps}: AppProps) {
                     url: '/api/auth/nonce',
                 });
                 const nonce = (await response).data;
-                console.log(`nonce: ${nonce}`);
-                console.log(`get nonce response ${response}`);
                 return nonce;
             } catch (e) {
                 console.log('catch nonce error');
@@ -83,11 +81,7 @@ export default function App({Component, pageProps}: AppProps) {
                 headers: {'Content-Type': 'application/json'},
                 data: JSON.stringify({message: args.message, signature: args.signature}),
             }).then(response => {
-                console.log('verify');
-                console.log(`verify response ${response}`)
-                console.log(response.data);
                 const verified = response.data.ok as boolean;
-                console.log(verified);
                 if (verified) {
                     setAuthStatus('authenticated');
                 } else {
@@ -109,7 +103,6 @@ export default function App({Component, pageProps}: AppProps) {
         }
     });
 
-    // loading | unathenticated | authenticated
     const [authStatus, setAuthStatus] = useState<AuthenticationStatus>(pageProps?.authStatus ?? 'unauthenticated');
 
     return (

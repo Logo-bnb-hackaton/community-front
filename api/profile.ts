@@ -1,4 +1,4 @@
-import {externalClient} from "@/core/axios";
+import {externalClient, internalClient} from "@/core/axios";
 import {ProfileDTO, UpdateProfileDTO} from "@/api/dto/profile.dto";
 import {ResponseDto} from "@/api/dto/response.dto";
 
@@ -17,13 +17,10 @@ export const loadProfile = async (profileId: string, cookie: any): Promise<Profi
     return response.data;
 }
 
-export const updateProfile = async (data: UpdateProfileDTO, cookie: any): Promise<void> => {
-    return externalClient({
+export const updateProfile = async (data: UpdateProfileDTO): Promise<void> => {
+    return internalClient({
         method: 'post',
-        url: '/profile/update',
+        url: '/api/profile/update',
         data: data,
-        headers: {
-            Cookie: cookie
-        }
     });
 }

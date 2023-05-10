@@ -13,7 +13,7 @@ export interface UpdateSubscriptionDTO {
 }
 
 export interface SubscriptionBeforePayDTO {
-    id: string;
+    subscriptionId: string;
 }
 
 export interface BriefSubscriptionInfo {
@@ -27,7 +27,7 @@ export interface BriefSubscriptionInfo {
 export type SubscriptionStatus =
     'DRAFT' |
     'NOT_PAID' |
-    'BEFORE_PAY' |
+    'PAYMENT_PROCESSING' |
     'UNPUBLISHED' |
     'PUBLISHED'
     ;

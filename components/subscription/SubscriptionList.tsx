@@ -10,9 +10,10 @@ const ROW_COUNT = 3;
 interface Props {
     profileId: string;
     subscriptions: BriefSubscriptionInfo[];
+    isOwner: boolean;
 }
 
-const SubscriptionList: React.FC<Props> = ({profileId, subscriptions}) => {
+const SubscriptionList: React.FC<Props> = ({profileId, subscriptions, isOwner}) => {
 
     const router = useRouter()
 
@@ -36,7 +37,7 @@ const SubscriptionList: React.FC<Props> = ({profileId, subscriptions}) => {
                                 />
                                 <p className={`${styles.subscriptionTitle}`}>{subscription.title}</p>
                                 {
-                                    <div
+                                    isOwner && <div
                                         className={`${styles.subscriptionStatus}`}
                                         onClick={e => router.push(`/subscription/${subscription.id}?edited=true&profileId=${profileId}`)}
                                     >

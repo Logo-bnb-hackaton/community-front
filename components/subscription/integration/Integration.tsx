@@ -166,8 +166,8 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
             <>
                 {chat &&
                     <>
-                        <p>Telegram chat name: {chat!!.chat.title}</p>
-                        <a href={chat!!.chat.link} target="_blank">Tg chat link</a>
+                        <p>Telegram chat name: {chat!!.chat!!.title}</p>
+                        <a href={chat!!.chat!!.link} target="_blank">Tg chat link</a>
                     </>
                 }
             </>

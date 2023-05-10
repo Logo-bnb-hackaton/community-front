@@ -28,6 +28,8 @@ export default function Subscription({
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [subscriptionStatus, setSubscriptionStatus] = useState(subscription.status);
+
     const openCloseModal = () => setIsShareModalOpen(prev => !prev);
 
     const isOwner = () => subscription.ownerId === profile.id;
@@ -48,7 +50,7 @@ export default function Subscription({
                 return 'Continue editing';
             case "NOT_PAID":
                 return 'Pay';
-            case "BEFORE_PAY":
+            case "PAYMENT_PROCESSING":
                 return 'Check payment';
             case "UNPUBLISHED":
                 return 'Publish';
@@ -57,21 +59,25 @@ export default function Subscription({
         }
     }
 
-    const executeBaseOnSatus = (status: SubscriptionStatus) => {
+    const executeBaseOnSatus = async (status: SubscriptionStatus) => {
         switch (status) {
             case "DRAFT":
                 routeToEditing();
                 return;
             case "NOT_PAID":
-                pay();
+                await pay();
                 return;
-            case "BEFORE_PAY":
-                checkPayment();
+            case "PAYMENT_PROCESSING":
+                await processPayment(subscription.id);
                 return;
             case "UNPUBLISHED":
-                return 'Publish';
+                await Api.subscription.publish({subscriptionId: subscription.id});
+                setSubscriptionStatus('PUBLISHED');
+                return;
             case "PUBLISHED":
-                return 'Unpublish';
+                await Api.subscription.unpublish({subscriptionId: subscription.id});
+                setSubscriptionStatus('UNPUBLISHED');
+                return;
         }
     }
 
@@ -85,17 +91,20 @@ export default function Subscription({
 
             const ethersPrice = ethers.utils.parseEther(subscription.price);
 
-            await Api.subscription.beforePay({id: subscription.id});
-            await Contract.subscription.createNewSubscriptionByEth(subscription.id, profile!!.id, ethersPrice);
-            await Api.subscription.afterPay({id: subscription.id});
-
-            router.replace(router.asPath);
+            await Contract.subscription.createNewSubscriptionByEth(subscription.id, profile!!.id, ethersPrice)
+            setSubscriptionStatus('PAYMENT_PROCESSING');
+            await processPayment(subscription.id);
         } catch (e) {
             console.error('Catch error during pay');
             console.error(e);
         } finally {
             setIsLoading(false);
         }
+    }
+
+    const processPayment = async (id: string) => {
+        const status = await Api.subscription.processPayment({subscriptionId: id});
+        setSubscriptionStatus(status);
     }
 
     return (
@@ -241,9 +250,9 @@ export default function Subscription({
                         disabled={isLoading}
                         type="wide"
                         color={"green"}
-                        onClick={() => executeBaseOnSatus(subscription.status)}
+                        onClick={() => executeBaseOnSatus(subscriptionStatus)}
                     >
-                        {getButtonText(subscription.status)} {isLoading && <LoadingOutlined/>}
+                        {getButtonText(subscriptionStatus)} {isLoading && <LoadingOutlined/>}
                     </CustomButton>
                 }
             </div>

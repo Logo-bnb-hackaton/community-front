@@ -43,25 +43,17 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
     const [currentStep, setCurrentStep] = useState(0);
     // this field contains top-level data to understand if there are changes
     // and updated after saving in db
-    const [lastDbData, setLastDbData] = useState<UpdateSubscriptionDTO | undefined>(undefined);
+    const [lastDbData, setLastDbData] = useState<UpdateSubscriptionDTO | undefined>(data);
     const [baseInfoData, setBaseInfoData] = useState<BaseInfoData>(
-        {
+        data ? toBaseInfoData(data) : {
             title: '',
             description: '',
             mainImage: undefined,
             previewImage: undefined,
             price: 0.0,
             coin: baseCoin,
-        }
-    );
+        });
     const [chat, setChat] = useState<TgChatDTO | undefined>(undefined);
-
-    useEffect(() => {
-        if (!data) return;
-        const inputData = toBaseInfoData(data);
-        setBaseInfoData(inputData);
-        setLastDbData(data);
-    }, [data]);
 
     /**
      * Errors are undefined before calling 'next'
@@ -96,10 +88,10 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
 
             const oldId = lastDbData?.id;
             const isNewSub = oldId === undefined;
-            const id: string = isNewSub ? ethers.utils.keccak256(ethers.utils.toUtf8Bytes(uuidv4())) : oldId!!;
+            const id = (isNewSub ? ethers.utils.keccak256(ethers.utils.toUtf8Bytes(uuidv4())) : oldId!!) as `0x${string}`;
             const price = baseInfo!!.price.toString();
 
-            if (lastDbData && hasChanges(toBaseInfoData(lastDbData), baseInfo!!)) {
+            if (!lastDbData || hasChanges(toBaseInfoData(lastDbData), baseInfo!!)) {
                 const request: UpdateSubscriptionDTO = {
                     id: id,
                     ownerId: profile!!.id,
@@ -168,14 +160,18 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
         },
         {
             title: 'Step 2: Integration setup',
-            content: <Integration
-                topLvlChat={chat}
-                subscriptionId={data!!.id as `0x${string}`} //todo fix late
-                previousCallback={() => prev()}
-                doneCallback={() => {
-                    message.success('Processing complete!');
-                    router.push(`/subscription/${lastDbData.id}?profileId=${profile.id}`);
-                }}/>,
+            content:
+                <>
+                    {lastDbData && <Integration
+                        topLvlChat={chat}
+                        subscriptionId={lastDbData!!.id as `0x${string}`}
+                        previousCallback={() => prev()}
+                        doneCallback={() => {
+                            message.success('Processing complete!');
+                            router.push(`/subscription/${lastDbData!!.id}?profileId=${profile.id}`);
+                        }}/>
+                    }
+                </>
         },
     ];
 

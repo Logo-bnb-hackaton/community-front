@@ -15,16 +15,16 @@ interface Props {
     baseData: BaseProfile,
     tokens: string[],
     subscriptions: BriefSubscriptionInfo[],
-    editAvailable: boolean
+    isOwner: boolean
 }
 
-const Profile: React.FC<Props> = ({baseData, tokens, subscriptions, editAvailable}) => {
+const Profile: React.FC<Props> = ({baseData, tokens, subscriptions, isOwner}) => {
     const {isConnected} = useAccount();
     const router = useRouter();
 
     const getAvailableSubscriptions = () => {
         return subscriptions.filter(
-            (s) => editAvailable || s.status !== "DRAFT"
+            (s) => isOwner || s.status === "PUBLISHED"
         );
     };
 
@@ -74,8 +74,9 @@ const Profile: React.FC<Props> = ({baseData, tokens, subscriptions, editAvailabl
             <Donate
                 profileId={baseData.id}
                 availableTokens={tokens}
+                isOwner={isOwner}
             />
-            <CustomButton
+            {isOwner && <CustomButton
                 disabled={!isConnected}
                 type={"wide"}
                 color={"gray"}
@@ -86,9 +87,11 @@ const Profile: React.FC<Props> = ({baseData, tokens, subscriptions, editAvailabl
             >
                 Add subscription <FileAddOutlined/>
             </CustomButton>
+            }
             <SubscriptionList
                 profileId={baseData.id}
                 subscriptions={getAvailableSubscriptions()}
+                isOwner={isOwner}
             />
         </div>
     );

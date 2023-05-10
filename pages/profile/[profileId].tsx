@@ -61,24 +61,22 @@ const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
     const {profileId} = router.query;
 
     const [isLoading, setIsLoading] = useState(false);
-    const [editAvailable, setEditAvailable] = useState(false);
-    const [edited, setEdited] = useState(false);
+    const [editing, setEditing] = useState(false);
 
-    const [baseData, setBaseData] = useState<BaseProfile>();
+    const [baseData, setBaseData] = useState<BaseProfile | undefined>(profile ? fromProfileDTO(profile) : undefined);
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined);
 
+    const isOwner = () => isConnected && address === ownerAddress;
+
     useEffect(() => {
-        if (isConnected && !profile && address !== ownerAddress) {
+        if (!profile && (!isConnected || address !== ownerAddress)) {
             router.push("/");
             return;
         }
-        setEditAvailable(isConnected && address === ownerAddress);
+        if (!profile) {
+            setEditing(true);
+        }
     }, [ownerAddress, isConnected, address, profile, router]);
-
-    useEffect(() => {
-        if (!profile) return;
-        setBaseData(fromProfileDTO(profile));
-    }, [profile, profileId]);
 
     useEffect(() => {
         const hasLogoError = !baseData?.logo?.base64Image;
@@ -112,10 +110,10 @@ const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
                     description: baseData!!.description,
                     logo: baseData!!.logo,
                     socialMediaLinks: baseData!!.socialMediaLinks,
-                }, undefined);
+                });
             }
 
-            setEdited(false);
+            setEditing(false);
             setProfileError(undefined);
         } catch (e) {
             console.error(`Catch error during updating profile. Error: ${e}`);
@@ -128,15 +126,15 @@ const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
         <main className={styles.main}>
             <Header
                 saveCallback={saveCallback}
-                edited={edited}
-                editAvailable={editAvailable}
-                setEdited={setEdited}
+                edited={editing}
+                editAvailable={isOwner()}
+                setEdited={setEditing}
                 disabled={isLoading}
                 profileId={profileId as string}
-                base64Logo={profile?.logo?.base64Image}
+                base64Logo={baseData?.logo?.base64Image}
             />
 
-            {edited || !profile ?
+            {editing ?
                 <ProfileEdit
                     id={profileId as string}
                     isLoading={isLoading}
@@ -148,10 +146,10 @@ const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
                 />
                 :
                 <Profile
-                    baseData={baseData ?? fromProfileDTO(profile)}
+                    baseData={baseData!!}
                     tokens={tokens}
-                    subscriptions={profile.subscriptions ?? []}
-                    editAvailable={editAvailable}
+                    subscriptions={profile?.subscriptions ?? []}
+                    isOwner={isOwner()}
                 />
             }
             <Footer/>
