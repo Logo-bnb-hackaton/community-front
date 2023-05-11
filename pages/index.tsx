@@ -1,5 +1,6 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
+import styles_header from "@/styles/Header.module.css";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import {
@@ -32,8 +33,10 @@ export default function Home() {
     undefined
   );
   const [isSticky, setIsSticky] = useState(false);
+  const [pageIsReady, setPageIsReady] = useState(false);
   const arrowRef = useRef<HTMLDivElement>(null);
   const { openConnectModal } = useConnectModal();
+  const [error, setError] = useState<string>("");
 
   // It's a workaround,
   // details - https://ethereum.stackexchange.com/questions/133612/error-hydration-failed-because-the-initial-ui-does-not-match-what-was-rendered
@@ -63,11 +66,17 @@ export default function Home() {
     }
   }, [priceToMintData, isPriceToMintDataSuccess]);
 
-  // useEffect(() => {
-  //   if (isDefinitelyConnected && userProfileId) {
-  //     router.push(`/profile/${userProfileId}`);
-  //   }
-  // }, [isDefinitelyConnected, router, userProfileId]);
+  useEffect(() => {
+    if (isDefinitelyConnected && userProfileId) {
+      router.prefetch(`/profile/${userProfileId}`);
+      setPageIsReady(true);
+    }
+  }, [isDefinitelyConnected, userProfileId]);
+
+  const redirectClick = () => {
+    setPageIsReady(false);
+    router.push(`/profile/${userProfileId}`);
+  };
 
   /**
    * Loading address tokens.
@@ -111,11 +120,29 @@ export default function Home() {
   });
 
   const [isMinting, setIsMinting] = useState(false);
-  const { writeAsync: safeMintWriteAsync } = useContractWrite(safeMintConfig);
+  const {
+    writeAsync: safeMintWriteAsync,
+    error: safeMintWriteError,
+    status: safeMintStatus,
+  } = useContractWrite(safeMintConfig);
+
+  useEffect(() => {
+    if (safeMintWriteError) {
+      console.log(safeMintWriteError.message);
+      setError(safeMintWriteError.message);
+    }
+    console.log(safeMintStatus);
+  }, [safeMintWriteError, safeMintStatus]);
 
   const mint = async () => {
     if (!priceToMint) {
       console.error("Can't load mint price.");
+      setError("Can't load mint price.");
+      return;
+    }
+
+    if (!safeMintWriteAsync) {
+      setError("Insufficient funds in your wallet.");
       return;
     }
 
@@ -133,12 +160,15 @@ export default function Home() {
           .finally(() => {
             // after minting we have to receive token by user again.
             tokenOfOwnerByIndexRefetch();
+            redirectClick();
           });
       })
       .catch((err) => {
         console.error(err);
+        setError(err.message);
+        
         setIsMinting(false);
-      });
+      })
   };
 
   useEffect(() => {
@@ -178,6 +208,12 @@ export default function Home() {
         </CustomAlert>
       )}
 
+      {error && (
+        <CustomAlert type="error" onClose={() => setError("")}>
+          {error}
+        </CustomAlert>
+      )}
+
       <Head>
         <title>Nodde community</title>
         <meta
@@ -189,11 +225,6 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <Header
-          saveCallback={undefined}
-          editAvailable={false}
-          edited={false}
-          setEdited={undefined}
-          disabled={false}
           showLogo={isSticky}
           profileId={userProfileId?.toString()}
           // todo fix it
@@ -204,7 +235,7 @@ export default function Home() {
           <div className={styles.welcome_content}>
             <div className={styles.welcome_content_left_side}>
               <h1>Welcome to</h1>
-              <div id="logo_nodde" className={styles.logo_nodde}></div>
+              <div id="logo_nodde" className={styles_header.logo_nodde}></div>
             </div>
             <div className={styles.welcome_content_right_side}>
               <div className={styles.home_image_0}></div>
@@ -216,7 +247,7 @@ export default function Home() {
               fontSize: "32px",
             }}
           >
-            Create a closed sessions for training, streams, and other events, as
+            Create closed sessions for training, streams, and other events, as
             well as receive donations from subscribers.
           </p>
           <h1>Build you own community</h1>
@@ -226,41 +257,74 @@ export default function Home() {
             onClick={handleClick}
             ref={arrowRef}
           ></div>
-          <p
-            style={{
-              marginTop: "76px",
-              marginBottom: "80px",
-              fontSize: "32px",
-              textAlign: "center",
-            }}
-          >
-            To use platform connect you wallet firstly
-          </p>
-          <CustomButton
-            color="white"
-            onClick={openConnectModal}
-            style={{ width: "324px", fontSize: "21px" }}
-            disabled={isDefinitelyConnected}
-          >
-            🌈 Connect wallet
-          </CustomButton>
-          <p
-            style={{
-              margin: "96px 0",
-              fontFamily: "var(--font-montserrat)",
-              fontSize: "32px",
-            }}
-          >
-            Create your NFT profile
-          </p>
-          <CustomButton
-            color="white"
-            onClick={!isDefinitelyConnected ? handleAlerShow : mint}
-            style={{ width: "324px", fontSize: "21px", marginBottom: "176px" }}
-            disabled={isMinting || !isDefinitelyConnected}
-          >
-            {isMinting ? <LoadingOutlined /> : "🚀"} Create a profile
-          </CustomButton>
+          {!isDefinitelyConnected && (
+            <div className={styles.section_wrapper}>
+              <p
+                style={{
+                  marginBottom: "80px",
+                  fontSize: "32px",
+                }}
+              >
+                To use platform connect you wallet firstly
+              </p>
+              <CustomButton
+                color="white"
+                onClick={openConnectModal}
+                style={{ width: "324px", fontSize: "21px" }}
+                disabled={isDefinitelyConnected}
+              >
+                🌈 Connect wallet
+              </CustomButton>
+            </div>
+          )}
+          {isDefinitelyConnected && !userProfileId && (
+            <div className={styles.section_wrapper}>
+              <p
+                style={{
+                  marginBottom: "80px",
+                  fontSize: "32px",
+                }}
+              >
+                Create your NFT profile
+              </p>
+              <CustomButton
+                color="white"
+                onClick={!isDefinitelyConnected ? handleAlerShow : mint}
+                style={{
+                  width: "324px",
+                  fontSize: "21px",
+                  marginBottom: "176px",
+                }}
+                disabled={isMinting || !isDefinitelyConnected}
+              >
+                {isMinting ? <LoadingOutlined /> : "🚀"} Create a profile
+              </CustomButton>
+            </div>
+          )}
+          {isDefinitelyConnected && userProfileId && (
+            <div className={styles.section_wrapper}>
+              <p
+                style={{
+                  marginBottom: "80px",
+                  fontSize: "32px",
+                }}
+              >
+                Set your profile
+              </p>
+              <CustomButton
+                color="white"
+                onClick={redirectClick}
+                style={{
+                  width: "324px",
+                  fontSize: "21px",
+                  marginBottom: "176px",
+                }}
+                disabled={!pageIsReady}
+              >
+                {!pageIsReady ? <LoadingOutlined /> : "🚀"} Let's go right now
+              </CustomButton>
+            </div>
+          )}
         </div>
         <Footer />
       </main>
