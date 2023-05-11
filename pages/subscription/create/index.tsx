@@ -16,11 +16,6 @@ const CreatePage: NextPage<Props> = ({profile}) => {
     return (
         <main className={homeStyles.main}>
             <Header
-                saveCallback={undefined}
-                editAvailable={false}
-                edited={false}
-                setEdited={undefined}
-                disabled={false}
                 profileId={profile.id}
                 base64Logo={profile.logo.base64Image}
             />
