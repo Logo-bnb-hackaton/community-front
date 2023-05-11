@@ -1,70 +1,63 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import styles_header from "@/styles/Header.module.css";
-import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
-import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-} from "wagmi";
+import React, {useEffect, useRef, useState} from "react";
+import {useRouter} from "next/router";
+import {useAccount, useContractRead, useContractWrite, usePrepareContractWrite,} from "wagmi";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import CustomButton from "@/components/customButton/CustomButton";
 import CustomAlert from "@/components/alert/CustomAlert";
-import {
-  MAIN_NFT_ABI,
-  MAIN_NFT_ADDRESS,
-  WAIT_BLOCK_CONFIRMATIONS,
-} from "@/constants";
-import { BigNumber } from "ethers";
-import { waitForTransaction } from "@wagmi/core";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { LoadingOutlined } from "@ant-design/icons";
+import {MAIN_NFT_ABI, MAIN_NFT_ADDRESS, WAIT_BLOCK_CONFIRMATIONS,} from "@/constants";
+import {BigNumber} from "ethers";
+import {waitForTransaction} from "@wagmi/core";
+import {useConnectModal} from "@rainbow-me/rainbowkit";
+import {LoadingOutlined} from "@ant-design/icons";
+import {AuthProps} from "@/pages/_app";
+import {GetServerSidePropsContext, NextPage} from "next";
+import {getAuthStatus} from "@/utils/getAuthStatus";
 
-export default function Home() {
+interface Props extends AuthProps {
+}
+
+const Home: NextPage<Props> = () => {
   const router = useRouter();
   const { address, isConnected } = useAccount();
-  const [priceToMint, setPriceToMint] = useState<BigNumber | undefined>(
-    undefined
-  );
-  const [userProfileId, setUserProfileId] = useState<number | undefined>(
-    undefined
-  );
+  const [priceToMint, setPriceToMint] = useState<BigNumber | undefined>(undefined);
+  const [userProfileId, setUserProfileId] = useState<number | undefined>(undefined);
   const [isSticky, setIsSticky] = useState(false);
   const [pageIsReady, setPageIsReady] = useState(false);
   const arrowRef = useRef<HTMLDivElement>(null);
   const { openConnectModal } = useConnectModal();
   const [error, setError] = useState<string>("");
 
-  // It's a workaround,
-  // details - https://ethereum.stackexchange.com/questions/133612/error-hydration-failed-because-the-initial-ui-does-not-match-what-was-rendered
-  const [isDefinitelyConnected, setIsDefinitelyConnected] = useState(false);
-  useEffect(() => {
-    if (isConnected) {
-      setIsDefinitelyConnected(true);
-    } else {
-      setIsDefinitelyConnected(false);
-    }
-  }, [isConnected]);
+    // It's a workaround,
+    // details - https://ethereum.stackexchange.com/questions/133612/error-hydration-failed-because-the-initial-ui-does-not-match-what-was-rendered
+    const [isDefinitelyConnected, setIsDefinitelyConnected] = useState(false);
+    useEffect(() => {
+        if (isConnected) {
+            setIsDefinitelyConnected(true);
+        } else {
+            setIsDefinitelyConnected(false);
+        }
+    }, [isConnected]);
 
-  /**
-   * Loading price to mint
-   */
-  const { data: priceToMintData, isSuccess: isPriceToMintDataSuccess } =
-    useContractRead({
-      address: MAIN_NFT_ADDRESS,
-      abi: MAIN_NFT_ABI,
-      functionName: "priceToMint",
-      args: [address],
-    });
+    /**
+     * Loading price to mint
+     */
+    const {data: priceToMintData, isSuccess: isPriceToMintDataSuccess} =
+        useContractRead({
+            address: MAIN_NFT_ADDRESS,
+            abi: MAIN_NFT_ABI,
+            functionName: "priceToMint",
+            args: [address],
+        });
 
-  useEffect(() => {
-    if (isPriceToMintDataSuccess) {
-      setPriceToMint(priceToMintData as BigNumber);
-    }
-  }, [priceToMintData, isPriceToMintDataSuccess]);
+    useEffect(() => {
+        if (isPriceToMintDataSuccess) {
+            setPriceToMint(priceToMintData as BigNumber);
+        }
+    }, [priceToMintData, isPriceToMintDataSuccess]);
 
   useEffect(() => {
     if (isDefinitelyConnected && userProfileId) {
@@ -78,46 +71,46 @@ export default function Home() {
     router.push(`/profile/${userProfileId}`);
   };
 
-  /**
-   * Loading address tokens.
-   *
-   * I can't find a way to check if a user has a profile, so it's a workaround.
-   *
-   * success => has profile
-   * error => no profile
-   */
-  const {
-    data: tokenOfOwnerByIndexData,
-    isSuccess: isTokenOfOwnerByIndexSuccess,
-    refetch: tokenOfOwnerByIndexRefetch,
-  } = useContractRead({
-    address: MAIN_NFT_ADDRESS,
-    abi: MAIN_NFT_ABI,
-    functionName: "tokenOfOwnerByIndex",
-    args: [address, 0],
-  });
+    /**
+     * Loading address tokens.
+     *
+     * I can't find a way to check if a user has a profile, so it's a workaround.
+     *
+     * success => has profile
+     * error => no profile
+     */
+    const {
+        data: tokenOfOwnerByIndexData,
+        isSuccess: isTokenOfOwnerByIndexSuccess,
+        refetch: tokenOfOwnerByIndexRefetch,
+    } = useContractRead({
+        address: MAIN_NFT_ADDRESS,
+        abi: MAIN_NFT_ABI,
+        functionName: "tokenOfOwnerByIndex",
+        args: [address, 0],
+    });
 
-  useEffect(() => {
-    if (isTokenOfOwnerByIndexSuccess) {
-      setUserProfileId(tokenOfOwnerByIndexData as number);
-    } else {
-      setUserProfileId(undefined);
-    }
-  }, [
-    priceToMintData,
-    isPriceToMintDataSuccess,
-    isTokenOfOwnerByIndexSuccess,
-    tokenOfOwnerByIndexData,
-  ]);
+    useEffect(() => {
+        if (isTokenOfOwnerByIndexSuccess) {
+            setUserProfileId(tokenOfOwnerByIndexData as number);
+        } else {
+            setUserProfileId(undefined);
+        }
+    }, [
+        priceToMintData,
+        isPriceToMintDataSuccess,
+        isTokenOfOwnerByIndexSuccess,
+        tokenOfOwnerByIndexData,
+    ]);
 
-  const { config: safeMintConfig } = usePrepareContractWrite({
-    address: MAIN_NFT_ADDRESS,
-    abi: MAIN_NFT_ABI,
-    functionName: "safeMint",
-    overrides: {
-      value: priceToMint,
-    },
-  });
+    const {config: safeMintConfig} = usePrepareContractWrite({
+        address: MAIN_NFT_ADDRESS,
+        abi: MAIN_NFT_ABI,
+        functionName: "safeMint",
+        overrides: {
+            value: priceToMint,
+        },
+    });
 
   const [isMinting, setIsMinting] = useState(false);
   const {
@@ -146,7 +139,7 @@ export default function Home() {
       return;
     }
 
-    setIsMinting((old) => !old);
+        setIsMinting(old => !old);
 
     safeMintWriteAsync?.()
       .then((data) => {
@@ -166,47 +159,47 @@ export default function Home() {
       .catch((err) => {
         console.error(err);
         setError(err.message);
-        
+
         setIsMinting(false);
       })
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const logo = document.querySelector(`#logo_nodde`);
-      if (logo) {
-        const logoRect = logo.getBoundingClientRect();
-        setIsSticky(logoRect.top <= 0);
-      }
+    useEffect(() => {
+        const handleScroll = () => {
+            const logo = document.querySelector(`#logo_nodde`);
+            if (logo) {
+                const logoRect = logo.getBoundingClientRect();
+                setIsSticky(logoRect.top <= 0);
+            }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
+
+    const handleClick = () => {
+        if (arrowRef.current) {
+            arrowRef.current.scrollIntoView({behavior: "smooth", block: "start"});
+        }
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
+
+    const [showAlert, setShowAlert] = useState(false);
+    const handleAlerShow = () => {
+        setShowAlert(true);
     };
-  }, []);
 
-  const handleClick = () => {
-    if (arrowRef.current) {
-      arrowRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
+    const handleAlertClose = () => {
+        setShowAlert(false);
+    };
 
-  const [showAlert, setShowAlert] = useState(false);
-  const handleAlerShow = () => {
-    setShowAlert(true);
-  };
-
-  const handleAlertClose = () => {
-    setShowAlert(false);
-  };
-
-  return (
-    <>
-      {showAlert && (
-        <CustomAlert type="warning" onClose={handleAlertClose}>
-          Firstly, connect your wallet to the platform
-        </CustomAlert>
-      )}
+    return (
+        <>
+            {showAlert && (
+                <CustomAlert type="warning" onClose={handleAlertClose}>
+                    Firstly, connect your wallet to the platform
+                </CustomAlert>
+            )}
 
       {error && (
         <CustomAlert type="error" onClose={() => setError("")}>
@@ -331,3 +324,13 @@ export default function Home() {
     </>
   );
 }
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+    return {
+        props: {
+            authStatus: getAuthStatus(ctx)
+        }
+    }
+}
+
+export default Home;

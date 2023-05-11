@@ -13,3 +13,15 @@ export const createNewSubscriptionByEth = async (id: string, profileId: string, 
     const {hash} = await writeContract(config);
     await waitForTransaction({hash, confirmations: WAIT_BLOCK_CONFIRMATIONS})
 }
+
+export const updateSubscriptionTokenAndPrice = async (profileId: string, price: BigNumber) => {
+    const config = await prepareWriteContract({
+        address: SUBSCRIPTIONS_ADDRESS,
+        abi: SUBSCRIPTIONS_ABI,
+        functionName: 'setNewTokensAndPrice',
+        args: [profileId, 0, [], price]
+    });
+
+    const {hash} = await writeContract(config);
+    await waitForTransaction({hash, confirmations: WAIT_BLOCK_CONFIRMATIONS})
+}

@@ -6,15 +6,17 @@ import {useRouter} from "next/router";
 // @ts-ignore
 import {parse as uuidParse, v4 as uuidv4} from 'uuid';
 import {ethers} from "ethers";
-import {SubscriptionStatus, UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
+import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import {baseCoin} from "@/utils/tokens";
 
 import * as Api from '@/api'
+
 import BaseInfo, {BaseInfoData, BaseInfoErrors, hasError} from "@/components/subscription/edit/BaseInfo";
 import {BriefProfile} from "@/components/subscription/Subscription";
 import Integration from "@/components/subscription/integration/Integration";
 import CustomButton from "@/components/customButton/CustomButton";
 import {hasChanges} from "@/utils/compare";
+import {ChatBindingStatus, TgChatDTO} from "@/api/dto/integration.dto";
 
 // todo maybe extract it later
 function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
@@ -39,21 +41,19 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+    // this field contains top-level data to understand if there are changes
+    // and updated after saving in db
+    const [lastDbData, setLastDbData] = useState<UpdateSubscriptionDTO | undefined>(data);
     const [baseInfoData, setBaseInfoData] = useState<BaseInfoData>(
-        {
+        data ? toBaseInfoData(data) : {
             title: '',
             description: '',
             mainImage: undefined,
             previewImage: undefined,
             price: 0.0,
             coin: baseCoin,
-        }
-    );
-
-    useEffect(() => {
-        if (!data) return;
-        setBaseInfoData(toBaseInfoData(data));
-    }, [data]);
+        });
+    const [chat, setChat] = useState<TgChatDTO | undefined>(undefined);
 
     /**
      * Errors are undefined before calling 'next'
@@ -62,7 +62,7 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
 
     const next = async () => {
         if (currentStep === 0) {
-            await saveSubscriptionDraft(data?.id, data?.status, baseInfoData)
+            await saveSubscriptionDraft(baseInfoData)
         } else {
             setCurrentStep(currentStep + 1);
         }
@@ -80,48 +80,47 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
      * Save subscription
      */
     const saveSubscriptionDraft = async (
-        oldId: string | undefined,
-        status: SubscriptionStatus | undefined,
         baseInfo: BaseInfoData | undefined
     ) => {
         setIsLoading(true);
         try {
             if (!isValid(baseInfo, errors)) return;
-            if (data && !hasChanges(toBaseInfoData(data), baseInfo!!)) {
-                setCurrentStep(old => old + 1);
-                return;
+
+            const oldId = lastDbData?.id;
+            const isNewSub = oldId === undefined;
+            const id = (isNewSub ? ethers.utils.keccak256(ethers.utils.toUtf8Bytes(uuidv4())) : oldId!!) as `0x${string}`;
+            const price = baseInfo!!.price.toString();
+
+            if (!lastDbData || hasChanges(toBaseInfoData(lastDbData), baseInfo!!)) {
+                const request: UpdateSubscriptionDTO = {
+                    id: id,
+                    ownerId: profile!!.id,
+                    status: isNewSub ? 'DRAFT' : lastDbData!!.status,
+                    title: baseInfo!!.title,
+                    description: baseInfo!!.description,
+                    mainImage: {
+                        id: baseInfo?.mainImage?.id,
+                        base64Image: baseInfo?.mainImage?.base64Image,
+                    },
+                    previewImage: {
+                        id: baseInfo?.previewImage?.id,
+                        base64Image: baseInfo?.previewImage?.base64Image,
+                    },
+                    price: price,
+                    coin: baseInfo!!.coin,
+                };
+                await Api.subscription.updateSubscription(request);
+                setLastDbData(request);
             }
 
-            const isNewSub = oldId === undefined;
-
-            const id: string = isNewSub ? ethers.utils.keccak256(ethers.utils.toUtf8Bytes(uuidv4())) : oldId!!;
-            const price = baseInfo!!.price.toString();
-            const ethersPrice = ethers.utils.parseEther(price);
-
-            await Api.subscription.updateSubscription({
-                id: id,
-                ownerId: profile!!.id,
-                status: isNewSub ? 'DRAFT' : status!!,
-                title: baseInfo!!.title,
-                description: baseInfo!!.description,
-                mainImage: {
-                    id: baseInfo?.mainImage?.id,
-                    base64Image: baseInfo?.mainImage?.base64Image,
-                },
-                previewImage: {
-                    id: baseInfo?.previewImage?.id,
-                    base64Image: baseInfo?.previewImage?.base64Image,
-                },
-                price: price,
-                coin: baseInfo!!.coin,
-            });
-
-            // todo uncomment it later
-            // if (isNewSub) {
-            //     await Contract.subscription.createNewSubscriptionByEth(id, profileId, ethersPrice);
-            // }
-
+            const chat = await Api.integration.getChat(id);
+            if (chat.status === ChatBindingStatus.BINDED) {
+                setChat(chat);
+            }
             setCurrentStep(old => old + 1);
+        } catch (e) {
+            console.error(e);
+            console.error(`Catch error during updating subscription.`);
         } finally {
             setIsLoading(false);
         }
@@ -152,7 +151,7 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
     const steps = [
         {
             title: 'CREATE SUBSCRIPTION',
-            subTitle: 'Connect with Telegram',
+            subTitle: 'Subscription editing',
             content: <BaseInfo
                 data={baseInfoData}
                 profile={profile}
@@ -163,12 +162,17 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
         {
             title: 'CREATE SUBSCRIPTION',
             subTitle: 'Connect with platform',
-            content: <Integration
-                previousCallback={() => prev()}
-                doneCallback={() => {
-                    message.success('Processing complete!');
-                    router.push(`/profile/${data!!.id}`);
-                }}/>,
+            content:
+                <>
+                    {lastDbData && <Integration
+                        topLvlChat={chat}
+                        subscriptionId={lastDbData!!.id as `0x${string}`}
+                        previousCallback={() => prev()}
+                        doneCallback={() => {
+                            message.success('Processing complete!');
+                            router.push(`/subscription/${lastDbData!!.id}?profileId=${profile.id}`);
+                        }}/>}
+                </>,
         },
     ];
 

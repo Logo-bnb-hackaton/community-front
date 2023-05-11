@@ -1,88 +1,106 @@
-import React, {ReactNode, useState} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import {ConfigProvider, Input, Select} from "antd";
 import styles from "@/styles/Subscription.module.css";
-import Image from "next/image";
-import heroIcon from "@/assets/Hero.png";
 import CustomButton from "@/components/customButton/CustomButton";
+import * as Api from "@/api";
+import {TgChatDTO} from "@/api/dto/integration.dto";
 
 enum Platform {
     Telegram = "Telegram",
 }
 
 interface Props {
+    topLvlChat: TgChatDTO | undefined,
+    subscriptionId: `0x${string}`,
     previousCallback: () => void;
     doneCallback: () => void;
 }
 
-const Integration: React.FC<Props> = ({previousCallback, doneCallback}) => {
+const TgBotName = 'Nodde_Bot';
+const savingStepIndex = 1;
+const finalStepIndex = 2;
+
+const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallback, doneCallback}) => {
 
     const [currentStep, setCurrentStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
     const [platform, setPlatform] = useState<string>(Platform.Telegram.toString());
-    const [token, setToken] = useState<string>('');
-    const [tokenError, setTokenError] = useState(false);
+    const [code, setCode] = useState<string>('');
+    const [tokenErrorMsg, setTokenErrorMsg] = useState<string | undefined>(undefined);
+    const [chat, setChat] = useState<TgChatDTO | undefined>(undefined);
+
+    useEffect(() => {
+        if (!topLvlChat) return;
+        setCurrentStep(finalStepIndex);
+        setChat(topLvlChat);
+    }, [topLvlChat]);
 
     const next = async () => {
-        if (currentStep === 3 && !isTokenValid(token)) {
-            setTokenError(true);
-            return;
+        if (currentStep === savingStepIndex) {
+            await bindTelegram();
+        } else {
+            setTokenErrorMsg(undefined);
         }
-        setTokenError(false);
         setCurrentStep(currentStep + 1);
     };
 
     const prev = () => {
-        setTokenError(false);
-        if (currentStep === 0) {
+        setTokenErrorMsg(undefined);
+        if (currentStep === 0 || chat) {
             previousCallback();
             return;
         }
         setCurrentStep(currentStep - 1);
     };
 
-    const onTokenChange = (token: string) => {
-        setToken(token);
-        setTokenError(!isTokenValid(token));
+    const onCodeChange = (token: string) => {
+        setCode(token);
+        setTokenErrorMsg(!isCodeValid(token) ? 'Please enter token!' : undefined);
 
     }
 
-    const isTokenValid = (token: string): boolean => {
+    const isCodeValid = (token: string): boolean => {
         return token !== undefined && token !== null && token.trim().length !== 0;
     }
 
+    const bindTelegram = async () => {
+        if (!isCodeValid(code)) {
+            setTokenErrorMsg('Please enter token!');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const bindRes = await Api.integration.bindTelegram(subscriptionId, code);
+            if (bindRes.error?.message !== undefined) {
+                setTokenErrorMsg(bindRes.error!!.message);
+                return;
+            }
+            setChat(await Api.integration.getChat(subscriptionId));
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     /**
      * Component
      */
-    const generateStep = (step: number, title: string, descriptionItems: string[], child: ReactNode | undefined = undefined) => {
+    const generateDescriptions = (descriptionItems: string[], child: ReactNode | undefined = undefined) => {
         return (
             <div className={styles.integrationStepWrapper}>
-                <div className={styles.integrationStepIndex}>
-                    {step}
-                </div>
-
                 <div className={styles.integrationStepContentWrapper}>
-                    <div className={styles.integrationStepTitleWrapper}>
-                        <h3>{title}</h3>
-                    </div>
-                    <div>
-                        <div className={styles.integrationStepDescriptionWrapper}>
-                            <ul>
-                                {descriptionItems.map((text, index) => {
-                                    return (
-                                        <>
-                                            {index !== 0 ? <br/> : <></>}
-                                            <li>{text}</li>
-                                        </>
-                                    );
-                                })}
-                            </ul>
-
-                            <div className={styles.integrationStepHero}>
-                                <Image src={heroIcon} alt={"Hero img"} fill/>
-                            </div>
-                        </div>
+                    <div className={styles.integrationStepDescriptionWrapper}>
+                        <ul>
+                            {descriptionItems.map((text, index) => {
+                                return (
+                                    <>
+                                        {index !== 0 ? <br/> : <></>}
+                                        <li>{text}</li>
+                                    </>
+                                );
+                            })}
+                        </ul>
                     </div>
                     {child && child}
                 </div>
@@ -90,16 +108,14 @@ const Integration: React.FC<Props> = ({previousCallback, doneCallback}) => {
         );
     }
 
-    const firstAndSecondStep = () => {
+    const firstStep = () => {
         return (
             <>
                 <div className={styles.integrationStepWrapper}>
-                    <div className={styles.integrationStepIndex}>1
-                    </div>
-
                     <Select
+                        placeholder={'Add hosting platform'}
                         defaultValue={Platform.Telegram.toString()}
-                        style={{width: '940px', marginLeft: '24px'}}
+                        style={{width: '100%'}}
                         onChange={value => setPlatform(value)}
                     >
                         <Select.Option key={Platform.Telegram.toString()}
@@ -107,110 +123,80 @@ const Integration: React.FC<Props> = ({previousCallback, doneCallback}) => {
                     </Select>
                 </div>
                 {
-                    generateStep(2, 'Activate the @Nodde_Bot',
+                    generateDescriptions(
                         [
-                            'To activate the @Nodde_Bot, go to Telegram and search for it by name in the search bar. Click on the bot\'s icon to go to its page.',
-                            'Press the "Start" button on the bot\'s page.'
+                            `To activate the @${TgBotName}, go to Telegram and search for it by name in the search bar. Click on the bot\'s icon to go to its page.`,
+                            `Press the "Start" button on the bot\'s page.`,
+                            `Invite @${TgBotName} to your private channel. To do this, go to the channel\'s information panel and find the "Members" tab.`,
+                            `Click on the "Add member" button and find @${TgBotName} in the list of available bots. Click on it to add it to the channel.`,
                         ])
                 }
             </>
         );
     }
 
-    const thirdStep = () => {
-        return generateStep(
-            3,
-            'Add the bot to your private channel',
-            [
-                'Invite @Nodde_Bot to your private channel. To do this, go to the channel\'s information panel and find the "Members" tab.',
-                'Click on the "Add member" button and find @Nodde_Bot in the list of available bots. Click on it to add it to the channel.'
-            ]
-        );
-    }
-
-    const fourthStep = () => {
-        return generateStep(
-            4,
-            'Bind the bot to the channel',
-            [
-                'Write a message "@Nodde_Bot bind" in your private channel. The bot should respond with a message containing a code.'
-            ]
-        );
-    }
-
-    const fifthStep = () => {
-        const child = (<>
-            <Input
-                placeholder={'Add Telegram Token'}
-                onChange={e => onTokenChange(e.target.value)}
-                className={styles.integrationTokenInput}
-                style={{borderColor: tokenError ? 'red' : ''}}
-            />
-            {tokenError && <div style={{color: "red", fontSize: '12px', marginTop: '12px'}}>Please enter token!</div>}
-        </>);
+    const secondStep = () => {
         return (
             <>
                 {
-                    generateStep(
-                        5,
-                        'Enter the token code on the platform',
+                    generateDescriptions(
                         [
-                            'Copy the code received from @Nodde_Bot.',
-                            'Enter the copied code in the "Telegram Token" field.'
-                        ],
-                        child
-                    )
+                            `Write a message "@${TgBotName} bind" in your private channel. The bot should respond with a message containing a code.`,
+                            `Copy the code received from @${TgBotName}.`,
+                            `Enter the copied code in the "Telegram Code" field.`,
+                        ])
                 }
+                <div className={styles.integrationStepWrapper}>
+                    <Input
+                        disabled={isLoading}
+                        style={{width: '100%', height: 64, paddingLeft: 20, borderColor: tokenErrorMsg ? 'red' : ''}}
+                        value={code}
+                        placeholder="Enter telegram code"
+                        onChange={v => onCodeChange(v.target.value)}
+                    />
+                    {tokenErrorMsg &&
+                        <div style={{color: "red", fontSize: '12px', marginTop: '12px'}}>{tokenErrorMsg}</div>}
+                </div>
             </>
         );
     }
 
-    const sixthStep = () => {
+    const thirdStep = () => {
         return (
             <>
-                {
-                    generateStep(
-                        6,
-                        `Verify ${platform} information`,
-                        [
-                            `Your ${platform} code is '${token}' `
-                        ]
-                    )
+                {chat &&
+                    <>
+                        <p>Telegram chat name: {chat!!.chat!!.title}</p>
+                        <a href={chat!!.chat!!.link} target="_blank">Tg chat link</a>
+                    </>
                 }
             </>
         );
     }
 
     const steps: ReactNode[] = [
-        firstAndSecondStep(),
+        firstStep(),
+        secondStep(),
         thirdStep(),
-        fourthStep(),
-        fifthStep(),
-        sixthStep(),
     ];
 
     return (
         <ConfigProvider
             theme={{
-                components: {
-                    Select: {
-                        fontSize: 24,
-                        fontFamily: 'co-headline',
-                        controlHeight: 64,
-                        colorBorder: '#000',
-                        borderRadius: 14,
-                        colorPrimaryHover: '#000'
-                    },
-                    Input: {
-                        colorPrimaryHover: '#d9d9d9'
-                    }
+                token: {
+                    fontSize: 24,
+                    fontFamily: 'co-headline',
+                    controlHeight: 64,
+                    colorBorder: '#000',
+                    borderRadius: 14,
+                    colorPrimaryHover: '#000',
+                    colorPrimaryActive: '#fff'
                 }
             }}
         >
             <div className={styles.integrationFlowWrapper}>
                 {steps[currentStep]}
                 <div className={styles.eventButtonWrapper} style={{marginTop: '217px'}}>
-
                     <CustomButton
                         type={"small"}
                         color={"gray"}

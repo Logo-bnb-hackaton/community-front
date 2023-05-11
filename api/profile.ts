@@ -1,13 +1,16 @@
-import axios from "@/core/axios";
+import {externalClient, internalClient} from "@/core/axios";
 import {ProfileDTO, UpdateProfileDTO} from "@/api/dto/profile.dto";
 import {ResponseDto} from "@/api/dto/response.dto";
 
-export const loadProfile = async (profileId: string): Promise<ProfileDTO> => {
-    const response: ResponseDto<ProfileDTO> = (await axios({
+export const loadProfile = async (profileId: string, cookie: any): Promise<ProfileDTO> => {
+    const response: ResponseDto<ProfileDTO> = (await externalClient({
         method: 'post',
         url: '/profile/',
         data: {
             profileId: profileId
+        },
+        headers: {
+            Cookie: cookie
         },
     })).data;
     // todo check status here
@@ -15,9 +18,9 @@ export const loadProfile = async (profileId: string): Promise<ProfileDTO> => {
 }
 
 export const updateProfile = async (data: UpdateProfileDTO): Promise<void> => {
-    return axios({
+    return internalClient({
         method: 'post',
-        url: '/profile/update',
+        url: '/api/profile/update',
         data: data,
     });
 }

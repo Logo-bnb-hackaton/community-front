@@ -10,8 +10,12 @@ import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import Subscription, {BriefProfile} from "@/components/subscription/Subscription";
 import SubscriptionEdit from "@/components/subscription/edit/SubscriptionEdit";
 import Footer from "@/components/footer/Footer";
+import {AuthProps} from "@/pages/_app";
+import {getAuthStatus} from "@/utils/getAuthStatus";
+import * as Contract from "@/contract";
+import {ProfileDTO} from "@/api/dto/profile.dto";
 
-interface Props {
+interface Props extends AuthProps {
     subscription: UpdateSubscriptionDTO;
     profile: BriefProfile
 }
@@ -54,22 +58,42 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         }
 
         const subscriptionId = ctx.query!!.subscriptionId as string;
+        // todo mb remove cookie here
+        const cookie = ctx.req.headers.cookie
 
         console.log(`loading sub: ${subscriptionId}`);
-        let subscription;
-        const subscriptionPromise = Api.subscription.loadSubscription(subscriptionId).then(data => subscription = data);
+        let subscription: UpdateSubscriptionDTO | undefined;
+        const subscriptionPromise = Api.subscription.loadSubscription(subscriptionId, cookie).then(data => subscription = data);
         console.log(`loading profile: ${profileId}`);
-        let profile;
-        const profilePromise = await Api.profile.loadProfile(profileId)
-            .then(data => ({id: data.id, title: data.title, logo: data.logo}))
+        let profile: ProfileDTO | undefined;
+        const profilePromise = await Api.profile.loadProfile(profileId, cookie)
             .then(data => profile = data);
 
-        await Promise.all([subscriptionPromise, profilePromise]);
+        let ownerAddress;
+        const ownerPromise = Contract.profile
+            .loadProfileOwner(profileId)
+            .then((address) => (ownerAddress = address));
+
+        await Promise.all([subscriptionPromise, profilePromise, ownerPromise]);
+        if (!profile || !subscription) {
+            return {
+                redirect: {
+                    destination: `/${profileId}`,
+                    permanent: false,
+                },
+            }
+        }
 
         return {
             props: {
+                authStatus: getAuthStatus(ctx),
                 subscription: subscription,
-                profile: profile
+                profile: {
+                    id: profile.id,
+                    title: profile.title,
+                    logo: profile.logo,
+                    ownerAddress: ownerAddress,
+                }
             }
         };
     } catch (err) {
