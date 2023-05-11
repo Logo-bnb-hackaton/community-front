@@ -30,7 +30,7 @@ const {connectors} = getDefaultWallets({
     chains
 });
 const wagmiClient = createClient({
-    autoConnect: true,
+    autoConnect: false,
     connectors: connectors,
     provider,
 });
@@ -48,8 +48,7 @@ export default function App({Component, pageProps}: AppProps) {
                     method: 'get',
                     url: '/api/auth/nonce',
                 });
-                const nonce = (await response).data;
-                return nonce;
+                return (await response).data;
             } catch (e) {
                 console.log('catch nonce error');
                 console.log(e);

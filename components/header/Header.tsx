@@ -16,7 +16,7 @@ export default function Header({
                                    base64Logo = undefined,
                                }: {
     saveCallback: Function | undefined;
-    editAvailable: boolean;
+    editAvailable?: boolean;
     edited: boolean;
     setEdited: Function | undefined;
     disabled: boolean;
@@ -51,23 +51,24 @@ export default function Header({
                     )}
                 </div>
                 <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
-                    {editAvailable && (
-                        <CustomButton
-                            style={{
-                                minWidth: "55px", height: "55px",
-                                padding: "0 16px ", margin: '0 12px',
-                                backgroundColor: '#fff',
-                                display: 'flex', justifyContent: 'center', alignItems: 'center'
-                            }}
-                            type="small"
-                            color={"gray"}
-                            disabled={disabled}
-                            onClick={edited ? onSaveHandle : onEditHandle}
-                        >
-                            {edited ? "Save" : <Image src={EditSvg} alt={"Edit icon"} width={20} height={20}/>}
-                        </CustomButton>
-                    )}
-                    <WalletButton profileId={profileId} base64Logo={base64Logo}/>
+                    <WalletButton profileId={profileId} base64Logo={base64Logo}>
+                        {editAvailable && (
+                            <CustomButton
+                                style={{
+                                    minWidth: "55px", height: "55px",
+                                    padding: "0 16px ", margin: '0 12px',
+                                    backgroundColor: '#fff',
+                                    display: 'flex', justifyContent: 'center', alignItems: 'center'
+                                }}
+                                type="small"
+                                color={"gray"}
+                                disabled={disabled}
+                                onClick={edited ? onSaveHandle : onEditHandle}
+                            >
+                                {edited ? "Save" : <Image src={EditSvg} alt={"Edit icon"} width={20} height={20}/>}
+                            </CustomButton>
+                        )}
+                    </WalletButton>
                 </div>
             </div>
         </div>

@@ -11,6 +11,7 @@ import {prepareWriteContract, waitForTransaction, writeContract, WriteContractPr
 import {PUBLIC_DONATION_ABI, PUBLIC_DONATION_ADDRESS} from "@/constants";
 import {addressBySymbol, baseCoin} from "@/utils/tokens";
 import {SegmentedValue} from "rc-segmented";
+import {useConnectModal} from "@rainbow-me/rainbowkit";
 
 const defaultDonateSteps: StepProps[] = [
     {
@@ -62,7 +63,9 @@ interface Props {
 }
 
 const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
-    const {address} = useAccount();
+    const {isConnected, address} = useAccount();
+    const {openConnectModal} = useConnectModal();
+
     const {data: baseBalanceResponse} = useBalance({
         address: address,
     });
@@ -102,6 +105,10 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
     >(undefined);
 
     const openDonateMenu = () => {
+        if (!isConnected) {
+            openConnectModal!!();
+            return;
+        }
         setIsDonateMenuOpen(true);
     };
     const closeDonateMenu = () => {

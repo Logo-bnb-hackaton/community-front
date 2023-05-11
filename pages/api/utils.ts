@@ -6,7 +6,7 @@ export default async function cookieWrapper(
     req: NextApiRequest,
     res: NextApiResponse,
     axiosConfig: AxiosRequestConfig,
-    deleteCookie: boolean = false,
+    deleteSessionCookie: boolean = false,
 ): Promise<string> {
     const response = await externalClient({
         ...axiosConfig,
@@ -16,10 +16,11 @@ export default async function cookieWrapper(
             Cookie: req.headers.cookie
         }
     });
+    console.log(req.headers.cookie);
 
-    let cookie: string[] = (response.headers as AxiosHeaders).get('set-cookie') as string[];
-    if (deleteCookie) {
-        cookie = [`${req.headers.cookie}; Max-Age=0`];
+    let cookie: string[] = ((response.headers as AxiosHeaders).get('set-cookie') ?? []) as string[];
+    if (deleteSessionCookie) {
+        cookie.push(`${req.headers.cookie}; Path=/; Max-Age=0`);
     }
 
     res.status(200)

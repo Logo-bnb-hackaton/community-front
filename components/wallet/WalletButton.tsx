@@ -1,18 +1,21 @@
 import {ConnectButton, useAccountModal} from '@rainbow-me/rainbowkit';
 import Image from "next/image";
-import React, {useEffect, useRef, useState} from "react";
+import React, {ReactNode, useEffect, useRef, useState} from "react";
 import heroIcon from "@/assets/Hero.png";
 import {MenuOutlined} from "@ant-design/icons";
 import {Dropdown, MenuProps} from "antd";
 import {useRouter} from "next/router";
 import CustomButton from "@/components/customButton/CustomButton";
+import ReactMarkdown from "react-markdown";
+
 
 interface Props {
     profileId?: string;
     base64Logo?: string;
+    children?: ReactNode;
 }
 
-const WalletButton: React.FC<Props> = ({profileId, base64Logo}) => {
+const WalletButton: React.FC<Props> = ({profileId, base64Logo, children}) => {
 
     const router = useRouter();
     const {openAccountModal} = useAccountModal();
@@ -109,41 +112,50 @@ const WalletButton: React.FC<Props> = ({profileId, base64Logo}) => {
                                 );
                             }
                             return (
-                                <Dropdown
-                                    menu={{items}}
-                                    placement="bottomRight"
-                                    arrow={false}
-                                    open={isOpen}
-                                    dropdownRender={body => <div ref={wrapperRef}>{body}</div>}
-                                >
-                                    <CustomButton onClick={openCloseMenu} style={{
-                                        backgroundColor: '#fff',
-                                        height: '56px',
-                                        minWidth: '100px',
-                                        position: "relative",
-                                        display: 'flex',
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        padding: '8px'
-                                    }}>
-                                        <MenuOutlined style={{fontSize: '24px', marginRight: '8px'}}/>
-                                        <Image
-                                            width={40}
-                                            height={40}
-                                            style={{borderRadius: '50%'}}
-                                            // todo fix it, use some default logo
-                                            src={base64Logo ? base64Logo : heroIcon}
-                                            alt={`Profile logo`}
-                                        />
-                                    </CustomButton>
-                                </Dropdown>
+                                <div style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                }}>
+                                    {children}
+                                    <Dropdown
+                                        menu={{items}}
+                                        placement="bottomRight"
+                                        arrow={false}
+                                        open={isOpen}
+                                        dropdownRender={body => <div ref={wrapperRef}>{body}</div>}
+                                    >
+                                        <CustomButton onClick={openCloseMenu} style={{
+                                            backgroundColor: '#fff',
+                                            height: '56px',
+                                            minWidth: '100px',
+                                            position: "relative",
+                                            display: 'flex',
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            padding: '8px'
+                                        }}>
+                                            <MenuOutlined style={{fontSize: '24px', marginRight: '8px'}}/>
+                                            <Image
+                                                width={40}
+                                                height={40}
+                                                style={{borderRadius: '50%'}}
+                                                // todo fix it, use some default logo
+                                                src={base64Logo ? base64Logo : heroIcon}
+                                                alt={`Profile logo`}
+                                            />
+                                        </CustomButton>
+                                    </Dropdown>
+                                </div>
                             );
                         })()}
                     </div>
                 );
             }}
         </ConnectButton.Custom>
-    );
+    )
+        ;
 }
 
 export default WalletButton;

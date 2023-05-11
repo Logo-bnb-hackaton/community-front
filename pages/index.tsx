@@ -188,7 +188,6 @@ const Home: NextPage<Props> = () => {
             <main className={styles.main}>
                 <Header
                     saveCallback={undefined}
-                    editAvailable={false}
                     edited={false}
                     setEdited={undefined}
                     disabled={false}

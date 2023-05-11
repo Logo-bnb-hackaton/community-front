@@ -12,8 +12,10 @@ import SubscriptionEdit from "@/components/subscription/edit/SubscriptionEdit";
 import Footer from "@/components/footer/Footer";
 import {AuthProps} from "@/pages/_app";
 import {getAuthStatus} from "@/utils/getAuthStatus";
+import * as Contract from "@/contract";
+import {ProfileDTO} from "@/api/dto/profile.dto";
 
-interface Props extends AuthProps{
+interface Props extends AuthProps {
     subscription: UpdateSubscriptionDTO;
     profile: BriefProfile
 }
@@ -26,7 +28,6 @@ const SubscriptionPage: NextPage<Props> = ({subscription, profile}) => {
         <main className={homeStyles.main}>
             <Header
                 saveCallback={undefined}
-                editAvailable={false}
                 edited={false}
                 setEdited={undefined}
                 disabled={false}
@@ -64,26 +65,38 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         const cookie = ctx.req.headers.cookie
 
         console.log(`loading sub: ${subscriptionId}`);
-        let subscription;
+        let subscription: UpdateSubscriptionDTO | undefined;
         const subscriptionPromise = Api.subscription.loadSubscription(subscriptionId, cookie).then(data => subscription = data);
         console.log(`loading profile: ${profileId}`);
-        let profile;
+        let profile: ProfileDTO | undefined;
         const profilePromise = await Api.profile.loadProfile(profileId, cookie)
-            .then(data => ({id: data.id, title: data.title, logo: data.logo}))
             .then(data => profile = data);
 
-        await Promise.all([subscriptionPromise, profilePromise]);
+        let ownerAddress;
+        const ownerPromise = Contract.profile
+            .loadProfileOwner(profileId)
+            .then((address) => (ownerAddress = address));
 
-        console.log({
-            authStatus: getAuthStatus(ctx),
-            subscription: subscription,
-            profile: profile
-        })
+        await Promise.all([subscriptionPromise, profilePromise, ownerPromise]);
+        if (!profile || !subscription) {
+            return {
+                redirect: {
+                    destination: `/${profileId}`,
+                    permanent: false,
+                },
+            }
+        }
+
         return {
             props: {
                 authStatus: getAuthStatus(ctx),
                 subscription: subscription,
-                profile: profile
+                profile: {
+                    id: profile.id,
+                    title: profile.title,
+                    logo: profile.logo,
+                    ownerAddress: ownerAddress,
+                }
             }
         };
     } catch (err) {

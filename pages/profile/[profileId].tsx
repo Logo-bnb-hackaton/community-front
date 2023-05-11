@@ -54,7 +54,7 @@ interface Props extends AuthProps {
     tokens: string[];
 }
 
-const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
+const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens}) => {
     const {address, isConnected} = useAccount();
 
     const router = useRouter();
@@ -66,7 +66,8 @@ const ProfilePage: NextPage<Props> = ({profile, ownerAddress, tokens}) => {
     const [baseData, setBaseData] = useState<BaseProfile | undefined>(profile ? fromProfileDTO(profile) : undefined);
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined);
 
-    const isOwner = () => isConnected && address === ownerAddress;
+    const isOwner = () => isConnected && authStatus === 'authenticated' && address === ownerAddress;
+    console.log(`isOwner: ${isOwner()}`);
 
     useEffect(() => {
         if (!profile && (!isConnected || address !== ownerAddress)) {

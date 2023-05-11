@@ -9,10 +9,13 @@ import {Input, Modal} from "antd";
 import {ethers} from "ethers";
 import * as Api from "@/api";
 import * as Contract from "@/contract";
+import {useAccount} from "wagmi";
+import {useConnectModal} from "@rainbow-me/rainbowkit";
 
 export interface BriefProfile {
     id: string,
     title: string,
+    ownerAddress: string,
     logo: {
         id: string,
         base64Image: string
@@ -24,6 +27,8 @@ export default function Subscription({
                                          profile
                                      }: { subscription: UpdateSubscriptionDTO, profile: BriefProfile }) {
     const router = useRouter()
+    const {isConnected, address} = useAccount();
+    const {openConnectModal} = useConnectModal();
 
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +37,7 @@ export default function Subscription({
 
     const openCloseModal = () => setIsShareModalOpen(prev => !prev);
 
-    const isOwner = () => subscription.ownerId === profile.id;
+    const isOwner = () => isConnected && profile.ownerAddress === address && subscription.ownerId === profile.id;
 
     const getPath = () => {
         const origin =
@@ -105,6 +110,13 @@ export default function Subscription({
     const processPayment = async (id: string) => {
         const status = await Api.subscription.processPayment({subscriptionId: id});
         setSubscriptionStatus(status);
+    }
+
+    const subscribe = async () => {
+        if (!isConnected) {
+            openConnectModal!!();
+            return;
+        }
     }
 
     return (
@@ -238,8 +250,7 @@ export default function Subscription({
                     <CustomButton
                         type="wide"
                         color={"green"}
-                        onClick={() => {
-                        }}
+                        onClick={subscribe}
                     >
                         Subscribe {subscription.price} {subscription.coin.toUpperCase()}
                     </CustomButton>

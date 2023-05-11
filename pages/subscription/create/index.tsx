@@ -20,7 +20,6 @@ const CreatePage: NextPage<Props> = ({profile}) => {
         <main className={homeStyles.main}>
             <Header
                 saveCallback={undefined}
-                editAvailable={false}
                 edited={false}
                 setEdited={undefined}
                 disabled={false}
