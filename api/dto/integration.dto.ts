@@ -1,4 +1,4 @@
-interface TgIntegrationDTO {
+export interface TgIntegrationDTO {
     status: string,
     error: {
         code: string,
