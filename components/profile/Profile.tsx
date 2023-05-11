@@ -1,4 +1,4 @@
-import styles from "@/styles/Home.module.css";
+import styles from "@/styles/Profile.module.css";
 import Logo from "@/components/logo/Logo";
 import SocialMediaList from "@/components/social_media_list/SocialMediaList";
 import Donate from "@/components/donate/donate";
@@ -12,32 +12,27 @@ import {useAccount} from "wagmi";
 import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
 
 interface Props {
-    baseData: BaseProfile,
-    tokens: string[],
-    subscriptions: BriefSubscriptionInfo[],
-    isOwner: boolean
+    baseData: BaseProfile;
+    tokens: string[];
+    subscriptions: BriefSubscriptionInfo[];
+    isOwner: boolean;
 }
 
-const Profile: React.FC<Props> = ({baseData, tokens, subscriptions, isOwner}) => {
+const Profile: React.FC<Props> = ({
+                                      baseData,
+                                      tokens,
+                                      subscriptions,
+                                      isOwner,
+                                  }) => {
     const {isConnected} = useAccount();
     const router = useRouter();
 
     const getAvailableSubscriptions = () => {
-        return subscriptions.filter(
-            (s) => isOwner || s.status === "PUBLISHED"
-        );
+        return subscriptions.filter(s => isOwner || s.status === "PUBLISHED");
     };
 
     return (
-        <div
-            className={styles.center}
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-            }}
-        >
+        <div className={styles.gridWrapper}>
             <div className={styles.grid}>
                 <Logo
                     isLoading={false}
@@ -59,9 +54,7 @@ const Profile: React.FC<Props> = ({baseData, tokens, subscriptions, isOwner}) =>
                         }}
                     >
                         {/* Todo use markdown here, but not now */}
-                        <p className={styles.lineBreak}>
-                            {baseData.description}
-                        </p>
+                        <p className={styles.lineBreak}>{baseData.description}</p>
                     </div>
                     <SocialMediaList
                         socialMediaLinks={baseData.socialMediaLinks}
@@ -76,17 +69,18 @@ const Profile: React.FC<Props> = ({baseData, tokens, subscriptions, isOwner}) =>
                 availableTokens={tokens}
                 isOwner={isOwner}
             />
-            {isOwner && <CustomButton
-                disabled={!isConnected}
-                type={"wide"}
-                color={"gray"}
-                style={{marginTop: "48px"}}
-                onClick={() =>
-                    router.push(`/subscription/create?profileId=${baseData.id}`)
-                }
-            >
-                Add subscription <FileAddOutlined/>
-            </CustomButton>
+            {isOwner &&
+                <CustomButton
+                    disabled={!isConnected}
+                    type={"wide"}
+                    color={"gray"}
+                    style={{marginTop: "48px"}}
+                    onClick={() =>
+                        router.push(`/subscription/create?profileId=${baseData.id}`)
+                    }
+                >
+                    Add subscription <FileAddOutlined/>
+                </CustomButton>
             }
             <SubscriptionList
                 profileId={baseData.id}
@@ -95,6 +89,6 @@ const Profile: React.FC<Props> = ({baseData, tokens, subscriptions, isOwner}) =>
             />
         </div>
     );
-}
+};
 
 export default Profile;

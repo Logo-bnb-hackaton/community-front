@@ -27,12 +27,8 @@ const SubscriptionPage: NextPage<Props> = ({subscription, profile}) => {
     return (
         <main className={homeStyles.main}>
             <Header
-                saveCallback={undefined}
-                edited={false}
-                setEdited={undefined}
-                disabled={false}
-                base64Logo={profile.logo.base64Image}
                 profileId={profile.id!!}
+                base64Logo={profile.logo.base64Image}
             />
 
             <div className={styles.eventWrapper}>
@@ -62,6 +58,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         }
 
         const subscriptionId = ctx.query!!.subscriptionId as string;
+        // todo mb remove cookie here
         const cookie = ctx.req.headers.cookie
 
         console.log(`loading sub: ${subscriptionId}`);

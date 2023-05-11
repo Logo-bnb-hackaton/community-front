@@ -150,7 +150,8 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
      */
     const steps = [
         {
-            title: 'Step 1: Subscription editing',
+            title: 'CREATE SUBSCRIPTION',
+            subTitle: 'Subscription editing',
             content: <BaseInfo
                 data={baseInfoData}
                 profile={profile}
@@ -159,7 +160,8 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
                 errors={errors}/>,
         },
         {
-            title: 'Step 2: Integration setup',
+            title: 'CREATE SUBSCRIPTION',
+            subTitle: 'Connect with platform',
             content:
                 <>
                     {lastDbData && <Integration
@@ -169,9 +171,8 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
                         doneCallback={() => {
                             message.success('Processing complete!');
                             router.push(`/subscription/${lastDbData!!.id}?profileId=${profile.id}`);
-                        }}/>
-                    }
-                </>
+                        }}/>}
+                </>,
         },
     ];
 
@@ -179,6 +180,7 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
         <div className={styles.eventWrapper}>
             <div style={{width: "100%"}}>
                 <p className={styles.eventEditTitle}>{steps[currentStep].title}</p>
+                <p className={styles.eventEditSubTitle}>{steps[currentStep].subTitle}</p>
 
                 <div>{steps[currentStep].content}</div>
 

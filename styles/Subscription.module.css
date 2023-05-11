@@ -9,10 +9,16 @@
 }
 
 .eventEditTitle {
-    padding: 80px 0 36px 0;
-    font-size: 40px;
+    padding: 60px 0 16px 0;
+    font-size: 32px;
     font-weight: bold;
     font-family: var(--font-co-headline-corp);
+}
+
+.eventEditSubTitle {
+    padding-bottom: 80px;
+    font-size: 21px;
+    font-family: var(--font-montserrat);
 }
 
 .eventSteps {
@@ -28,7 +34,7 @@
 }
 
 .eventButtonWrapper {
-    margin-top: 24px;
+    margin-top: 64px;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -72,7 +78,7 @@
 
 .eventEditBaseInfoPreviewImageWrapper {
     min-width: 300px;
-    height: 410px;
+    height: 300px;
     position: relative;
 }
 
@@ -90,11 +96,16 @@
     flex-direction: row;
     justify-content: space-between;
     gap: 32px;
+    margin-bottom: 64px;
+}
+
+.eventEditBaseInfoPriceWrapper * {
+    font-family: var(--font-montserrat);
 }
 
 .inputShadow {
     /*border: none;*/
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .eventEditBaseInfoDescription {
@@ -120,25 +131,50 @@
 .integrationStepWrapper {
     padding-top: 32px;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
     height: 100%;
 }
 
+.integrationStepIndex {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+    font-family: var(--font-co-headline-corp);
+    font-weight: bold;
+    border: 1px solid #000000;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .integrationStepContentWrapper {
+    margin-left: 24px;
     display: flex;
     flex-direction: column;
     justify-content: start;
     align-items: start;
 }
 
+.integrationStepTitleWrapper {
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .integrationStepDescriptionWrapper {
     position: relative;
-    width: 100%;
+    width: 940px;
     padding: 18px 32px;
     display: flex;
     flex-direction: column;
     justify-content: start;
     align-items: start;
     border-radius: 14px;
+    border: 3px solid #b7b7b7;
 }
 
 .integrationStepHero {

@@ -9,6 +9,7 @@ import Footer from "@/components/footer/Footer";
 import ProfileEdit from "@/components/profile/edit/ProfileEdit";
 import {ImageDto} from "@/api/dto/image.dto";
 import Profile from "@/components/profile/Profile";
+import EditeProfileButton from "@/components/profile/EditeProfileButton";
 
 import * as Api from "@/api";
 import * as Contract from "@/contract";
@@ -25,14 +26,17 @@ export interface ProfileError {
 }
 
 const hasError = (error: ProfileError | undefined) => {
-    return error && (error.logo || error.title || error.description || error.socialMediaLinks);
-}
+    return (
+        error &&
+        (error.logo || error.title || error.description || error.socialMediaLinks)
+    );
+};
 
 export interface BaseProfile {
     id: string;
     title: string;
     description: string;
-    logo: ImageDto,
+    logo: ImageDto;
     socialMediaLinks: string[];
 }
 
@@ -44,7 +48,7 @@ const fromProfileDTO = (dto: ProfileDTO): BaseProfile => {
         logo: dto.logo,
         socialMediaLinks: dto.socialMediaLinks,
     };
-}
+};
 
 const MAX_DESCRIPTION_LEN = 250;
 
@@ -67,7 +71,6 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined);
 
     const isOwner = () => isConnected && authStatus === 'authenticated' && address === ownerAddress;
-    console.log(`isOwner: ${isOwner()}`);
 
     useEffect(() => {
         if (!profile && (!isConnected || address !== ownerAddress)) {
@@ -104,7 +107,10 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
                 return;
             }
 
-            if (!profile || (profile && hasChanges(baseData, fromProfileDTO(profile)))) {
+            if (
+                !profile ||
+                (profile && hasChanges(baseData, fromProfileDTO(profile)))
+            ) {
                 await Api.profile.updateProfile({
                     id: profileId!! as string,
                     title: baseData!!.title,
@@ -126,16 +132,20 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
     return (
         <main className={styles.main}>
             <Header
-                saveCallback={saveCallback}
-                edited={editing}
-                editAvailable={isOwner()}
-                setEdited={setEditing}
-                disabled={isLoading}
                 profileId={profileId as string}
-                base64Logo={baseData?.logo?.base64Image}
-            />
+                base64Logo={profile?.logo?.base64Image}
+            >
+                {isOwner() && (
+                    <EditeProfileButton
+                        saveCallback={saveCallback}
+                        edited={editing}
+                        setEdited={setEditing}
+                        disabled={isLoading}
+                    />
+                )}
+            </Header>
 
-            {editing ?
+            {editing ? (
                 <ProfileEdit
                     id={profileId as string}
                     isLoading={isLoading}
@@ -145,14 +155,14 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
                     errors={profileError}
                     tokens={tokens}
                 />
-                :
+            ) : (
                 <Profile
                     baseData={baseData!!}
                     tokens={tokens}
                     subscriptions={profile?.subscriptions ?? []}
                     isOwner={isOwner()}
                 />
-            }
+            )}
             <Footer/>
         </main>
     );
@@ -174,6 +184,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             .then((tokens) => (props.tokens = tokens));
 
         const profilePromise = Api.profile
+            // todo mb remove cookie here
             .loadProfile(profileId, getAuthCookie(ctx))
             .then((profile) => (props.profile = profile ?? null));
 

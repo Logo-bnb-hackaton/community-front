@@ -14,56 +14,52 @@ interface Props {
 }
 
 const SubscriptionList: React.FC<Props> = ({profileId, subscriptions, isOwner}) => {
-
-    const router = useRouter()
+    const router = useRouter();
 
     return (
         <div className={styles.subscriptionsWrapper}>
-            <p className={styles.subscriptionsTitle}>SUBSCRIPTIONS</p>
+            <h1 style={{margin: "48px 0"}}>Subscriptions</h1>
             <div className={styles.subscriptionsContainer}>
-                {
-                    subscriptions
-                        .map(subscription =>
-                            <div
-                                key={subscription.id}
-                                className={styles.subscriptionWrapper}
-                            >
-                                <Image
-                                    src={subscription.previewImage.base64Image!!}
-                                    alt={"Subscription logo"}
-                                    className={styles.subscriptionImage}
-                                    fill
-                                    onClick={e => router.push(`/subscription/${subscription.id}?profileId=${profileId}`)}
-                                />
-                                <p className={`${styles.subscriptionTitle}`}>{subscription.title}</p>
-                                {
-                                    isOwner && <div
-                                        className={`${styles.subscriptionStatus}`}
-                                        onClick={e => router.push(`/subscription/${subscription.id}?edited=true&profileId=${profileId}`)}
-                                    >
-                                        {subscription.ownerId === profileId ?
-                                            <FormOutlined style={{fontSize: "20px"}}/> : <CheckOutlined/>}
-                                    </div>
+                {subscriptions.map((subscription) =>
+                    <div key={subscription.id} className={styles.subscriptionWrapper}>
+                        <Image
+                            src={subscription.previewImage.base64Image!!}
+                            alt={"Subscription logo"}
+                            className={styles.subscriptionImage}
+                            fill
+                            onClick={(e) =>
+                                router.push(`/subscription/${subscription.id}?profileId=${profileId}`)
+                            }
+                        />
+                        <p className={`${styles.subscriptionTitle}`}>
+                            {subscription.title}
+                        </p>
+                        {
+                            isOwner && <div
+                                className={`${styles.subscriptionStatus}`}
+                                onClick={(e) =>
+                                    router.push(`/subscription/${subscription.id}?edited=true&profileId=${profileId}`)
                                 }
+                            >
+                                {subscription.ownerId === profileId ?
+                                    <FormOutlined style={{fontSize: "20px"}}/> : <CheckOutlined/>}
                             </div>
-                        )
-                }
-                {
-                    subscriptions.length % ROW_COUNT < ROW_COUNT &&
-                    Array(ROW_COUNT - subscriptions.length).fill(1).map((item, index) =>
-                        <div
-                            key={`stub-${index}`}
-                            className={styles.subscriptionWrapper}
-                        >
-                            <div className={styles.subscriptionStub}>
-                                <p>Coming soon :)</p>
+                        }
+                    </div>
+                )}
+                {subscriptions.length % ROW_COUNT < ROW_COUNT &&
+                    Array(ROW_COUNT - subscriptions.length)
+                        .fill(1)
+                        .map((item, index) => (
+                            <div key={`stub-${index}`} className={styles.subscriptionWrapper}>
+                                <div className={styles.subscriptionStub}>
+                                    <p>Coming soon :)</p>
+                                </div>
                             </div>
-                        </div>
-                    )
-                }
+                        ))}
             </div>
         </div>
     );
-}
+};
 
 export default SubscriptionList;
