@@ -128,7 +128,6 @@ const Subscription: React.FC<Props> = (
     }
 
     const subscribe = async () => {
-        console.log('here');
         if (!isConnected) {
             openConnectModal!!();
             return;
@@ -136,12 +135,12 @@ const Subscription: React.FC<Props> = (
         try {
             setIsLoading(true);
             const index = await Contract.subscription.getIndexByHexId(subscription.id);
-            console.log(`index: ${index}`);
             await Contract.subscription.payForSubscriptionByEth(subscription.id, profile.id, Number(index), subscription.price);
         } catch (e) {
             console.log(e);
         } finally {
             setIsLoading(false);
+            router.reload();
         }
     }
 
@@ -174,14 +173,12 @@ const Subscription: React.FC<Props> = (
         }
 
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return () => {
-            console.log(`Copy code: ${tgLinkStatus.code!!}`);
             navigator.clipboard.writeText(tgLinkStatus.code!!);
         };
         if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return async () => {
             try {
                 setIsLoading(true);
                 const code = (await Api.integration.generateInviteCode(subscription.id)).code;
-                console.log(`Tg code: ${code}`);
                 setTgLinkStatus({status: GetInviteLinkStatusType.CODE_GENERATED, code: code});
             } catch (e) {
                 router.reload();
@@ -195,7 +192,6 @@ const Subscription: React.FC<Props> = (
         return () => router.reload();
     }
 
-    console.log(tgLinkStatus);
     return (
         <div
             style={{
