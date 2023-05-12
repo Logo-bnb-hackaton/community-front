@@ -18,3 +18,14 @@ export enum ChatBindingStatus {
     BINDED,
     NOT_BINDED
 }
+
+export interface TgChatStatusDTO {
+    status: GetInviteLinkStatusType,
+    code?: string
+}
+
+export enum GetInviteLinkStatusType {
+    NOT_GENERATED,
+    CODE_GENERATED,
+    CODE_USED
+}

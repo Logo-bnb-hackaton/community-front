@@ -4,13 +4,15 @@ import telegramIcon from "@/assets/social_media_logo/telegram.svg";
 import {DeleteOutlined, EditOutlined, LoadingOutlined, ShareAltOutlined} from "@ant-design/icons";
 import {useRouter} from "next/router";
 import CustomButton from "@/components/customButton/CustomButton";
-import React, {useState} from "react";
+import React, {ReactNode, useState} from "react";
 import {Input, Modal} from "antd";
 import {ethers} from "ethers";
 import * as Api from "@/api";
 import * as Contract from "@/contract";
 import {useAccount} from "wagmi";
 import {useConnectModal} from "@rainbow-me/rainbowkit";
+import {GetInviteLinkStatusType, TgChatStatusDTO} from "@/api/dto/integration.dto";
+import Link from "next/link";
 
 export interface BriefProfile {
     id: string;
@@ -22,10 +24,21 @@ export interface BriefProfile {
     };
 }
 
-export default function Subscription({
-                                         subscription,
-                                         profile
-                                     }: { subscription: UpdateSubscriptionDTO, profile: BriefProfile }) {
+interface Props {
+    subscription: UpdateSubscriptionDTO,
+    profile: BriefProfile,
+    paymentStatus: 'PAID' | 'NOT_PAID',
+    tgLinkStatus?: TgChatStatusDTO
+}
+
+const Subscription: React.FC<Props> = (
+    {
+        subscription,
+        profile,
+        paymentStatus: _paymentStatus,
+        tgLinkStatus: _tgLinkStatus
+    }
+) => {
     const router = useRouter()
     const {isConnected, address} = useAccount();
     const {openConnectModal} = useConnectModal();
@@ -34,6 +47,9 @@ export default function Subscription({
     const [isLoading, setIsLoading] = useState(false);
 
     const [subscriptionStatus, setSubscriptionStatus] = useState(subscription.status);
+    const [paymentStatus, setPaymentStatus] = useState(_paymentStatus);
+    const [tgLinkStatus, setTgLinkStatus] = useState(_tgLinkStatus);
+
 
     const openCloseModal = () => setIsShareModalOpen((prev) => !prev);
 
@@ -47,7 +63,6 @@ export default function Subscription({
 
         return `${origin}${router.asPath}`;
     };
-
 
     const getButtonText = (status: SubscriptionStatus) => {
         switch (status) {
@@ -113,10 +128,64 @@ export default function Subscription({
     }
 
     const subscribe = async () => {
+        console.log('here');
         if (!isConnected) {
             openConnectModal!!();
             return;
         }
+        try {
+            setIsLoading(true);
+            const index = await Contract.subscription.getIndexByHexId(subscription.id);
+            console.log(`index: ${index}`);
+            await Contract.subscription.payForSubscriptionByEth(subscription.id, profile.id, Number(index), subscription.price);
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const getPaidButtonText = (tgLinkStatus: TgChatStatusDTO | undefined): ReactNode => {
+        if (tgLinkStatus?.status === undefined) {
+            return <p>Refresh page</p>;
+        }
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return <p>Copy invite code</p>;
+        if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return <p>Generate invite code</p>;
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_USED) {
+            return (
+                <Link href="https://www.t.me/sprut_signals_bot" target={'_blank'}>
+                    Go to telegram
+                </Link>
+            );
+        }
+
+        return <p>Refresh page</p>;
+    }
+
+    const getPaidFunction = (tgLinkStatus: TgChatStatusDTO | undefined): () => void => {
+        if (tgLinkStatus?.status === undefined) {
+            return () => router.reload();
+        }
+
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return () => {
+            navigator.clipboard.writeText(tgLinkStatus.code!!);
+        };
+        if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return async () => {
+            try {
+                setIsLoading(true);
+                const code = (await Api.integration.generateInviteCode(subscription.id)).code;
+                console.log(`Tg code: ${code}`);
+                setTgLinkStatus({status: GetInviteLinkStatusType.CODE_GENERATED, code: code});
+            } catch (e) {
+                router.reload();
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_USED) return () => {
+        };
+
+        return () => router.reload();
     }
 
     return (
@@ -258,13 +327,28 @@ export default function Subscription({
 
             <div style={{marginTop: '30px'}}>
                 {!isOwner() &&
-                    <CustomButton
-                        type="wide"
-                        color={"green"}
-                        onClick={subscribe}
-                    >
-                        Subscribe {subscription.price} {subscription.coin.toUpperCase()}
-                    </CustomButton>
+                    <>
+                        {paymentStatus === 'PAID' &&
+                            <CustomButton
+                                disabled={isLoading}
+                                type="wide"
+                                color={"green"}
+                                onClick={getPaidFunction(tgLinkStatus)}
+                            >
+                                {getPaidButtonText(tgLinkStatus)}
+                            </CustomButton>
+                        }
+                        {paymentStatus === 'NOT_PAID' &&
+                            <CustomButton
+                                disabled={isLoading}
+                                type="wide"
+                                color={"green"}
+                                onClick={subscribe}
+                            >
+                                Subscribe {subscription.price} {subscription.coin.toUpperCase()} {isLoading &&
+                                <LoadingOutlined/>}
+                            </CustomButton>}
+                    </>
                 }
                 {
                     isOwner() &&
@@ -336,3 +420,5 @@ export default function Subscription({
         </div>
     );
 }
+
+export default Subscription

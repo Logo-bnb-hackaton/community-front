@@ -10,22 +10,23 @@ export const externalClient = axios.create({
     withCredentials: true,
 });
 
-externalClient.interceptors.request.use(request => {
+
+export const internalClient = axios.create({withCredentials: true});
+
+internalClient.interceptors.request.use(request => {
     try {
         console.log('Starting Request', JSON.stringify(request))
     } catch (e) {
         console.log(`Can't parse request, error: ${e}`);
     }
     return request
-})
+});
 
-externalClient.interceptors.response.use(response => {
+internalClient.interceptors.response.use(response => {
     try {
         console.log('Response:', JSON.stringify(response))
     } catch (e) {
         console.log(`Can't parse response, error: ${e}`);
     }
     return response
-})
-
-export const internalClient = axios.create({withCredentials: true})
+});

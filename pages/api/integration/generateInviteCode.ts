@@ -1,13 +1,13 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import cookieWrapper from "@/pages/api/utils";
 
-export default async function publish(
+export default async function generateInviteCode(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
     await cookieWrapper(req, res, {
         method: 'post',
-        url: '/subscription/get-subscription-payment-status',
+        url: `/telegram/generate-invite-code`,
         data: req.body as string,
     });
 };

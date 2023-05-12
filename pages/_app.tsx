@@ -98,7 +98,10 @@ export default function App({Component, pageProps}: AppProps) {
                 method: 'POST',
                 url: '/api/auth/signOut',
                 headers: {'Content-Type': 'application/json'},
-            }).finally(() => setAuthStatus('unauthenticated'));
+            })
+                .catch(e => {
+                })
+                .finally(() => setAuthStatus('unauthenticated'));
         }
     });
 

@@ -14,13 +14,23 @@ import {AuthProps} from "@/pages/_app";
 import {getAuthStatus} from "@/utils/getAuthStatus";
 import * as Contract from "@/contract";
 import {ProfileDTO} from "@/api/dto/profile.dto";
+import {TgChatStatusDTO} from "@/api/dto/integration.dto";
 
 interface Props extends AuthProps {
     subscription: UpdateSubscriptionDTO;
-    profile: BriefProfile
+    profile: BriefProfile,
+    paymentStatus: 'PAID' | 'NOT_PAID',
+    tgLinkStatus?: TgChatStatusDTO
 }
 
-const SubscriptionPage: NextPage<Props> = ({subscription, profile}) => {
+const SubscriptionPage: NextPage<Props> = (
+    {
+        subscription,
+        profile,
+        paymentStatus,
+        tgLinkStatus
+    }
+) => {
     const router = useRouter()
     const {edited} = router.query
 
@@ -36,7 +46,12 @@ const SubscriptionPage: NextPage<Props> = ({subscription, profile}) => {
                     edited ?
                         <SubscriptionEdit data={subscription} profile={profile}/>
                         :
-                        <Subscription subscription={subscription} profile={profile}/>
+                        <Subscription
+                            subscription={subscription}
+                            profile={profile}
+                            paymentStatus={paymentStatus}
+                            tgLinkStatus={tgLinkStatus}
+                        />
                 }
             </div>
 
@@ -57,7 +72,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             }
         }
 
-        const subscriptionId = ctx.query!!.subscriptionId as string;
+        const subscriptionId = ctx.query!!.subscriptionId as `0x${string}`;
         // todo mb remove cookie here
         const cookie = ctx.req.headers.cookie
 
@@ -66,15 +81,31 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         const subscriptionPromise = Api.subscription.loadSubscription(subscriptionId, cookie).then(data => subscription = data);
         console.log(`loading profile: ${profileId}`);
         let profile: ProfileDTO | undefined;
-        const profilePromise = await Api.profile.loadProfile(profileId, cookie)
-            .then(data => profile = data);
+        const profilePromise = Api.profile.loadProfile(profileId, cookie).then(data => profile = data);
 
         let ownerAddress;
         const ownerPromise = Contract.profile
             .loadProfileOwner(profileId)
             .then((address) => (ownerAddress = address));
 
-        await Promise.all([subscriptionPromise, profilePromise, ownerPromise]);
+        let paymentStatus;
+        const paymentStatusPromise = Api.subscription
+            .paymentStatus({subscriptionId: subscriptionId}, cookie)
+            .then(status => paymentStatus = status.status)
+            .catch(e => {
+                paymentStatus = 'NOT_PAID'
+            })
+
+        let tgLinkStatus;
+        const tgLinkStatusPromise = Api.integration
+            .getInviteLinkStatus(subscriptionId, cookie)
+            .then(linkStatus => tgLinkStatus = linkStatus)
+            .catch(e => {
+                console.log(e);
+                tgLinkStatus = null;
+            });
+
+        await Promise.all([subscriptionPromise, profilePromise, ownerPromise, paymentStatusPromise, tgLinkStatusPromise]);
         if (!profile || !subscription) {
             return {
                 redirect: {
@@ -93,7 +124,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
                     title: profile.title,
                     logo: profile.logo,
                     ownerAddress: ownerAddress,
-                }
+                },
+                paymentStatus: paymentStatus,
+                tgLinkStatus: tgLinkStatus
             }
         };
     } catch (err) {
