@@ -1,7 +1,7 @@
 import {ImageDto} from "@/api/dto/image.dto";
 
 export interface UpdateSubscriptionDTO {
-    id: string;
+    id: `0x${string}`;
     ownerId: string;
     status: SubscriptionStatus;
     title: string;
@@ -12,7 +12,7 @@ export interface UpdateSubscriptionDTO {
     coin: string;
 }
 
-export interface SubscriptionBeforePayDTO {
+export interface SubscriptionIdDTO {
     subscriptionId: string;
 }
 
@@ -31,3 +31,7 @@ export type SubscriptionStatus =
     'UNPUBLISHED' |
     'PUBLISHED'
     ;
+
+export interface SubscriptionPaymentStatus {
+    status: 'PAID' | 'NOT_PAID'
+}

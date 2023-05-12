@@ -11,6 +11,7 @@ import * as Api from "@/api";
 import * as Contract from "@/contract";
 import {useAccount} from "wagmi";
 import {useConnectModal} from "@rainbow-me/rainbowkit";
+import {TgChatStatusDTO} from "@/api/dto/integration.dto";
 
 export interface BriefProfile {
     id: string;
@@ -22,10 +23,21 @@ export interface BriefProfile {
     };
 }
 
-export default function Subscription({
-                                         subscription,
-                                         profile
-                                     }: { subscription: UpdateSubscriptionDTO, profile: BriefProfile }) {
+interface Props {
+    subscription: UpdateSubscriptionDTO,
+    profile: BriefProfile,
+    paymentStatus: 'PAID' | 'NOT_PAID',
+    tgLinkStatus?: TgChatStatusDTO
+}
+
+const Subscription: React.FC<Props> = (
+    {
+        subscription,
+        profile,
+        paymentStatus,
+        tgLinkStatus
+    }
+) => {
     const router = useRouter()
     const {isConnected, address} = useAccount();
     const {openConnectModal} = useConnectModal();
@@ -47,7 +59,6 @@ export default function Subscription({
 
         return `${origin}${router.asPath}`;
     };
-
 
     const getButtonText = (status: SubscriptionStatus) => {
         switch (status) {
@@ -113,9 +124,20 @@ export default function Subscription({
     }
 
     const subscribe = async () => {
+        console.log('here');
         if (!isConnected) {
             openConnectModal!!();
             return;
+        }
+        try {
+            setIsLoading(true);
+            const index = await Contract.subscription.getIndexByHexId(subscription.id);
+            console.log(`index: ${index}`);
+            await Contract.subscription.payForSubscriptionByEth(subscription.id, profile.id, Number(index), subscription.price);
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -259,11 +281,12 @@ export default function Subscription({
             <div style={{marginTop: '30px'}}>
                 {!isOwner() &&
                     <CustomButton
+                        disabled={isLoading}
                         type="wide"
                         color={"green"}
                         onClick={subscribe}
                     >
-                        Subscribe {subscription.price} {subscription.coin.toUpperCase()}
+                        Subscribe {subscription.price} {subscription.coin.toUpperCase()} {isLoading && <LoadingOutlined/>}
                     </CustomButton>
                 }
                 {
@@ -336,3 +359,5 @@ export default function Subscription({
         </div>
     );
 }
+
+export default Subscription
