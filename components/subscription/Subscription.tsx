@@ -151,7 +151,12 @@ const Subscription: React.FC<Props> = (
         }
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) {
             return (
-                <Link href="https://www.t.me/sprut_signals_bot" target={'_blank'}>
+                <Link href="https://www.t.me/sprut_signals_bot" target={'_blank'}
+                      onClick={() => {
+                          console.log(`Copy code: ${tgLinkStatus.code!!}`)
+                          navigator.clipboard.writeText(tgLinkStatus.code!!)
+                      }}
+                >
                     Copy invite code and Go to telegram
                 </Link>
             );
@@ -174,7 +179,6 @@ const Subscription: React.FC<Props> = (
         }
 
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return () => {
-            navigator.clipboard.writeText(tgLinkStatus.code!!);
         };
         if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return async () => {
             try {
@@ -194,6 +198,7 @@ const Subscription: React.FC<Props> = (
         return () => router.reload();
     }
 
+    console.log(tgLinkStatus);
     return (
         <div
             style={{
