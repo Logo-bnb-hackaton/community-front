@@ -4,6 +4,7 @@ import {CheckOutlined, FormOutlined} from "@ant-design/icons";
 import styles from "@/styles/Subscriptions.module.css";
 import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
 import {useRouter} from "next/router";
+import {buildSubscriptionImageLink} from "@/utils/s3";
 
 const ROW_COUNT = 3;
 
@@ -23,7 +24,7 @@ const SubscriptionList: React.FC<Props> = ({profileId, subscriptions, isOwner}) 
                 {subscriptions.map((subscription) =>
                     <div key={subscription.id} className={styles.subscriptionWrapper}>
                         <Image
-                            src={subscription.previewImage.base64Image!!}
+                            src={buildSubscriptionImageLink(subscription.previewImage.id!!)}
                             alt={"Subscription logo"}
                             className={styles.subscriptionImage}
                             fill

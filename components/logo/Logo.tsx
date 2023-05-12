@@ -4,7 +4,7 @@ import styles from "@/styles/Profile.module.css";
 
 interface Props {
   isLoading: boolean;
-  base64Logo?: string;
+  base64LogoUrl?: string;
   setBase64Logo: ((base64Img: string | undefined) => void) | undefined;
   editing: boolean;
   hasError: boolean | undefined;
@@ -12,7 +12,7 @@ interface Props {
 
 const Logo: React.FC<Props> = ({
   isLoading,
-  base64Logo,
+  base64LogoUrl,
   setBase64Logo = undefined,
   editing = false,
   hasError = false,
@@ -31,7 +31,7 @@ const Logo: React.FC<Props> = ({
         sizeText={"350 x 350 px"}
         hasError={hasError}
         editing={editing}
-        base64Img={base64Logo}
+        base64Img={base64LogoUrl}
         setBase64Img={setBase64Logo}
       />
     </div>

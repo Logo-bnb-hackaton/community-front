@@ -10,6 +10,7 @@ import {BaseProfile} from "@/pages/profile/[profileId]";
 import {useRouter} from "next/router";
 import {useAccount} from "wagmi";
 import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
+import {buildProfileImageLink} from "@/utils/s3";
 
 interface Props {
     baseData: BaseProfile;
@@ -36,7 +37,7 @@ const Profile: React.FC<Props> = ({
             <div className={styles.grid}>
                 <Logo
                     isLoading={false}
-                    base64Logo={baseData.logo.base64Image}
+                    base64LogoUrl={buildProfileImageLink(baseData.logo.id!!)}
                     setBase64Logo={undefined}
                     editing={false}
                     hasError={false}

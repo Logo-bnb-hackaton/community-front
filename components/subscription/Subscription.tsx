@@ -13,6 +13,7 @@ import {useAccount} from "wagmi";
 import {useConnectModal} from "@rainbow-me/rainbowkit";
 import {GetInviteLinkStatusType, TgChatStatusDTO} from "@/api/dto/integration.dto";
 import Link from "next/link";
+import {buildProfileImageLink, buildSubscriptionImageLink} from "@/utils/s3";
 
 export interface BriefProfile {
     id: string;
@@ -207,7 +208,7 @@ const Subscription: React.FC<Props> = (
                 }}
             >
                 <Image
-                    src={subscription.mainImage.base64Image!!}
+                    src={buildSubscriptionImageLink(subscription.mainImage.id!!)}
                     alt={"Subscription main image"}
                     style={{borderRadius: "20px"}}
                     fill
@@ -243,7 +244,7 @@ const Subscription: React.FC<Props> = (
                         onClick={(e) => router.push(`/profile/${profile.id}`)}
                     >
                         <Image
-                            src={profile.logo.base64Image}
+                            src={buildProfileImageLink(profile.logo.id)}
                             alt={"Profile image"}
                             style={{borderRadius: "20px"}}
                             fill

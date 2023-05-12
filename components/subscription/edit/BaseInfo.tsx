@@ -6,6 +6,7 @@ import styles from "@/styles/Subscription.module.css";
 import {baseCoin, possibleTokens} from "@/utils/tokens";
 import {ImageDto} from "@/api/dto/image.dto";
 import {BriefProfile} from "@/components/subscription/Subscription";
+import {buildProfileImageLink, buildSubscriptionImageLink} from "@/utils/s3";
 
 export interface BaseInfoErrors {
     title: boolean;
@@ -108,7 +109,7 @@ const BaseInfo: React.FC<Props> = ({
                         sizeText={"1050 x 320 px"}
                         hasError={errors.base64MainImg}
                         editing={true}
-                        base64Img={data?.mainImage?.base64Image}
+                        base64Img={data?.mainImage?.id ? buildSubscriptionImageLink(data.mainImage.id) : undefined}
                         setBase64Img={(img) =>
                             setter({
                                 ...data,
@@ -121,7 +122,7 @@ const BaseInfo: React.FC<Props> = ({
                 <div className={styles.eventEditBaseInfoTitleWrapper}>
                     <div className={styles.eventEditBaseInfoLogoWrapper}>
                         <Image
-                            src={profile!!.logo!!.base64Image}
+                            src={buildProfileImageLink(profile!!.logo!!.id)}
                             alt={"Community logo"}
                             style={{borderRadius: "20px"}}
                             fill
@@ -174,7 +175,7 @@ const BaseInfo: React.FC<Props> = ({
                             sizeText={"300 x 300 px"}
                             hasError={errors.base64PreviewImg}
                             editing={true}
-                            base64Img={data?.previewImage?.base64Image}
+                            base64Img={data?.previewImage?.id ? buildSubscriptionImageLink(data.previewImage.id) : undefined}
                             setBase64Img={(img) =>
                                 setter({
                                     ...data,

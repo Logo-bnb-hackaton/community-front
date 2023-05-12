@@ -38,7 +38,7 @@ const SubscriptionPage: NextPage<Props> = (
         <main className={homeStyles.main}>
             <Header
                 profileId={profile.id!!}
-                base64Logo={profile.logo.base64Image}
+                base64Logo={undefined}
             />
 
             <div className={styles.eventWrapper}>
