@@ -38,7 +38,7 @@ const Profile: React.FC<Props> = ({
                     isLoading={false}
                     base64Logo={baseData.logo.base64Image}
                     setBase64Logo={undefined}
-                    edited={false}
+                    editing={false}
                     hasError={false}
                 />
                 <div
@@ -59,7 +59,7 @@ const Profile: React.FC<Props> = ({
                     <SocialMediaList
                         socialMediaLinks={baseData.socialMediaLinks}
                         setSocialLinks={undefined}
-                        edited={false}
+                        editing={false}
                         hasError={false}
                     />
                 </div>

@@ -107,7 +107,7 @@ const BaseInfo: React.FC<Props> = ({
                         description={"Add main picture"}
                         sizeText={"1050 x 320 px"}
                         hasError={errors.base64MainImg}
-                        edited={true}
+                        editing={true}
                         base64Img={data?.mainImage?.base64Image}
                         setBase64Img={(img) =>
                             setter({
@@ -173,7 +173,7 @@ const BaseInfo: React.FC<Props> = ({
                             description={"Add main picture"}
                             sizeText={"300 x 300 px"}
                             hasError={errors.base64PreviewImg}
-                            edited={true}
+                            editing={true}
                             base64Img={data?.previewImage?.base64Image}
                             setBase64Img={(img) =>
                                 setter({
