@@ -93,7 +93,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             .paymentStatus({subscriptionId: subscriptionId}, cookie)
             .then(status => paymentStatus = status.status)
             .catch(e => {
-                console.log(e);
                 paymentStatus = 'NOT_PAID'
             })
 

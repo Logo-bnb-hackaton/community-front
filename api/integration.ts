@@ -22,6 +22,20 @@ export const getChat = async (subscriptionId: `0x${string}`): Promise<TgChatDTO>
     })).data as TgChatDTO;
 }
 
+export const generateInviteCode = async (subscriptionId: `0x${string}`): Promise<TgChatStatusDTO> => {
+    return (await internalClient({
+        method: 'post',
+        url: `/api/integration/generateInviteCode`,
+        data: {
+            subscriptionId: subscriptionId,
+        },
+    })).data as TgChatStatusDTO;
+}
+
+
+/**
+ * Server side
+ */
 export const getInviteLinkStatus = async (subscriptionId: `0x${string}`, cookie: any): Promise<TgChatStatusDTO> => {
     return (await externalClient({
         method: 'post',

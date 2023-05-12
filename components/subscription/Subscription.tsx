@@ -4,14 +4,15 @@ import telegramIcon from "@/assets/social_media_logo/telegram.svg";
 import {DeleteOutlined, EditOutlined, LoadingOutlined, ShareAltOutlined} from "@ant-design/icons";
 import {useRouter} from "next/router";
 import CustomButton from "@/components/customButton/CustomButton";
-import React, {useState} from "react";
+import React, {ReactNode, useState} from "react";
 import {Input, Modal} from "antd";
 import {ethers} from "ethers";
 import * as Api from "@/api";
 import * as Contract from "@/contract";
 import {useAccount} from "wagmi";
 import {useConnectModal} from "@rainbow-me/rainbowkit";
-import {TgChatStatusDTO} from "@/api/dto/integration.dto";
+import {GetInviteLinkStatusType, TgChatStatusDTO} from "@/api/dto/integration.dto";
+import Link from "next/link";
 
 export interface BriefProfile {
     id: string;
@@ -34,8 +35,8 @@ const Subscription: React.FC<Props> = (
     {
         subscription,
         profile,
-        paymentStatus,
-        tgLinkStatus
+        paymentStatus: _paymentStatus,
+        tgLinkStatus: _tgLinkStatus
     }
 ) => {
     const router = useRouter()
@@ -46,6 +47,9 @@ const Subscription: React.FC<Props> = (
     const [isLoading, setIsLoading] = useState(false);
 
     const [subscriptionStatus, setSubscriptionStatus] = useState(subscription.status);
+    const [paymentStatus, setPaymentStatus] = useState(_paymentStatus);
+    const [tgLinkStatus, setTgLinkStatus] = useState(_tgLinkStatus);
+
 
     const openCloseModal = () => setIsShareModalOpen((prev) => !prev);
 
@@ -139,6 +143,49 @@ const Subscription: React.FC<Props> = (
         } finally {
             setIsLoading(false);
         }
+    }
+
+    const getPaidButtonText = (tgLinkStatus: TgChatStatusDTO | undefined): ReactNode => {
+        if (tgLinkStatus?.status === undefined) {
+            return <p>Refresh page</p>;
+        }
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return <p>Copy invite code</p>;
+        if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return <p>Generate invite code</p>;
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_USED) {
+            return (
+                <Link href="https://www.t.me/sprut_signals_bot" target={'_blank'}>
+                    Go to telegram
+                </Link>
+            );
+        }
+
+        return <p>Refresh page</p>;
+    }
+
+    const getPaidFunction = (tgLinkStatus: TgChatStatusDTO | undefined): () => void => {
+        if (tgLinkStatus?.status === undefined) {
+            return () => router.reload();
+        }
+
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return () => {
+            navigator.clipboard.writeText(tgLinkStatus.code!!);
+        };
+        if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return async () => {
+            try {
+                setIsLoading(true);
+                const code = (await Api.integration.generateInviteCode(subscription.id)).code;
+                console.log(`Tg code: ${code}`);
+                setTgLinkStatus({status: GetInviteLinkStatusType.CODE_GENERATED, code: code});
+            } catch (e) {
+                router.reload();
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_USED) return () => {
+        };
+
+        return () => router.reload();
     }
 
     return (
@@ -280,14 +327,28 @@ const Subscription: React.FC<Props> = (
 
             <div style={{marginTop: '30px'}}>
                 {!isOwner() &&
-                    <CustomButton
-                        disabled={isLoading}
-                        type="wide"
-                        color={"green"}
-                        onClick={subscribe}
-                    >
-                        Subscribe {subscription.price} {subscription.coin.toUpperCase()} {isLoading && <LoadingOutlined/>}
-                    </CustomButton>
+                    <>
+                        {paymentStatus === 'PAID' &&
+                            <CustomButton
+                                disabled={isLoading}
+                                type="wide"
+                                color={"green"}
+                                onClick={getPaidFunction(tgLinkStatus)}
+                            >
+                                {getPaidButtonText(tgLinkStatus)}
+                            </CustomButton>
+                        }
+                        {paymentStatus === 'NOT_PAID' &&
+                            <CustomButton
+                                disabled={isLoading}
+                                type="wide"
+                                color={"green"}
+                                onClick={subscribe}
+                            >
+                                Subscribe {subscription.price} {subscription.coin.toUpperCase()} {isLoading &&
+                                <LoadingOutlined/>}
+                            </CustomButton>}
+                    </>
                 }
                 {
                     isOwner() &&
