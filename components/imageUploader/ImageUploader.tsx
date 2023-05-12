@@ -1,11 +1,7 @@
-import { message, Upload } from "antd";
-import {
-  DeleteOutlined,
-  FileAddOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
-import React, { SyntheticEvent, useState } from "react";
-import { RcFile } from "antd/es/upload";
+import {message, Upload} from "antd";
+import {DeleteOutlined, FileAddOutlined, LoadingOutlined,} from "@ant-design/icons";
+import React, {SyntheticEvent, useState} from "react";
+import {RcFile} from "antd/es/upload";
 import styles from "@/styles/Profile.module.css";
 import Image from "next/image";
 
@@ -20,7 +16,7 @@ interface Props {
   description: string;
   sizeText: string;
   hasError: boolean;
-  edited: boolean;
+  editing: boolean;
   base64Img: string | undefined;
   setBase64Img: ((img: string | undefined) => void) | undefined;
 }
@@ -30,7 +26,7 @@ const ImageUploader: React.FC<Props> = ({
   description,
   sizeText,
   hasError,
-  edited,
+  editing,
   base64Img,
   setBase64Img,
 }) => {
@@ -69,7 +65,7 @@ const ImageUploader: React.FC<Props> = ({
             fill
           />
 
-          {edited && !disabled && (
+          {editing && !disabled && (
             <div
               className={styles.logoDeleteButton}
               onClick={deleteButtonHandler}
@@ -97,9 +93,7 @@ const ImageUploader: React.FC<Props> = ({
             borderColor: hasError ? "red" : "black",
             borderRadius: "14px",
           }}
-          className={`${styles.draggerWrapper} ${
-            hasError ? styles.errorBorder : ""
-          }`}
+          className={`${styles.draggerWrapper}`}
         >
           <p className="ant-upload-drag-icon">
             {isImgLoading ? (

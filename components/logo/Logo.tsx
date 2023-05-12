@@ -6,7 +6,7 @@ interface Props {
   isLoading: boolean;
   base64Logo?: string;
   setBase64Logo: ((base64Img: string | undefined) => void) | undefined;
-  edited: boolean;
+  editing: boolean;
   hasError: boolean | undefined;
 }
 
@@ -14,7 +14,7 @@ const Logo: React.FC<Props> = ({
   isLoading,
   base64Logo,
   setBase64Logo = undefined,
-  edited = false,
+  editing = false,
   hasError = false,
 }) => {
   return (
@@ -22,7 +22,7 @@ const Logo: React.FC<Props> = ({
       className={styles.logoProfile}
       style={{
         gridArea: "logo",
-        cursor: edited ? "pointer" : "auto",
+        cursor: editing ? "pointer" : "auto",
       }}
     >
       <ImageUploader
@@ -30,7 +30,7 @@ const Logo: React.FC<Props> = ({
         description={"Click or drag logo file to this area to upload"}
         sizeText={"350 x 350 px"}
         hasError={hasError}
-        edited={edited}
+        editing={editing}
         base64Img={base64Logo}
         setBase64Img={setBase64Logo}
       />

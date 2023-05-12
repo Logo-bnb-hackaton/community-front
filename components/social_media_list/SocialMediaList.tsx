@@ -1,8 +1,8 @@
 import styles from "@/styles/Profile.module.css";
 import Image from "next/image";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { Input, Modal } from "antd";
-import React, { useState } from "react";
+import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
+import {Input, Modal} from "antd";
+import React, {useState} from "react";
 import youtubeIcon from "@/assets/social_media_logo/youtube.svg";
 import githubIcon from "@/assets/social_media_logo/github.svg";
 import telegramIcon from "@/assets/social_media_logo/telegram.svg";
@@ -18,14 +18,14 @@ const SOCIAL_MEDIA_LINK_SIZE = 6;
 interface Props {
   socialMediaLinks: string[];
   setSocialLinks?: (links: string[]) => void;
-  edited: boolean;
+  editing: boolean;
   hasError: boolean | undefined;
 }
 
 const SocialMediaList: React.FC<Props> = ({
   socialMediaLinks,
   setSocialLinks,
-  edited = false,
+  editing = false,
   hasError = false,
 }) => {
   const [addSocialLinkMenu, setAddSocialLinkMenu] = useState(false);
@@ -95,11 +95,11 @@ const SocialMediaList: React.FC<Props> = ({
       {socialMediaLinks.map((item, index) => (
         <div className={`${styles.cardSize} ${styles.card}`} key={index}>
           <a
-            href={edited ? "#" : item}
-            target={edited ? "" : "_blank"}
+            href={editing ? "#" : item}
+            target={editing ? "" : "_blank"}
             rel="noopener noreferrer"
             onClick={
-              edited ? () => showEditSocialLinkMenu(index, item) : () => {}
+              editing ? () => showEditSocialLinkMenu(index, item) : () => {}
             }
           >
             <Image
@@ -109,7 +109,7 @@ const SocialMediaList: React.FC<Props> = ({
               fill
             />
           </a>
-          {edited && (
+          {editing && (
             <div
               className={styles.cardDeleteButton}
               onClick={() => deleteButtonHandler(index)}
@@ -119,13 +119,13 @@ const SocialMediaList: React.FC<Props> = ({
           )}
         </div>
       ))}
-      {socialMediaLinks.length <= SOCIAL_MEDIA_LINK_SIZE && edited && (
+      {socialMediaLinks.length <= SOCIAL_MEDIA_LINK_SIZE && editing && (
         <>
           {Array(SOCIAL_MEDIA_LINK_SIZE - socialMediaLinks.length)
             .fill(0)
             .map((zero, index) => (
               <button
-                key={socialMediaLinks.length + index}
+                key={`social-media-link-index-${socialMediaLinks.length + index}`}
                 className={`${styles.cardSize} ${styles.addCardButton} ${
                   hasError ? styles.errorBorder : ""
                 }`}

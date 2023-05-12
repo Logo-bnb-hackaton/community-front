@@ -59,13 +59,14 @@ interface Props extends AuthProps {
 }
 
 const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens}) => {
+
     const {address, isConnected} = useAccount();
 
     const router = useRouter();
     const {profileId} = router.query;
 
     const [isLoading, setIsLoading] = useState(false);
-    const [editing, setEditing] = useState(false);
+    const [editing, setEditing] = useState(!profile);
 
     const [baseData, setBaseData] = useState<BaseProfile | undefined>(profile ? fromProfileDTO(profile) : undefined);
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined);
@@ -82,19 +83,24 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
         }
     }, [ownerAddress, isConnected, address, profile, router]);
 
-    useEffect(() => {
+    const getError = (baseData: BaseProfile | undefined) => {
         const hasLogoError = !baseData?.logo?.base64Image;
         const hasTitleError = !baseData?.title;
         const hasDescriptionError = !baseData?.description || baseData?.description.length > MAX_DESCRIPTION_LEN;
-        const hasSocialLinksError = baseData?.socialMediaLinks.length === 0;
+        const hasSocialLinksError = !baseData?.socialMediaLinks || baseData.socialMediaLinks.length === 0;
 
-        setProfileError({
+        return {
             logo: hasLogoError,
             title: hasTitleError,
             description: hasDescriptionError,
             socialMediaLinks: hasSocialLinksError,
-        });
-    }, [baseData]);
+        };
+    }
+
+    useEffect(() => {
+        if (profileError === undefined) return;
+        setProfileError(getError(baseData))
+    }, [baseData, setProfileError]);
 
     /**
      * Updating profile
@@ -103,7 +109,9 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
         console.log("Save profile callback....");
         try {
             setIsLoading(true);
-            if (hasError(profileError)) {
+            const errors = getError(baseData);
+            if (hasError(errors)) {
+                setProfileError(errors);
                 return;
             }
 
@@ -121,7 +129,6 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
             }
 
             setEditing(false);
-            setProfileError(undefined);
         } catch (e) {
             console.error(`Catch error during updating profile. Error: ${e}`);
         } finally {

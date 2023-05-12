@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import styles from "@/styles/Profile.module.css";
 import Logo from "@/components/logo/Logo";
-import { Input } from "antd";
+import {Input} from "antd";
 import SocialMediaList from "@/components/social_media_list/SocialMediaList";
 import CustomButton from "@/components/customButton/CustomButton";
-import { addressBySymbol, baseCoin, possibleTokens } from "@/utils/tokens";
-import { LoadingOutlined } from "@ant-design/icons";
+import {addressBySymbol, baseCoin, possibleTokens} from "@/utils/tokens";
+import {LoadingOutlined} from "@ant-design/icons";
 import * as Contract from "@/contract";
-import { BaseProfile, ProfileError } from "@/pages/profile/[profileId]";
+import {BaseProfile, ProfileError} from "@/pages/profile/[profileId]";
 
 const MAX_DESCRIPTION_LEN = 150;
 
@@ -94,7 +94,7 @@ const ProfileEdit: React.FC<Props> = ({
           isLoading={isLoading}
           base64Logo={profile.logo.base64Image}
           setBase64Logo={logoDraggerHandler}
-          edited={true}
+          editing={true}
           hasError={errors?.logo}
         />
         <div
@@ -105,9 +105,6 @@ const ProfileEdit: React.FC<Props> = ({
             disabled={isLoading}
             status={errors?.title ? "error" : ""}
             className={styles.titleInput}
-            style={{
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-            }}
             placeholder="Community name"
             value={profile.title}
             onChange={(e) => titleInputHandler(e.target.value)}
@@ -124,9 +121,6 @@ const ProfileEdit: React.FC<Props> = ({
               disabled={isLoading}
               status={errors?.description ? "error" : ""}
               className={styles.descriptionInput}
-              style={{
-                boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-              }}
               value={profile.description}
               onChange={(e) => descriptionInputHandler(e.target.value)}
               autoSize={{ minRows: 6, maxRows: 6 }}
@@ -136,7 +130,7 @@ const ProfileEdit: React.FC<Props> = ({
           <SocialMediaList
             socialMediaLinks={profile.socialMediaLinks}
             setSocialLinks={socialLinkHandler}
-            edited={!isLoading}
+            editing={!isLoading}
             hasError={errors?.socialMediaLinks}
           />
         </div>

@@ -64,9 +64,7 @@
 
 .titleInput {
   overflow: hidden;
-  border: 0px solid black !important;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
   font-size: 48px;
   font-family: var(--font-co-headline-corp);
   background-color: transparent;
@@ -75,10 +73,6 @@
 
 .descriptionInput {
   overflow: hidden;
-  border: 0px solid black !important;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
   font-size: 16px;
   padding: 10px 20px;
   background-color: transparent;
