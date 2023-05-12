@@ -149,21 +149,10 @@ const Home: NextPage<Props> = () => {
                         confirmations: WAIT_BLOCK_CONFIRMATIONS
                     })
                 })
+                .then(_ => tokenOfOwnerByIndexRefetch())
                 .then(response => {
-                    console.log('waitForTransaction response');
-                    console.log(response);
-                    return response;
-                })
-                .then(_ => {
-                    console.log('Call tokenOfOwnerByIndexRefetch');
-                    return tokenOfOwnerByIndexRefetch();
-                })
-                .then(response => {
-                    console.log('tokenOfOwnerByIndexRefetch response');
-                    console.log(response);
                     if (response.error) throw Error(response.error.message);
-                    // @ts-ignore
-                    redirectClick((response.data.data as BigNumber).toNumber());
+                    redirectClick((response.data as BigNumber).toNumber());
                 })
                 .catch((err) => {
                     console.error(err);
