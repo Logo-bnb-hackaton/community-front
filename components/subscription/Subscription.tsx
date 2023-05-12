@@ -149,7 +149,13 @@ const Subscription: React.FC<Props> = (
         if (tgLinkStatus?.status === undefined) {
             return <p>Refresh page</p>;
         }
-        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return <p>Copy invite code</p>;
+        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) {
+            return (
+                <Link href="https://www.t.me/sprut_signals_bot" target={'_blank'}>
+                    Copy invite code and Go to telegram
+                </Link>
+            );
+        }
         if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return <p>Generate invite code</p>;
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_USED) {
             return (
