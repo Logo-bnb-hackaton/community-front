@@ -105,7 +105,7 @@ const ProfileEdit: React.FC<Props> = ({
                     <Input
                         disabled={isLoading}
                         status={errors?.title ? "error" : ""}
-                        className={styles.titleInput}
+                        className={`${styles.titleInput} ${errors?.description && styles.errorBorder}`}
                         placeholder="Title"
                         value={profile.title}
                         onChange={(e) => titleInputHandler(e.target.value)}
@@ -121,7 +121,7 @@ const ProfileEdit: React.FC<Props> = ({
                         <Input.TextArea
                             disabled={isLoading}
                             status={errors?.description ? "error" : ""}
-                            className={styles.descriptionInput}
+                            className={`${styles.descriptionInput} ${errors?.description && styles.errorBorder}`}
                             value={profile.description}
                             onChange={(e) => descriptionInputHandler(e.target.value)}
                             autoSize={{minRows: 6, maxRows: 6}}
