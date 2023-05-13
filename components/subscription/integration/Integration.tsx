@@ -41,8 +41,8 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
             await bindTelegram();
         } else {
             setTokenErrorMsg(undefined);
+            setCurrentStep(currentStep + 1);
         }
-        setCurrentStep(currentStep + 1);
     };
 
     const prev = () => {
@@ -78,6 +78,7 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
                 return;
             }
             setChat(await Api.integration.getChat(subscriptionId));
+            setCurrentStep(currentStep + 1);
         } finally {
             setIsLoading(false);
         }
@@ -196,7 +197,7 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
         >
             <div className={styles.integrationFlowWrapper}>
                 {steps[currentStep]}
-                <div className={styles.eventButtonWrapper} style={{marginTop: '217px'}}>
+                <div className={styles.eventButtonWrapper}>
                     <CustomButton
                         type={"small"}
                         color={"gray"}

@@ -17,6 +17,12 @@ interface Props {
 const SubscriptionList: React.FC<Props> = ({profileId, subscriptions, isOwner}) => {
     const router = useRouter();
 
+    const getDrawSize = (): number => {
+        const normalized = subscriptions.length % ROW_COUNT;
+        if (normalized === 0) return 0;
+        return ROW_COUNT - normalized;
+    }
+
     return (
         <div className={styles.subscriptionsWrapper}>
             <h1 style={{margin: "48px 0"}}>Subscriptions</h1>
@@ -48,8 +54,7 @@ const SubscriptionList: React.FC<Props> = ({profileId, subscriptions, isOwner}) 
                         }
                     </div>
                 )}
-                {subscriptions.length % ROW_COUNT < ROW_COUNT &&
-                    Array(ROW_COUNT - subscriptions.length)
+                {Array(getDrawSize())
                         .fill(1)
                         .map((item, index) => (
                             <div key={`stub-${index}`} className={styles.subscriptionWrapper}>
