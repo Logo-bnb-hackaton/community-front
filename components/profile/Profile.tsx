@@ -2,13 +2,9 @@ import styles from "@/styles/Profile.module.css";
 import Logo from "@/components/logo/Logo";
 import SocialMediaList from "@/components/social_media_list/SocialMediaList";
 import Donate from "@/components/donate/donate";
-import CustomButton from "@/components/customButton/CustomButton";
-import {FileAddOutlined} from "@ant-design/icons";
 import SubscriptionList from "@/components/subscription/SubscriptionList";
 import React from "react";
 import {BaseProfile} from "@/pages/profile/[profileId]";
-import {useRouter} from "next/router";
-import {useAccount} from "wagmi";
 import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
 import {buildProfileImageLink} from "@/utils/s3";
 
@@ -25,9 +21,6 @@ const Profile: React.FC<Props> = ({
                                       subscriptions,
                                       isOwner,
                                   }) => {
-    const {isConnected} = useAccount();
-    const router = useRouter();
-
     const getAvailableSubscriptions = () => {
         return subscriptions.filter(s => isOwner || s.status === "PUBLISHED");
     };
@@ -70,24 +63,14 @@ const Profile: React.FC<Props> = ({
                 availableTokens={tokens}
                 isOwner={isOwner}
             />
-            {/* {isOwner &&
-                <CustomButton
-                    disabled={!isConnected}
-                    type={"wide"}
-                    color={"gray"}
-                    style={{marginTop: "48px"}}
-                    onClick={() =>
-                        router.push(`/subscription/create?profileId=${baseData.id}`)
-                    }
-                >
-                    Add subscription <FileAddOutlined/>
-                </CustomButton>
-            {getAvailableSubscriptions().length > 0 &&
+            {
+                getAvailableSubscriptions().length > 0 &&
                 <SubscriptionList
                     profileId={baseData.id}
                     subscriptions={getAvailableSubscriptions()}
                     isOwner={isOwner}
-                />}
+                />
+            }
         </div>
     );
 };
