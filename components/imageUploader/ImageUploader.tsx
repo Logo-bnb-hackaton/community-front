@@ -89,9 +89,9 @@ const ImageUploader: React.FC<Props> = ({
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "#fff",
-            border: "1px dashed",
-            borderColor: hasError ? "red" : "black",
-            borderRadius: "14px",
+            borderRadius: "20px",
+            border: "none",
+            backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='20' ry='20' stroke='${hasError ? "red" : "%23837F7FFF"}' stroke-width='1' stroke-dasharray='10' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e")`,
           }}
           className={`${styles.draggerWrapper}`}
         >
@@ -99,7 +99,8 @@ const ImageUploader: React.FC<Props> = ({
             {isImgLoading ? (
               <LoadingOutlined />
             ) : (
-              <FileAddOutlined style={{ color: "#000" }} />
+              <div className={styles.personIcon}></div>
+              // <FileAddOutlined style={{ color: "#000" }} />
             )}
           </p>
           <p style={{ fontSize: "16px", fontFamily: "co-headline" }}>

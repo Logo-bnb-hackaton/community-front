@@ -47,16 +47,19 @@ const WalletButton: React.FC<Props> = ({profileId, base64Logo, children}) => {
     const items: MenuProps['items'] = [
         {
             key: 'profile-menu-1',
-            disabled: !profileId,
+            // disabled: !profileId,
             label: (
                 <div
                     style={{fontSize: '14px', fontFamily: 'co-headline', padding: '10px'}}
                     onClick={() => {
-                        if (!profileId) return;
-                        router.push(`/profile/${profileId!!}`);
+                        if (!profileId) {
+                            router.push("/");
+                        } else {
+                            router.push(`/profile/${profileId!!}`);
+                        }
                     }}
                 >
-                    Profile
+                    {profileId ? ("Profile") : ("Main")}
                 </div>
             ),
         },
@@ -142,7 +145,8 @@ const WalletButton: React.FC<Props> = ({profileId, base64Logo, children}) => {
                                                 height={40}
                                                 style={{borderRadius: '50%'}}
                                                 // todo fix it, use some default logo
-                                                src={base64Logo ? base64Logo : heroIcon}
+                                                // src={base64Logo ? base64Logo : heroIcon}
+                                                src={heroIcon}
                                                 alt={`Profile logo`}
                                             />
                                         </CustomButton>

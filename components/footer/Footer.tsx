@@ -7,9 +7,7 @@ export default function Footer() {
       <div className={styles.footer_content}>
         <div>NODDE</div>
         <div>
-          NODDE is a Web3 native social platform created
-          <br />
-          by 0xc0de team.
+          NODDE is a Web3 native social platform
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "row" }}>

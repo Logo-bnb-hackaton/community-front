@@ -72,6 +72,8 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
     const [baseData, setBaseData] = useState<BaseProfile | undefined>(profile ? fromProfileDTO(profile) : undefined);
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined);
 
+    const [profileIdByOwner, setProfileIdByOwner] = useState<string | undefined>(undefined);
+
     const isOwner = () => isConnected && authStatus === 'authenticated' && address === ownerAddress;
 
     useEffect(() => {
@@ -81,6 +83,14 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
         }
         if (!profile) {
             setEditing(true);
+        }
+        if (isConnected && address) {
+            Contract.profile
+                .getProfileIdByOwnerAndIndex(address, 0)
+                .then((profileIdByOwner) => setProfileIdByOwner(profileIdByOwner))
+                .catch(() => setProfileIdByOwner(undefined));
+        } else {
+            setProfileIdByOwner(undefined)
         }
     }, [ownerAddress, isConnected, address, profile, router]);
 
@@ -141,7 +151,7 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
     return (
         <main className={styles.main}>
             <Header
-                profileId={profileId as string}
+                profileId={profileIdByOwner as string}
                 base64Logo={undefined}
             >
                 {isOwner() && (

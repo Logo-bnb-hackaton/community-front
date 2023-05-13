@@ -198,6 +198,7 @@
 }
 
 .footer_content {
+  font-family: var(--font-co-headline-corp);
   font-size: 16px;
 }
 
