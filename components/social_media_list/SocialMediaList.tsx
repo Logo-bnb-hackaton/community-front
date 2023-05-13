@@ -129,10 +129,14 @@ const SocialMediaList: React.FC<Props> = ({
                 className={`${styles.cardSize} ${styles.addCardButton} ${
                   hasError ? styles.errorBorder : ""
                 }`}
-                onClick={showAddSocialLinkMenu}
+                onClick={() => { if (index === 0) showAddSocialLinkMenu() }}
               >
-                <PlusOutlined />
-                <p style={{ paddingTop: "8px" }}>Add link</p>
+                {index === 0 && (
+                  <>
+                    <PlusOutlined />
+                    <p style={{ paddingTop: "8px" }}>Add link</p>
+                  </>
+                )}
               </button>
             ))}
           <Modal

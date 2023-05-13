@@ -106,7 +106,7 @@ const ProfileEdit: React.FC<Props> = ({
                         disabled={isLoading}
                         status={errors?.title ? "error" : ""}
                         className={styles.titleInput}
-                        placeholder="Community name"
+                        placeholder="Title"
                         value={profile.title}
                         onChange={(e) => titleInputHandler(e.target.value)}
                     />
@@ -125,7 +125,7 @@ const ProfileEdit: React.FC<Props> = ({
                             value={profile.description}
                             onChange={(e) => descriptionInputHandler(e.target.value)}
                             autoSize={{minRows: 6, maxRows: 6}}
-                            placeholder={`Community description. Max length is ${MAX_DESCRIPTION_LEN} characters.`}
+                            placeholder={`Add description. Max length is ${MAX_DESCRIPTION_LEN} characters.`}
                         />
                     </div>
                     <SocialMediaList
