@@ -173,7 +173,7 @@ const BaseInfo: React.FC<Props> = ({
                     <div className={styles.eventEditBaseInfoPreviewImageWrapper}>
                         <ImageUploader
                             disabled={isLoading}
-                            description={"Add main picture"}
+                            description={"Add preview picture"}
                             sizeText={"300 x 300 px"}
                             hasError={errors.base64PreviewImg}
                             editing={true}

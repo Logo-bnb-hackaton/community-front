@@ -5,11 +5,11 @@ import {EditOutlined, LoadingOutlined, ShareAltOutlined} from "@ant-design/icons
 import {useRouter} from "next/router";
 import CustomButton from "@/components/customButton/CustomButton";
 import React, {ReactNode, useState} from "react";
-import {Input, Modal} from "antd";
+import {Input, message, Modal} from "antd";
 import {ethers} from "ethers";
 import * as Api from "@/api";
 import * as Contract from "@/contract";
-import {useAccount} from "wagmi";
+import {useAccount, useBalance} from "wagmi";
 import {useConnectModal} from "@rainbow-me/rainbowkit";
 import {GetInviteLinkStatusType, TgChatStatusDTO} from "@/api/dto/integration.dto";
 import Link from "next/link";
@@ -49,6 +49,9 @@ const Subscription: React.FC<Props> = (
     const [paymentStatus, setPaymentStatus] = useState(_paymentStatus);
     const [tgLinkStatus, setTgLinkStatus] = useState(_tgLinkStatus);
 
+    const {data: baseBalanceResponse} = useBalance({
+        address: address,
+    });
 
     const openCloseModal = () => setIsShareModalOpen((prev) => !prev);
 
@@ -135,11 +138,15 @@ const Subscription: React.FC<Props> = (
             setIsLoading(true);
             const index = await Contract.subscription.getIndexByHexId(subscription.id);
             await Contract.subscription.payForSubscriptionByEth(subscription.id, profile.id, Number(index), subscription.price);
-        } catch (e) {
+            message.error("Successful payment");
+            router.reload();
+        } catch (e: any) {
             console.log(e);
+            if (e?.code === -32603) {
+                message.error("Insufficient funds in your wallet.");
+            }
         } finally {
             setIsLoading(false);
-            router.reload();
         }
     }
 
@@ -203,7 +210,7 @@ const Subscription: React.FC<Props> = (
                 style={{
                     position: "relative",
                     width: "100%",
-                    height: "450px",
+                    height: "320px",
                 }}
             >
                 <Image
@@ -369,7 +376,7 @@ const Subscription: React.FC<Props> = (
 
             <div
                 style={{
-                    margin: "50px 0",
+                    margin: "50px 0 128px",
                     width: "100%",
                     fontSize: "21px",
                     whiteSpace: "pre-wrap",

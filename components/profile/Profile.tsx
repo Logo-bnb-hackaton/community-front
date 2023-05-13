@@ -82,12 +82,12 @@ const Profile: React.FC<Props> = ({
                 >
                     Add subscription <FileAddOutlined/>
                 </CustomButton>
-            } */}
-            <SubscriptionList
-                profileId={baseData.id}
-                subscriptions={getAvailableSubscriptions()}
-                isOwner={isOwner}
-            />
+            {getAvailableSubscriptions().length > 0 &&
+                <SubscriptionList
+                    profileId={baseData.id}
+                    subscriptions={getAvailableSubscriptions()}
+                    isOwner={isOwner}
+                />}
         </div>
     );
 };

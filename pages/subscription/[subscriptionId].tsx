@@ -73,7 +73,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         }
 
         const subscriptionId = ctx.query!!.subscriptionId as `0x${string}`;
-        // todo mb remove cookie here
         const cookie = ctx.req.headers.cookie
 
         console.log(`loading sub: ${subscriptionId}`);
