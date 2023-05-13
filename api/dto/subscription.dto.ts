@@ -1,13 +1,13 @@
-import {ImageDto} from "@/api/dto/image.dto";
-
 export interface UpdateSubscriptionDTO {
     id: `0x${string}`;
     ownerId: string;
     status: SubscriptionStatus;
     title: string;
     description: string;
-    mainImage: ImageDto,
-    previewImage: ImageDto,
+    mainImageId: string | undefined;
+    newMainBase64Image: string | undefined;
+    previewImageId: string | undefined;
+    newPreviewBase64Image: string | undefined;
     price: string;
     coin: string;
 }
@@ -21,7 +21,7 @@ export interface BriefSubscriptionInfo {
     status: SubscriptionStatus,
     ownerId: string;
     title: string;
-    previewImage: ImageDto,
+    previewImageId: string,
 }
 
 export type SubscriptionStatus =

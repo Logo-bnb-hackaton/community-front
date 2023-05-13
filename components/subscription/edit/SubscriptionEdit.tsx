@@ -4,7 +4,7 @@ import {LoadingOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 // @ts-ignore
-import {parse as uuidParse, v4 as uuidv4} from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {ethers} from "ethers";
 import {UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import {baseCoin} from "@/utils/tokens";
@@ -19,12 +19,26 @@ import {hasChanges} from "@/utils/compare";
 import {ChatBindingStatus, TgChatDTO} from "@/api/dto/integration.dto";
 
 // todo maybe extract it later
-function toBaseInfoData(dto: UpdateSubscriptionDTO): BaseInfoData {
+function toBaseInfoDataOrDefault(dto: UpdateSubscriptionDTO | undefined): BaseInfoData {
+    if (!dto) {
+        return {
+            title: '',
+            description: '',
+            mainImageId: undefined,
+            newMainBase64Image: undefined,
+            previewImageId: undefined,
+            newPreviewBase64Image: undefined,
+            price: 0.0,
+            coin: baseCoin,
+        };
+    }
     return {
         title: dto.title,
         description: dto.description,
-        mainImage: dto.mainImage,
-        previewImage: dto.previewImage,
+        mainImageId: dto.mainImageId,
+        newMainBase64Image: undefined,
+        previewImageId: dto.previewImageId,
+        newPreviewBase64Image: undefined,
         price: Number.parseFloat(dto.price),
         coin: dto.coin,
     }
@@ -44,15 +58,7 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
     // this field contains top-level data to understand if there are changes
     // and updated after saving in db
     const [lastDbData, setLastDbData] = useState<UpdateSubscriptionDTO | undefined>(data);
-    const [baseInfoData, setBaseInfoData] = useState<BaseInfoData>(
-        data ? toBaseInfoData(data) : {
-            title: '',
-            description: '',
-            mainImage: undefined,
-            previewImage: undefined,
-            price: 0.0,
-            coin: baseCoin,
-        });
+    const [baseInfoData, setBaseInfoData] = useState<BaseInfoData>(toBaseInfoDataOrDefault(data));
     const [chat, setChat] = useState<TgChatDTO | undefined>(undefined);
 
     /**
@@ -84,28 +90,28 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
     ) => {
         setIsLoading(true);
         try {
-            if (!isValid(baseInfo, errors)) return;
+            if (!isValid(baseInfo, errors)) {
+                console.log(baseInfo);
+                console.log(errors);
+                return;
+            }
 
             const oldId = lastDbData?.id;
             const isNewSub = oldId === undefined;
             const id = (isNewSub ? ethers.utils.keccak256(ethers.utils.toUtf8Bytes(uuidv4())) : oldId!!) as `0x${string}`;
             const price = baseInfo!!.price.toString();
 
-            if (!lastDbData || hasChanges(toBaseInfoData(lastDbData), baseInfo!!)) {
+            if (!lastDbData || hasChanges(toBaseInfoDataOrDefault(lastDbData), baseInfo!!)) {
                 const request: UpdateSubscriptionDTO = {
                     id: id,
                     ownerId: profile!!.id,
                     status: isNewSub ? 'DRAFT' : lastDbData!!.status,
                     title: baseInfo!!.title,
                     description: baseInfo!!.description,
-                    mainImage: {
-                        id: baseInfo?.mainImage?.id,
-                        base64Image: baseInfo?.mainImage?.base64Image,
-                    },
-                    previewImage: {
-                        id: baseInfo?.previewImage?.id,
-                        base64Image: baseInfo?.previewImage?.base64Image,
-                    },
+                    mainImageId: baseInfo?.mainImageId,
+                    newMainBase64Image: baseInfo?.newMainBase64Image,
+                    previewImageId: baseInfo?.previewImageId,
+                    newPreviewBase64Image: baseInfo?.newPreviewBase64Image,
                     price: price,
                     coin: baseInfo!!.coin,
                 };
@@ -138,8 +144,8 @@ const SubscriptionEdit: React.FC<Props> = ({data, profile}) => {
         updatedErrors.title = !data || data.title.trim().length === 0;
         updatedErrors.description = !data || data.description.trim().length === 0 || data.description.length > 2000;
         updatedErrors.price = !data || data.price <= 0;
-        updatedErrors.base64MainImg = !data || !data.mainImage || !data.mainImage.base64Image;
-        updatedErrors.base64PreviewImg = !data || !data.previewImage || !data.previewImage.base64Image;
+        updatedErrors.base64MainImg = !data || !data.mainImageId && !data.newMainBase64Image;
+        updatedErrors.base64PreviewImg = !data || !data.previewImageId && !data.newPreviewBase64Image;
 
         setErrors(updatedErrors);
         return !hasError(updatedErrors);

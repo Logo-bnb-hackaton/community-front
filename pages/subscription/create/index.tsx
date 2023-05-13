@@ -20,7 +20,7 @@ const CreatePage: NextPage<Props> = ({profile}) => {
         <main className={homeStyles.main}>
             <Header
                 profileId={profile.id}
-                base64Logo={profile.logo.base64Image}
+                base64Logo={profile.logoId}
             />
             <SubscriptionEdit data={undefined} profile={profile}/>
             <Footer/>
@@ -46,7 +46,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             return {
                 id: data.id,
                 title: data.title,
-                logo: data.logo
+                logoId: data.logoId
             } as BriefProfile
         });
 

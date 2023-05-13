@@ -4,9 +4,8 @@ import {ConfigProvider, Input, InputNumber, Select} from "antd";
 import React from "react";
 import styles from "@/styles/Subscription.module.css";
 import {baseCoin, possibleTokens} from "@/utils/tokens";
-import {ImageDto} from "@/api/dto/image.dto";
 import {BriefProfile} from "@/components/subscription/Subscription";
-import {buildProfileImageLink, buildSubscriptionImageLink} from "@/utils/s3";
+import {buildProfileImageLink, tryBuildSubscriptionImageLink} from "@/utils/s3";
 
 export interface BaseInfoErrors {
     title: boolean;
@@ -29,8 +28,10 @@ export function hasError(errors: BaseInfoErrors): boolean {
 export interface BaseInfoData {
     title: string;
     description: string;
-    mainImage: ImageDto | undefined;
-    previewImage: ImageDto | undefined;
+    mainImageId: string | undefined;
+    newMainBase64Image: string | undefined;
+    previewImageId: string | undefined;
+    newPreviewBase64Image: string | undefined;
     price: number;
     coin: string;
 }
@@ -109,11 +110,12 @@ const BaseInfo: React.FC<Props> = ({
                         sizeText={"1050 x 320 px"}
                         hasError={errors.base64MainImg}
                         editing={true}
-                        base64Img={data?.mainImage?.id ? buildSubscriptionImageLink(data.mainImage.id) : undefined}
+                        base64Img={data.newMainBase64Image ?? tryBuildSubscriptionImageLink(data.mainImageId)}
                         setBase64Img={(img) =>
                             setter({
                                 ...data,
-                                mainImage: {id: undefined, base64Image: img},
+                                mainImageId: undefined,
+                                newMainBase64Image: img,
                             })
                         }
                     />
@@ -122,7 +124,7 @@ const BaseInfo: React.FC<Props> = ({
                 <div className={styles.eventEditBaseInfoTitleWrapper}>
                     <div className={styles.eventEditBaseInfoLogoWrapper}>
                         <Image
-                            src={buildProfileImageLink(profile!!.logo!!.id)}
+                            src={buildProfileImageLink(profile!!.logoId)}
                             alt={"Community logo"}
                             style={{borderRadius: "20px"}}
                             fill
@@ -175,11 +177,12 @@ const BaseInfo: React.FC<Props> = ({
                             sizeText={"300 x 300 px"}
                             hasError={errors.base64PreviewImg}
                             editing={true}
-                            base64Img={data?.previewImage?.id ? buildSubscriptionImageLink(data.previewImage.id) : undefined}
+                            base64Img={data.newPreviewBase64Image ?? tryBuildSubscriptionImageLink(data.previewImageId)}
                             setBase64Img={(img) =>
                                 setter({
                                     ...data,
-                                    previewImage: {id: undefined, base64Image: img},
+                                    previewImageId: undefined,
+                                    newPreviewBase64Image: img,
                                 })
                             }
                         />

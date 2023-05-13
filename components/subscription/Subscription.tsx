@@ -1,7 +1,7 @@
 import {SubscriptionStatus, UpdateSubscriptionDTO} from "@/api/dto/subscription.dto";
 import Image from "next/image";
 import telegramIcon from "@/assets/social_media_logo/telegram.svg";
-import {DeleteOutlined, EditOutlined, LoadingOutlined, ShareAltOutlined} from "@ant-design/icons";
+import {EditOutlined, LoadingOutlined, ShareAltOutlined} from "@ant-design/icons";
 import {useRouter} from "next/router";
 import CustomButton from "@/components/customButton/CustomButton";
 import React, {ReactNode, useState} from "react";
@@ -19,10 +19,7 @@ export interface BriefProfile {
     id: string;
     title: string;
     ownerAddress: string,
-    logo: {
-        id: string;
-        base64Image: string;
-    };
+    logoId: string;
 }
 
 interface Props {
@@ -208,7 +205,7 @@ const Subscription: React.FC<Props> = (
                 }}
             >
                 <Image
-                    src={buildSubscriptionImageLink(subscription.mainImage.id!!)}
+                    src={buildSubscriptionImageLink(subscription.mainImageId!!)}
                     alt={"Subscription main image"}
                     style={{borderRadius: "20px"}}
                     fill
@@ -244,7 +241,7 @@ const Subscription: React.FC<Props> = (
                         onClick={(e) => router.push(`/profile/${profile.id}`)}
                     >
                         <Image
-                            src={buildProfileImageLink(profile.logo.id)}
+                            src={buildProfileImageLink(profile.logoId)}
                             alt={"Profile image"}
                             style={{borderRadius: "20px"}}
                             fill
@@ -311,22 +308,22 @@ const Subscription: React.FC<Props> = (
                             <EditOutlined style={{width: "32px"}}/>
                         </CustomButton>
                     )}
-                    {isOwner() && (
-                        <CustomButton
-                            color={"gray"}
-                            style={{
-                                minWidth: "55px",
-                                height: "55px",
-                                border: "2px solid #EA5858",
-                            }}
-                            // todo fix it
-                            onClick={() => {
-                                console.log(`delete ${subscription.id}`);
-                            }}
-                        >
-                            <DeleteOutlined style={{width: "32px", color: "#EA5858"}}/>
-                        </CustomButton>
-                    )}
+                    {/*{isOwner() && (*/}
+                    {/*    <CustomButton*/}
+                    {/*        color={"gray"}*/}
+                    {/*        style={{*/}
+                    {/*            minWidth: "55px",*/}
+                    {/*            height: "55px",*/}
+                    {/*            border: "2px solid #EA5858",*/}
+                    {/*        }}*/}
+                    {/*        // todo fix it*/}
+                    {/*        onClick={() => {*/}
+                    {/*            console.log(`delete ${subscription.id}`);*/}
+                    {/*        }}*/}
+                    {/*    >*/}
+                    {/*        <DeleteOutlined style={{width: "32px", color: "#EA5858"}}/>*/}
+                    {/*    </CustomButton>*/}
+                    {/*)}*/}
                 </div>
             </div>
 

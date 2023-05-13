@@ -24,7 +24,7 @@ const SubscriptionList: React.FC<Props> = ({profileId, subscriptions, isOwner}) 
                 {subscriptions.map((subscription) =>
                     <div key={subscription.id} className={styles.subscriptionWrapper}>
                         <Image
-                            src={buildSubscriptionImageLink(subscription.previewImage.id!!)}
+                            src={buildSubscriptionImageLink(subscription.previewImageId!!)}
                             alt={"Subscription logo"}
                             className={styles.subscriptionImage}
                             fill

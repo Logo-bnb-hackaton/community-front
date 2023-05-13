@@ -4,10 +4,9 @@ import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
 import {useAccount} from "wagmi";
 import {GetServerSidePropsContext, NextPage} from "next";
-import {ProfileDTO} from "@/api/dto/profile.dto";
+import {BaseProfileDTO, ProfileDTO} from "@/api/dto/profile.dto";
 import Footer from "@/components/footer/Footer";
 import ProfileEdit from "@/components/profile/edit/ProfileEdit";
-import {ImageDto} from "@/api/dto/image.dto";
 import Profile from "@/components/profile/Profile";
 import EditeProfileButton from "@/components/profile/EditeProfileButton";
 
@@ -36,16 +35,18 @@ export interface BaseProfile {
     id: string;
     title: string;
     description: string;
-    logo: ImageDto;
+    logoId?: string;
+    newBase64Logo?: string;
     socialMediaLinks: string[];
 }
 
-const fromProfileDTO = (dto: ProfileDTO): BaseProfile => {
+const fromProfileDTO = (dto: BaseProfileDTO): BaseProfile => {
     return {
         id: dto.id,
         title: dto.title,
         description: dto.description,
-        logo: dto.logo,
+        logoId: dto.logoId,
+        newBase64Logo: undefined,
         socialMediaLinks: dto.socialMediaLinks,
     };
 };
@@ -94,7 +95,7 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
     }, [ownerAddress, isConnected, address, profile, router]);
 
     const getError = (baseData: BaseProfile | undefined) => {
-        const hasLogoError = !baseData?.logo?.base64Image;
+        const hasLogoError = !baseData?.logoId && !baseData?.newBase64Logo;
         const hasTitleError = !baseData?.title;
         const hasDescriptionError = !baseData?.description || baseData?.description.length > MAX_DESCRIPTION_LEN;
         const hasSocialLinksError = !baseData?.socialMediaLinks || baseData.socialMediaLinks.length === 0;
@@ -120,22 +121,23 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
         try {
             setIsLoading(true);
             const errors = getError(baseData);
-            if (hasError(errors)) {
+            if (hasError(errors) || !baseData) {
                 setProfileError(errors);
                 return;
             }
-
             if (
                 !profile ||
-                (profile && hasChanges(baseData, fromProfileDTO(profile)))
+                hasChanges(baseData, fromProfileDTO(profile))
             ) {
-                await Api.profile.updateProfile({
+                const updatedProfile = await Api.profile.updateProfile({
                     id: profileId!! as string,
-                    title: baseData!!.title,
-                    description: baseData!!.description,
-                    logo: baseData!!.logo,
-                    socialMediaLinks: baseData!!.socialMediaLinks,
+                    title: baseData.title,
+                    description: baseData.description,
+                    logoId: baseData.logoId,
+                    newBase64Image: baseData.newBase64Logo,
+                    socialMediaLinks: baseData.socialMediaLinks,
                 });
+                setBaseData(fromProfileDTO(updatedProfile));
             }
 
             setEditing(false);
@@ -150,7 +152,7 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
         <main className={styles.main}>
             <Header
                 profileId={profileIdByOwner as string}
-                base64Logo={profile?.logo?.base64Image}
+                base64Logo={undefined}
             >
                 {isOwner() && (
                     <EditeProfileButton
