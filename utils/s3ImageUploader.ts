@@ -3,7 +3,13 @@ import {profileBucket, subscriptionBucket} from "@/utils/s3";
 // @ts-ignore
 import {v4 as uuidv4} from 'uuid';
 
-const s3 = new S3Client({})
+const s3 = new S3Client({
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!!,
+    },
+    region: process.env.AWS_REGION!!
+})
 
 export async function uploadProfileImage(base64Image: string): Promise<string | undefined> {
     return await uploadToS3(profileBucket, base64Image);
