@@ -203,7 +203,7 @@ const Subscription: React.FC<Props> = (
                 style={{
                     position: "relative",
                     width: "100%",
-                    height: "450px",
+                    height: "320px",
                 }}
             >
                 <Image
@@ -369,7 +369,7 @@ const Subscription: React.FC<Props> = (
 
             <div
                 style={{
-                    margin: "50px 0",
+                    margin: "50px 0 128px",
                     width: "100%",
                     fontSize: "21px",
                     whiteSpace: "pre-wrap",
