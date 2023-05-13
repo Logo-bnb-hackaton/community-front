@@ -70,7 +70,7 @@ const Profile: React.FC<Props> = ({
                 availableTokens={tokens}
                 isOwner={isOwner}
             />
-            {isOwner &&
+            {/* {isOwner &&
                 <CustomButton
                     disabled={!isConnected}
                     type={"wide"}
@@ -82,7 +82,7 @@ const Profile: React.FC<Props> = ({
                 >
                     Add subscription <FileAddOutlined/>
                 </CustomButton>
-            }
+            } */}
             <SubscriptionList
                 profileId={baseData.id}
                 subscriptions={getAvailableSubscriptions()}
