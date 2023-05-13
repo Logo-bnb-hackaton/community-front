@@ -37,7 +37,7 @@ const Profile: React.FC<Props> = ({
             <div className={styles.grid}>
                 <Logo
                     isLoading={false}
-                    base64LogoUrl={buildProfileImageLink(baseData.logo.id!!)}
+                    base64LogoUrl={buildProfileImageLink(baseData.logoId!!)}
                     setBase64Logo={undefined}
                     editing={false}
                     hasError={false}

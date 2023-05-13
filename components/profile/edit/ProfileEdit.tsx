@@ -8,7 +8,7 @@ import {addressBySymbol, baseCoin, possibleTokens} from "@/utils/tokens";
 import {LoadingOutlined} from "@ant-design/icons";
 import * as Contract from "@/contract";
 import {BaseProfile, ProfileError} from "@/pages/profile/[profileId]";
-import {buildProfileImageLink} from "@/utils/s3";
+import {tryBuildProfileImageLink} from "@/utils/s3";
 
 const MAX_DESCRIPTION_LEN = 150;
 
@@ -30,7 +30,8 @@ const ProfileEdit: React.FC<Props> = ({
                                               id: id,
                                               title: "",
                                               description: "",
-                                              logo: {id: undefined, base64Image: undefined},
+                                              logoId: undefined,
+                                              newBase64Logo: undefined,
                                               socialMediaLinks: [],
                                           },
                                           setProfile,
@@ -44,8 +45,7 @@ const ProfileEdit: React.FC<Props> = ({
 
     const logoDraggerHandler = (base64Logo: string | undefined) => {
         setProfile({
-            ...profile,
-            logo: {id: undefined, base64Image: base64Logo},
+            ...profile, logoId: undefined, newBase64Logo: base64Logo
         });
     };
 
@@ -93,7 +93,7 @@ const ProfileEdit: React.FC<Props> = ({
             <div className={styles.grid}>
                 <Logo
                     isLoading={isLoading}
-                    base64LogoUrl={profile.logo?.id ? buildProfileImageLink(profile.logo.id) : undefined}
+                    base64LogoUrl={profile.newBase64Logo ?? tryBuildProfileImageLink(profile.logoId)}
                     setBase64Logo={logoDraggerHandler}
                     editing={true}
                     hasError={errors?.logo}

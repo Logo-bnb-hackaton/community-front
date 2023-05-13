@@ -122,7 +122,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
                 profile: {
                     id: profile.id,
                     title: profile.title,
-                    logo: profile.logo,
+                    logoId: profile.logoId,
                     ownerAddress: ownerAddress,
                 },
                 paymentStatus: paymentStatus,

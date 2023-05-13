@@ -1,12 +1,14 @@
-import {ImageDto} from "@/api/dto/image.dto";
 import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
 
-export interface ProfileDTO {
+export interface BaseProfileDTO {
     id: string;
     title: string;
     description: string;
-    logo: ImageDto,
+    logoId: string,
     socialMediaLinks: string[];
+}
+
+export interface ProfileDTO extends BaseProfileDTO {
     subscriptions: BriefSubscriptionInfo[],
 }
 
@@ -14,6 +16,7 @@ export interface UpdateProfileDTO {
     id: string;
     title: string;
     description: string;
-    logo: ImageDto,
+    logoId: string | undefined,
+    newBase64Image: string | undefined,
     socialMediaLinks: string[];
 }
