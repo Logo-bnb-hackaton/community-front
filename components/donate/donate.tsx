@@ -9,7 +9,7 @@ import {LoadingOutlined} from "@ant-design/icons";
 import {BigNumber, ethers} from "ethers";
 import {prepareWriteContract, waitForTransaction, writeContract, WriteContractPreparedArgs,} from "@wagmi/core";
 import {PUBLIC_DONATION_ABI, PUBLIC_DONATION_ADDRESS} from "@/constants";
-import {addressBySymbol, baseCoin} from "@/utils/tokens";
+import {addressBySymbol, baseCoin, possibleTokens} from "@/utils/tokens";
 import {SegmentedValue} from "rc-segmented";
 import {useConnectModal} from "@rainbow-me/rainbowkit";
 
@@ -238,7 +238,8 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
             prepareWriteContract({
                 address: PUBLIC_DONATION_ADDRESS,
                 abi: PUBLIC_DONATION_ABI,
-                functionName: "donateToken",
+                // functionName: "donateToken",
+                functionName: "donateFromSwap",
                 args: [tokenAddress, tokenAmount, profileId],
             });
 
@@ -349,7 +350,7 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
                         <div>
                             <h3>Select a donation coin.</h3>
                             <div className={styles.donateInnerRow}>
-                                {[baseCoin, ...availableTokens].map((coin) => {
+                                {[baseCoin, ...possibleTokens.map((coin) => coin.symbol)].map((coin) => {
                                     return (
                                         <CustomButton
                                             disabled={isDonating}
@@ -359,7 +360,7 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
                                             color={coin === donateCoin ? "green" : "gray"}
                                             type="small"
                                         >
-                                            {coin.toUpperCase()}
+                                            {coin.toUpperCase()} {coin !== baseCoin && !availableTokens.includes(coin) && "by 🦄"}
                                         </CustomButton>
                                     );
                                 })}
