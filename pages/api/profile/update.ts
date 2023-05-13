@@ -19,3 +19,11 @@ export default async function update(
         data: updateReq,
     });
 }
+
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '2mb'
+        }
+    }
+}
