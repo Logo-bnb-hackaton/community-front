@@ -7,7 +7,7 @@ export default async function publish(
 ) {
     await cookieWrapper(req, res, {
         method: 'post',
-        url: '/subscription/get-subscription-payment-status',
+        url: '/subscription/publish',
         data: req.body as string,
     });
 };
