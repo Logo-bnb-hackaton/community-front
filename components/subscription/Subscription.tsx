@@ -317,22 +317,6 @@ const Subscription: React.FC<Props> = (
                             <EditOutlined style={{width: "32px"}}/>
                         </CustomButton>
                     )}
-                    {/*{isOwner() && (*/}
-                    {/*    <CustomButton*/}
-                    {/*        color={"gray"}*/}
-                    {/*        style={{*/}
-                    {/*            minWidth: "55px",*/}
-                    {/*            height: "55px",*/}
-                    {/*            border: "2px solid #EA5858",*/}
-                    {/*        }}*/}
-                    {/*        // todo fix it*/}
-                    {/*        onClick={() => {*/}
-                    {/*            console.log(`delete ${subscription.id}`);*/}
-                    {/*        }}*/}
-                    {/*    >*/}
-                    {/*        <DeleteOutlined style={{width: "32px", color: "#EA5858"}}/>*/}
-                    {/*    </CustomButton>*/}
-                    {/*)}*/}
                 </div>
             </div>
 

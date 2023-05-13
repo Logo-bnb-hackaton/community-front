@@ -175,7 +175,6 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
         if (!balance) return Number.MAX_SAFE_INTEGER.toString();
 
         const value = ethers.utils.formatEther(balance);
-        // console.log(`Max token value for ${donateCoin} is ${value}`);
         return value.toString();
     };
 
@@ -234,7 +233,6 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
             );
             return;
         }
-        // console.log(`${tokenAddress} and ${tokenAmount}`);
 
         const donateTokenConfig = async () =>
             prepareWriteContract({
