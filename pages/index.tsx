@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import styles from "@/styles/Home.module.css";
 import styles_header from "@/styles/Header.module.css";
 import React, {useEffect, useRef, useState} from "react";
@@ -16,15 +17,43 @@ import {LoadingOutlined} from "@ant-design/icons";
 import {AuthProps} from "@/pages/_app";
 import {GetServerSidePropsContext, NextPage} from "next";
 import {getAuthStatus} from "@/utils/getAuthStatus";
+import {buildProfileImageLink} from "@/utils/s3";
+
+import * as Api from "@/api";
+import {BaseProfileDTO} from "@/api/dto/profile.dto";
 
 interface Props extends AuthProps {
 }
 
+export interface BaseProfile {
+    id: string;
+    title: string;
+    description: string;
+    logoId?: string;
+    newBase64Logo?: string;
+    socialMediaLinks: string[];
+}
+
+const fromProfileDTO = (dto: BaseProfileDTO): BaseProfile => {
+    return {
+        id: dto.id,
+        title: dto.title,
+        description: dto.description,
+        logoId: dto.logoId,
+        newBase64Logo: undefined,
+        socialMediaLinks: dto.socialMediaLinks,
+    };
+};
+
 const Home: NextPage<Props> = () => {
     const router = useRouter();
     const {address, isConnected} = useAccount();
-    const [priceToMint, setPriceToMint] = useState<BigNumber | undefined>(undefined);
-    const [userProfileId, setUserProfileId] = useState<number | undefined>(undefined);
+    const [priceToMint, setPriceToMint] = useState<BigNumber | undefined>(
+        undefined
+    );
+    const [userProfileId, setUserProfileId] = useState<number | undefined>(
+        undefined
+    );
     const [isSticky, setIsSticky] = useState(false);
     const [pageIsReady, setPageIsReady] = useState(false);
     const arrowRef = useRef<HTMLDivElement>(null);
@@ -128,40 +157,39 @@ const Home: NextPage<Props> = () => {
     }, [safeMintWriteError, safeMintStatus]);
 
     const mint = async () => {
-            if (!priceToMint) {
-                console.error("Can't load mint price.");
-                setError("Can't load mint price.");
-                return;
-            }
-
-            if (!safeMintWriteAsync) {
-                setError("Insufficient funds in your wallet.");
-                return;
-            }
-
-            setIsMinting(old => !old);
-
-            safeMintWriteAsync?.()
-                .then((data) => {
-                    console.log(`Wait tx: ${data.hash}`);
-                    return waitForTransaction({
-                        hash: data.hash,
-                        confirmations: WAIT_BLOCK_CONFIRMATIONS
-                    })
-                })
-                .then(_ => tokenOfOwnerByIndexRefetch())
-                .then(response => {
-                    if (response.error) throw Error(response.error.message);
-                    redirectClick((response.data as BigNumber).toNumber());
-                })
-                .catch((err) => {
-                    console.error(err);
-                    setError(err.message);
-
-                    setIsMinting(false);
-                })
+        if (!priceToMint) {
+            console.error("Can't load mint price.");
+            setError("Can't load mint price.");
+            return;
         }
-    ;
+
+        if (!safeMintWriteAsync) {
+            setError("Insufficient funds in your wallet.");
+            return;
+        }
+
+        setIsMinting((old) => !old);
+
+        safeMintWriteAsync?.()
+            .then((data) => {
+                console.log(`Wait tx: ${data.hash}`);
+                return waitForTransaction({
+                    hash: data.hash,
+                    confirmations: WAIT_BLOCK_CONFIRMATIONS,
+                });
+            })
+            .then((_) => tokenOfOwnerByIndexRefetch())
+            .then((response) => {
+                if (response.error) throw Error(response.error.message);
+                redirectClick((response.data as BigNumber).toNumber());
+            })
+            .catch((err) => {
+                console.error(err);
+                setError(err.message);
+
+                setIsMinting(false);
+            });
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -191,6 +219,32 @@ const Home: NextPage<Props> = () => {
     const handleAlertClose = () => {
         setShowAlert(false);
     };
+
+    const [baseDatas, setBaseDatas] = useState<BaseProfile[] | undefined>(
+        undefined
+    );
+    const loadProfiles = async () => {
+        console.log("Load profile ....");
+        try {
+            const updatedProfiles: BaseProfile[] = [];
+
+            for (let i = 1; i <= 3; i++) {
+                await Api.profile
+                    .loadProfile(i.toString(), null)
+                    .then((profile) =>
+                        updatedProfiles.push(fromProfileDTO(profile ?? null))
+                    );
+            }
+
+            setBaseDatas(updatedProfiles);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        loadProfiles();
+    }, []);
 
     return (
         <>
@@ -249,87 +303,116 @@ const Home: NextPage<Props> = () => {
                         onClick={handleClick}
                         ref={arrowRef}
                     ></div>
-                    {!isDefinitelyConnected && (
-                        <div className={styles.section_wrapper}>
-                            <p
-                                style={{
-                                    marginBottom: "80px",
-                                    fontSize: "32px",
-                                }}
-                            >
-                                To use platform connect you wallet firstly
-                            </p>
-                            <CustomButton
-                                color="white"
-                                onClick={openConnectModal}
-                                style={{width: "324px", fontSize: "21px"}}
-                                disabled={isDefinitelyConnected}
-                            >
-                                🌈 Connect wallet
-                            </CustomButton>
+                    <div className={styles.section_wrapper}>
+                        {!isDefinitelyConnected && (
+                            <div>
+                                <p
+                                    style={{
+                                        marginBottom: "20px",
+                                        fontSize: "32px",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    To use platform connect you wallet firstly
+                                </p>
+                                <CustomButton
+                                    color="white"
+                                    onClick={openConnectModal}
+                                    style={{width: "324px", fontSize: "21px"}}
+                                    disabled={isDefinitelyConnected}
+                                >
+                                    🌈 Connect wallet
+                                </CustomButton>
+                            </div>
+                        )}
+                        {isDefinitelyConnected && !userProfileId && (
+                            <div>
+                                <p
+                                    style={{
+                                        marginBottom: "20px",
+                                        fontSize: "32px",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    Create your NFT profile
+                                </p>
+                                <CustomButton
+                                    color="white"
+                                    onClick={!isDefinitelyConnected ? handleAlerShow : mint}
+                                    style={{
+                                        width: "324px",
+                                        fontSize: "21px",
+                                        marginBottom: "76px",
+                                    }}
+                                    disabled={isMinting || !isDefinitelyConnected}
+                                >
+                                    {isMinting ? <LoadingOutlined/> : "🚀"} Create a profile
+                                </CustomButton>
+                            </div>
+                        )}
+                        {isDefinitelyConnected && userProfileId && (
+                            <div>
+                                <p
+                                    style={{
+                                        marginBottom: "20px",
+                                        fontSize: "32px",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    Set your profile
+                                </p>
+                                <CustomButton
+                                    color="white"
+                                    onClick={() => redirectClick(userProfileId)}
+                                    style={{
+                                        width: "324px",
+                                        fontSize: "21px",
+                                        marginBottom: "76px",
+                                    }}
+                                    disabled={!pageIsReady}
+                                >
+                                    {!pageIsReady ? <LoadingOutlined/> : "🚀"} Let's go right now
+                                </CustomButton>
+                            </div>
+                        )}
+                        <h2 style={{alignSelf: "start"}}>VIEW TOP PROFILES</h2>
+                        <div className={styles.topProfileWrapper}>
+                            <div className={styles.topProfileContainer}>
+                                {baseDatas &&
+                                    baseDatas.map((baseData) => (
+                                        <div
+                                            key={baseData.id}
+                                            className={styles.topProfileContainerWrapper}>
+                                            <Image
+                                                src={buildProfileImageLink(baseData.logoId!!)}
+                                                alt={"Profile logo"}
+                                                fill
+                                                className={styles.topProfileImage}
+                                                onClick={(e) =>
+                                                    router.push(`/profile/${baseData.id}`)
+                                                }
+                                            />
+                                            <p className={`${styles.topProfileTitle}`}>
+                                                {baseData.title}
+                                            </p>
+                                        </div>
+                                    ))}
+                            </div>
                         </div>
-                    )}
-                    {isDefinitelyConnected && !userProfileId && (
-                        <div className={styles.section_wrapper}>
-                            <p
-                                style={{
-                                    marginBottom: "80px",
-                                    fontSize: "32px",
-                                }}
-                            >
-                                Create your NFT profile
-                            </p>
-                            <CustomButton
-                                color="white"
-                                onClick={!isDefinitelyConnected ? handleAlerShow : mint}
-                                style={{
-                                    width: "324px",
-                                    fontSize: "21px",
-                                    marginBottom: "176px",
-                                }}
-                                disabled={isMinting || !isDefinitelyConnected}
-                            >
-                                {isMinting ? <LoadingOutlined/> : "🚀"} Create a profile
-                            </CustomButton>
-                        </div>
-                    )}
-                    {isDefinitelyConnected && userProfileId && (
-                        <div className={styles.section_wrapper}>
-                            <p
-                                style={{
-                                    marginBottom: "80px",
-                                    fontSize: "32px",
-                                }}
-                            >
-                                Set your profile
-                            </p>
-                            <CustomButton
-                                color="white"
-                                onClick={() => redirectClick(userProfileId)}
-                                style={{
-                                    width: "324px",
-                                    fontSize: "21px",
-                                    marginBottom: "176px",
-                                }}
-                                disabled={!pageIsReady}
-                            >
-                                {!pageIsReady ? <LoadingOutlined/> : "🚀"} Let's go right now
-                            </CustomButton>
-                        </div>
-                    )}
+                    </div>
                 </div>
                 <Footer/>
             </main>
         </>
     );
-}
+};
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     return {
         props: {
-            authStatus: getAuthStatus(ctx)
-        }
-    }
-}
+            authStatus: getAuthStatus(ctx),
+        },
+    };
+};
 
 export default Home;

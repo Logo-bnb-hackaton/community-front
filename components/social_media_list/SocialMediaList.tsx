@@ -127,7 +127,7 @@ const SocialMediaList: React.FC<Props> = ({
               <button
                 key={`social-media-link-index-${socialMediaLinks.length + index}`}
                 className={`${styles.cardSize} ${styles.addCardButton} ${
-                  hasError ? styles.errorBorder : ""
+                  hasError ? styles.addCardButtonErrorBg : styles.addCardButtonBg
                 }`}
                 onClick={() => { if (index === 0) showAddSocialLinkMenu() }}
               >
