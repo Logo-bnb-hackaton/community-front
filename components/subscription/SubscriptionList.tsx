@@ -40,7 +40,7 @@ const SubscriptionList: React.FC<Props> = ({
               fill
               onClick={(e) =>
                 router.push(
-                  `/subscription/${subscription.id}?profileId=${profileId}`
+                  `/subscription/${subscription.id}`
                 )
               }
             />

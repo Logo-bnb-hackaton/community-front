@@ -1,7 +1,7 @@
 import {useRouter} from 'next/router'
 import homeStyles from "@/styles/Home.module.css";
 import styles from '@/styles/Subscription.module.css'
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Header from "@/components/header/Header";
 import {GetServerSidePropsContext, NextPage} from "next";
 
@@ -19,6 +19,7 @@ import {useAccount} from "wagmi";
 
 interface Props extends AuthProps {
     subscription: UpdateSubscriptionDTO;
+    profileOwnerAddress: string,
     profile: BriefProfile,
     paymentStatus: 'PAID' | 'NOT_PAID',
     tgLinkStatus?: TgChatStatusDTO
@@ -27,6 +28,7 @@ interface Props extends AuthProps {
 const SubscriptionPage: NextPage<Props> = (
     {
         subscription,
+        profileOwnerAddress,
         profile,
         paymentStatus,
         tgLinkStatus
@@ -36,13 +38,24 @@ const SubscriptionPage: NextPage<Props> = (
     const router = useRouter();
     const {editing} = router.query;
 
-    const isOwner = () => address && address === profile.ownerAddress;
+    const isOwner = () => address && address === profileOwnerAddress;
+
+    const [profileIdByOwner, setProfileIdByOwner] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        if (address) {
+            Contract.profile
+                .getProfileIdByOwnerAndIndex(address, 0)
+                .then((profileIdByOwner) => setProfileIdByOwner(profileIdByOwner))
+                .catch(() => setProfileIdByOwner(undefined));
+        } else {
+            setProfileIdByOwner(undefined);
+        }
+    }, [address, profile, router]);
 
     return (
         <main className={homeStyles.main}>
-            <Header
-                profileId={profile.id!!}
-            />
+            <Header profileId={profileIdByOwner}/>
 
             <div className={styles.eventWrapper}>
                 {
@@ -51,6 +64,7 @@ const SubscriptionPage: NextPage<Props> = (
                         :
                         <Subscription
                             subscription={subscription}
+                            profileOwnerAddress={profileOwnerAddress}
                             profile={profile}
                             paymentStatus={paymentStatus}
                             tgLinkStatus={tgLinkStatus}
@@ -113,11 +127,11 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             props: {
                 authStatus: getAuthStatus(ctx),
                 subscription: subscription,
+                profileOwnerAddress: ownerAddress,
                 profile: {
                     id: profile.id,
                     title: profile.title,
                     logoId: profile.logoId,
-                    ownerAddress: ownerAddress,
                 },
                 paymentStatus: paymentStatus,
                 tgLinkStatus: tgLinkStatus

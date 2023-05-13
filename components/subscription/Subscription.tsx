@@ -19,12 +19,12 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 export interface BriefProfile {
     id: string;
     title: string;
-    ownerAddress: string,
     logoId: string;
 }
 
 interface Props {
     subscription: UpdateSubscriptionDTO,
+    profileOwnerAddress: string,
     profile: BriefProfile,
     paymentStatus: 'PAID' | 'NOT_PAID',
     tgLinkStatus?: TgChatStatusDTO
@@ -35,6 +35,7 @@ const tg_bot = 'https://t.me/nodde_bot';
 const Subscription: React.FC<Props> = (
     {
         subscription,
+        profileOwnerAddress,
         profile,
         paymentStatus: _paymentStatus,
         tgLinkStatus: _tgLinkStatus
@@ -57,7 +58,7 @@ const Subscription: React.FC<Props> = (
 
     const openCloseModal = () => setIsShareModalOpen((prev) => !prev);
 
-    const isOwner = () => isConnected && profile.ownerAddress === address && subscription.ownerId === profile.id;
+    const isOwner = () => isConnected && profileOwnerAddress === address && subscription.ownerId === profile.id;
 
     const getPath = () => {
         const origin =
