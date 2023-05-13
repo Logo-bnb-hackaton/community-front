@@ -140,7 +140,7 @@ const Subscription: React.FC<Props> = (
             setIsLoading(true);
             const index = await Contract.subscription.getIndexByHexId(subscription.id);
             await Contract.subscription.payForSubscriptionByEth(subscription.id, profile.id, Number(index), subscription.price);
-            message.error("Successful payment");
+            message.success("Successful payment");
             router.reload();
         } catch (e: any) {
             console.log(e);
