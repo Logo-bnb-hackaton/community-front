@@ -277,6 +277,11 @@
   height: 300px !important;
   width: 300px !important;
   border-radius: 20px;
+  transition: 0.125s ease;
+}
+
+.topProfileImage:hover {
+  transform: scale(1.03);
 }
 
 .topProfileTitle {

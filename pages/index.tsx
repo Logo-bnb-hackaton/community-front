@@ -226,21 +226,35 @@ const Home: NextPage<Props> = () => {
     const loadProfiles = async () => {
         console.log("Load profile ....");
         try {
-            const updatedProfiles: BaseProfile[] = [];
-
-            for (let i = 1; i <= 3; i++) {
-                await Api.profile
-                    .loadProfile(i.toString(), null)
-                    .then((profile) =>
-                        updatedProfiles.push(fromProfileDTO(profile ?? null))
-                    );
-            }
-
-            setBaseDatas(updatedProfiles);
+          const updatedProfiles: BaseProfile[] = [];
+          const profiles: Promise<void>[] = [];
+    
+          let i = 0;
+          while (i++ < 9) {
+            const profilePromise = Api.profile
+              .loadProfile(i.toString(), null)
+              .then((profile) => {
+                if (profile) {
+                  updatedProfiles.push(fromProfileDTO(profile));
+                }
+              });
+            profiles.push(profilePromise);
+          }
+    
+          await Promise.all(profiles).then(() => {
+            console.log(
+              `All profiles loaded. Number of profiles: ${updatedProfiles.length}`
+            );
+            const shuffledBaseDatas = updatedProfiles.sort(
+              () => 0.5 - Math.random()
+            );
+            const selectedBaseDatas = shuffledBaseDatas.slice(0, 3);
+            setBaseDatas(selectedBaseDatas);
+          });
         } catch (error) {
-            console.log(error);
+          console.log(error);
         }
-    };
+      };
 
     useEffect(() => {
         loadProfiles();
