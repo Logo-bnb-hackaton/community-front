@@ -14,6 +14,7 @@ import {useConnectModal} from "@rainbow-me/rainbowkit";
 import {GetInviteLinkStatusType, TgChatStatusDTO} from "@/api/dto/integration.dto";
 import Link from "next/link";
 import {buildProfileImageLink, buildSubscriptionImageLink} from "@/utils/s3";
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 export interface BriefProfile {
     id: string;
@@ -148,9 +149,11 @@ const Subscription: React.FC<Props> = (
         }
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) {
             return (
-                <Link href="https://www.t.me/sprut_signals_bot" target={'_blank'}>
-                    Copy invite code and Go to telegram
-                </Link>
+                <CopyToClipboard text={tgLinkStatus.code!!}>
+                    <Link href="https://www.t.me/sprut_signals_bot" target={'_blank'}>
+                        Copy invite code and Go to telegram
+                    </Link>
+                </CopyToClipboard>
             );
         }
         if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return <p>Generate invite code</p>;
@@ -171,7 +174,6 @@ const Subscription: React.FC<Props> = (
         }
 
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return () => {
-            navigator.clipboard.writeText(tgLinkStatus.code!!);
         };
         if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return async () => {
             try {
