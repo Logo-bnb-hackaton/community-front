@@ -27,7 +27,7 @@ const Logo: React.FC<Props> = ({
     >
       <ImageUploader
         disabled={isLoading}
-        description={"add you avatar"}
+        description={"Add you avatar"}
         sizeText={"350 x 350 px"}
         hasError={hasError}
         editing={editing}

@@ -1,9 +1,10 @@
 import {message, Upload} from "antd";
-import {DeleteOutlined, FileAddOutlined, LoadingOutlined,} from "@ant-design/icons";
+import {DeleteOutlined, LoadingOutlined,} from "@ant-design/icons";
 import React, {SyntheticEvent, useState} from "react";
 import {RcFile} from "antd/es/upload";
 import styles from "@/styles/Profile.module.css";
 import Image from "next/image";
+import ProfileAddSvg from "@/assets/svg_icon/person_add.svg";
 
 const getBase64 = (img: RcFile, callback: (url: string) => void) => {
   const reader = new FileReader();
@@ -95,27 +96,28 @@ const ImageUploader: React.FC<Props> = ({
           }}
           className={`${styles.draggerWrapper}`}
         >
-          <p className="ant-upload-drag-icon">
-            {isImgLoading ? (
-              <LoadingOutlined />
-            ) : (
-              <div className={styles.personIcon}></div>
-              // <FileAddOutlined style={{ color: "#000" }} />
-            )}
-          </p>
-          <p style={{ fontSize: "16px", fontFamily: "co-headline" }}>
-            {description}
-          </p>
-          <p
-            style={{
-              paddingTop: "24px",
-              fontSize: "16px",
-              fontFamily: "co-headline",
-              color: "#837F7F",
-            }}
-          >
-            {sizeText}
-          </p>
+
+          <div>
+            <div style={{margin: 0, height: '100%'}}>
+              {isImgLoading ?
+                  (<LoadingOutlined />) :
+                  (<Image width={30} height={30} className={styles.personIcon} alt={'Add icon'} src={ProfileAddSvg}/>)
+              }
+            </div>
+            <div style={{ fontSize: "16px", fontFamily: "co-headline" }}>
+              {description}
+            </div>
+            <p
+                style={{
+                  paddingTop: "24px",
+                  fontSize: "16px",
+                  fontFamily: "co-headline",
+                  color: "#837F7F",
+                }}
+            >
+              {sizeText}
+            </p>
+          </div>
         </Upload.Dragger>
       )}
     </>
