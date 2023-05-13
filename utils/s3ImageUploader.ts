@@ -3,6 +3,9 @@ import {profileBucket, subscriptionBucket} from "@/utils/s3";
 // @ts-ignore
 import {v4 as uuidv4} from 'uuid';
 
+/**
+ * Get credentials from env
+ */
 const s3 = new S3Client({})
 
 export async function uploadProfileImage(base64Image: string): Promise<string | undefined> {
@@ -15,7 +18,6 @@ export async function uploadSubscriptionImage(base64Image: string): Promise<stri
 
 async function uploadToS3(bucket: string, base64Image: string): Promise<string | undefined> {
     console.log(`Start saving new image`);
-    console.log(process.env);
 
     const type: string = base64Image.substring("data:image/".length, base64Image.indexOf(";base64"));
 
