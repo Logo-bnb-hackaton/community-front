@@ -305,7 +305,7 @@ const Home: NextPage<Props> = () => {
                     ></div>
                     <div className={styles.section_wrapper}>
                         {!isDefinitelyConnected && (
-                            <div>
+                            <div className={styles.section_sub_wrapper}>
                                 <p
                                     style={{
                                         marginBottom: "20px",
@@ -318,7 +318,11 @@ const Home: NextPage<Props> = () => {
                                 <CustomButton
                                     color="white"
                                     onClick={openConnectModal}
-                                    style={{width: "324px", fontSize: "21px"}}
+                                    style={{
+                                        width: "324px",
+                                        fontSize: "21px",
+                                        marginBottom: "70px",
+                                    }}
                                     disabled={isDefinitelyConnected}
                                 >
                                     🌈 Connect wallet
@@ -326,7 +330,7 @@ const Home: NextPage<Props> = () => {
                             </div>
                         )}
                         {isDefinitelyConnected && !userProfileId && (
-                            <div>
+                            <div className={styles.section_sub_wrapper}>
                                 <p
                                     style={{
                                         marginBottom: "20px",
@@ -342,7 +346,7 @@ const Home: NextPage<Props> = () => {
                                     style={{
                                         width: "324px",
                                         fontSize: "21px",
-                                        marginBottom: "76px",
+                                        marginBottom: "70px",
                                     }}
                                     disabled={isMinting || !isDefinitelyConnected}
                                 >
@@ -351,7 +355,7 @@ const Home: NextPage<Props> = () => {
                             </div>
                         )}
                         {isDefinitelyConnected && userProfileId && (
-                            <div>
+                            <div className={styles.section_sub_wrapper}>
                                 <p
                                     style={{
                                         marginBottom: "20px",
@@ -367,7 +371,7 @@ const Home: NextPage<Props> = () => {
                                     style={{
                                         width: "324px",
                                         fontSize: "21px",
-                                        marginBottom: "76px",
+                                        marginBottom: "70px",
                                     }}
                                     disabled={!pageIsReady}
                                 >

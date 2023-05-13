@@ -246,10 +246,16 @@
   height: 100vh;
 }
 
+.section_sub_wrapper {
+  max-width: 500px;
+  text-align-last: center;
+}
+
 .topProfileWrapper {
   display: flex;
   flex-direction: column;
   margin-top: 64px;
+  max-width: var(--max-width);
 }
 
 .topProfileContainer {
