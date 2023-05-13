@@ -1,7 +1,8 @@
 .subscriptionsWrapper {
   display: flex;
   flex-direction: column;
-  margin: 32px 0;
+  margin-top: 32px;
+  margin-bottom: 64px;
 }
 
 .subscriptionsTitle {
@@ -22,13 +23,13 @@
 .subscriptionWrapper {
   cursor: pointer;
   width: 300px;
-  height: 300px;
+  height: 351px;
   position: relative;
 }
 
 .subscriptionStub {
-  width: 100%;
-  height: 100%;
+  width: 300px;
+  height: 300px;
   background-color: var(--default-white-color);
   border-radius: 20px;
   display: flex;
@@ -82,20 +83,17 @@
 }
 
 .subscriptionImage {
+  height: 300px !important;
+  width: 300px !important;
   border-radius: 20px;
 }
 
 .subscriptionTitle {
   position: absolute;
-  background-color: var(--default-white-color);
-  border-radius: 15px;
-  padding: 0 23px;
   bottom: 0;
-  margin: 24px;
-  font-size: 24px;
+  margin-top: 24px;
+  font-size: 21px;
   font-family: var(--font-co-headline-corp);
-  font-weight: bold;
-  line-height: 50px;
 }
 
 .subscriptionStatus {
