@@ -202,7 +202,7 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
                         type={"small"}
                         color={"gray"}
                         disabled={isLoading}
-                        style={{margin: '0 10px'}}
+                        style={{marginRight: '20px'}}
                         onClick={prev}
                     >
                         Back
