@@ -226,21 +226,35 @@ const Home: NextPage<Props> = () => {
     const loadProfiles = async () => {
         console.log("Load profile ....");
         try {
-            const updatedProfiles: BaseProfile[] = [];
-
-            for (let i = 1; i <= 3; i++) {
-                await Api.profile
-                    .loadProfile(i.toString(), null)
-                    .then((profile) =>
-                        updatedProfiles.push(fromProfileDTO(profile ?? null))
-                    );
-            }
-
-            setBaseDatas(updatedProfiles);
+          const updatedProfiles: BaseProfile[] = [];
+          const profiles: Promise<void>[] = [];
+    
+          let i = 0;
+          while (i++ < 9) {
+            const profilePromise = Api.profile
+              .loadProfile(i.toString(), null)
+              .then((profile) => {
+                if (profile) {
+                  updatedProfiles.push(fromProfileDTO(profile));
+                }
+              });
+            profiles.push(profilePromise);
+          }
+    
+          await Promise.all(profiles).then(() => {
+            console.log(
+              `All profiles loaded. Number of profiles: ${updatedProfiles.length}`
+            );
+            const shuffledBaseDatas = updatedProfiles.sort(
+              () => 0.5 - Math.random()
+            );
+            const selectedBaseDatas = shuffledBaseDatas.slice(0, 3);
+            setBaseDatas(selectedBaseDatas);
+          });
         } catch (error) {
-            console.log(error);
+          console.log(error);
         }
-    };
+      };
 
     useEffect(() => {
         loadProfiles();
@@ -303,7 +317,7 @@ const Home: NextPage<Props> = () => {
                     ></div>
                     <div className={styles.section_wrapper}>
                         {!isDefinitelyConnected && (
-                            <div>
+                            <div className={styles.section_sub_wrapper}>
                                 <p
                                     style={{
                                         marginBottom: "20px",
@@ -316,7 +330,11 @@ const Home: NextPage<Props> = () => {
                                 <CustomButton
                                     color="white"
                                     onClick={openConnectModal}
-                                    style={{width: "324px", fontSize: "21px"}}
+                                    style={{
+                                        width: "324px",
+                                        fontSize: "21px",
+                                        marginBottom: "70px",
+                                    }}
                                     disabled={isDefinitelyConnected}
                                 >
                                     🌈 Connect wallet
@@ -324,7 +342,7 @@ const Home: NextPage<Props> = () => {
                             </div>
                         )}
                         {isDefinitelyConnected && !userProfileId && (
-                            <div>
+                            <div className={styles.section_sub_wrapper}>
                                 <p
                                     style={{
                                         marginBottom: "20px",
@@ -340,7 +358,7 @@ const Home: NextPage<Props> = () => {
                                     style={{
                                         width: "324px",
                                         fontSize: "21px",
-                                        marginBottom: "76px",
+                                        marginBottom: "70px",
                                     }}
                                     disabled={isMinting || !isDefinitelyConnected}
                                 >
@@ -349,7 +367,7 @@ const Home: NextPage<Props> = () => {
                             </div>
                         )}
                         {isDefinitelyConnected && userProfileId && (
-                            <div>
+                            <div className={styles.section_sub_wrapper}>
                                 <p
                                     style={{
                                         marginBottom: "20px",
@@ -365,7 +383,7 @@ const Home: NextPage<Props> = () => {
                                     style={{
                                         width: "324px",
                                         fontSize: "21px",
-                                        marginBottom: "76px",
+                                        marginBottom: "70px",
                                     }}
                                     disabled={!pageIsReady}
                                 >
