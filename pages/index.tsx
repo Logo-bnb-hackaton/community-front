@@ -273,8 +273,6 @@ const Home: NextPage<Props> = () => {
                 <Header
                     showLogo={isSticky}
                     profileId={userProfileId?.toString()}
-                    // todo fix it
-                    base64Logo={undefined}
                 />
 
                 <div className={styles.center}>

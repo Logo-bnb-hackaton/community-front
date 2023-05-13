@@ -16,7 +16,7 @@ interface Props {
     doneCallback: () => void;
 }
 
-const TgBotName = 'Nodde_Bot';
+const TgBotName = 'nodde_bot';
 const savingStepIndex = 1;
 const finalStepIndex = 2;
 

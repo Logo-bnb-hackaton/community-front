@@ -106,7 +106,7 @@ const Subscription: React.FC<Props> = (
     }
 
     const routeToEditing = () => {
-        router.push(`/subscription/${subscription.id}?edited=true&profileId=${profile.id}`);
+        router.push(`/subscription/${subscription.id}?editing=true`);
     }
 
     const pay = async () => {

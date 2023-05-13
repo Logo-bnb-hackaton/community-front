@@ -16,7 +16,6 @@ export default async function cookieWrapper(
             Cookie: req.headers.cookie
         }
     });
-    console.log(req.headers.cookie);
 
     let cookie: string[] = ((response.headers as AxiosHeaders).get('set-cookie') ?? []) as string[];
     if (deleteSessionCookie) {

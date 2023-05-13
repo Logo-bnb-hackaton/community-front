@@ -1,10 +1,10 @@
 import Image from "next/image";
 import React from "react";
-import { CheckOutlined, FormOutlined } from "@ant-design/icons";
+import {CheckOutlined, FormOutlined} from "@ant-design/icons";
 import styles from "@/styles/Subscriptions.module.css";
-import { BriefSubscriptionInfo } from "@/api/dto/subscription.dto";
-import { useRouter } from "next/router";
-import { buildSubscriptionImageLink } from "@/utils/s3";
+import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
+import {useRouter} from "next/router";
+import {buildSubscriptionImageLink} from "@/utils/s3";
 
 const ROW_COUNT = 3;
 
@@ -52,7 +52,7 @@ const SubscriptionList: React.FC<Props> = ({
                 className={`${styles.subscriptionStatus}`}
                 onClick={(e) =>
                   router.push(
-                    `/subscription/${subscription.id}?edited=true&profileId=${profileId}`
+                    `/subscription/${subscription.id}?editing=true`
                   )
                 }
               >

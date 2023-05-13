@@ -69,20 +69,21 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
     const [isLoading, setIsLoading] = useState(false);
     const [editing, setEditing] = useState(!profile);
 
-    const [baseData, setBaseData] = useState<BaseProfile | undefined>(profile ? fromProfileDTO(profile) : undefined);
+    const [baseData, setBaseData] = useState<BaseProfile | undefined>(undefined);
     const [profileError, setProfileError] = useState<ProfileError | undefined>(undefined);
 
     const [profileIdByOwner, setProfileIdByOwner] = useState<string | undefined>(undefined);
 
     const isOwner = () => isConnected && authStatus === 'authenticated' && address === ownerAddress;
 
+
     useEffect(() => {
+        setBaseData(profile ? fromProfileDTO(profile) : undefined);
+        setEditing(!profile);
+
         if (!profile && (!isConnected || address !== ownerAddress)) {
             router.push("/");
             return;
-        }
-        if (!profile) {
-            setEditing(true);
         }
         if (isConnected && address) {
             Contract.profile
@@ -150,10 +151,7 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
 
     return (
         <main className={styles.main}>
-            <Header
-                profileId={profileIdByOwner as string}
-                base64Logo={undefined}
-            >
+            <Header profileId={profileIdByOwner as string}>
                 {isOwner() && (
                     <EditeProfileButton
                         saveCallback={saveCallback}
@@ -164,7 +162,7 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
                 )}
             </Header>
 
-            {editing ? (
+            {editing &&
                 <ProfileEdit
                     id={profileId as string}
                     isLoading={isLoading}
@@ -174,14 +172,15 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
                     errors={profileError}
                     tokens={tokens}
                 />
-            ) : (
+            }
+            {!editing && baseData &&
                 <Profile
                     baseData={baseData!!}
                     tokens={tokens}
                     subscriptions={profile?.subscriptions ?? []}
                     isOwner={isOwner()}
                 />
-            )}
+            }
             <Footer/>
         </main>
     );
@@ -190,6 +189,8 @@ const ProfilePage: NextPage<Props> = ({authStatus, profile, ownerAddress, tokens
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {
         const profileId = ctx.params!!.profileId as string;
+
+        console.log(`Load profile ${profileId}`);
 
         const props: Props = {
             authStatus: getAuthStatus(ctx),
