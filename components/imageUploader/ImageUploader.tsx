@@ -99,7 +99,8 @@ const ImageUploader: React.FC<Props> = ({
             {isImgLoading ? (
               <LoadingOutlined />
             ) : (
-              <FileAddOutlined style={{ color: "#000" }} />
+              <div className={styles.personIcon}></div>
+              // <FileAddOutlined style={{ color: "#000" }} />
             )}
           </p>
           <p style={{ fontSize: "16px", fontFamily: "co-headline" }}>
