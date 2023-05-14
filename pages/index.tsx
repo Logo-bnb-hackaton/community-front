@@ -253,8 +253,7 @@ const Home: NextPage<Props> = ({topProfiles}) => {
                             fontSize: "32px",
                         }}
                     >
-                        Create closed sessions for training, streams, and other events, as
-                        well as receive donations from subscribers.
+                        Create content for your subscribers and receive donates in one click with Web 3 technologies
                     </p>
                     <h1>Build you own community</h1>
                     <div
