@@ -15,6 +15,7 @@ import {GetInviteLinkStatusType, TgChatStatusDTO} from "@/api/dto/integration.dt
 import Link from "next/link";
 import {buildProfileImageLink, buildSubscriptionImageLink} from "@/utils/s3";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import {TgBotLink} from "@/components/subscription/integration/Integration";
 
 export interface BriefProfile {
     id: string;
@@ -29,8 +30,6 @@ interface Props {
     paymentStatus: 'PAID' | 'NOT_PAID',
     tgLinkStatus?: TgChatStatusDTO
 }
-
-const tg_bot = 'https://t.me/nodde_bot';
 
 const Subscription: React.FC<Props> = (
     {
@@ -160,7 +159,7 @@ const Subscription: React.FC<Props> = (
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) {
             return (
                 <CopyToClipboard text={tgLinkStatus.code!!}>
-                    <Link href={tg_bot} target={'_blank'}>
+                    <Link href={TgBotLink} target={'_blank'}>
                         Copy invite code and Go to telegram
                     </Link>
                 </CopyToClipboard>
@@ -169,7 +168,7 @@ const Subscription: React.FC<Props> = (
         if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return <p>Generate invite code</p>;
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_USED) {
             return (
-                <Link href={tg_bot} target={'_blank'}>
+                <Link href={TgBotLink} target={'_blank'}>
                     Go to telegram
                 </Link>
             );
@@ -367,6 +366,7 @@ const Subscription: React.FC<Props> = (
                     width: "100%",
                     fontSize: "21px",
                     whiteSpace: "pre-wrap",
+                    textAlign: 'justify',
                 }}
             >
                 {subscription.description}
@@ -402,16 +402,17 @@ const Subscription: React.FC<Props> = (
                             value={getPath()}
                             placeholder="Subscription link"
                         />
-                        <CustomButton
-                            type="small"
-                            style={{minWidth: "100px", fontSize: "16px"}}
-                            color={"green"}
-                            onClick={() => {
-                                navigator.clipboard.writeText(getPath());
-                            }}
-                        >
-                            Copy
-                        </CustomButton>
+                        <CopyToClipboard text={getPath()} onCopy={() => message.success('Copied')}>
+                            <CustomButton
+                                type="small"
+                                style={{minWidth: "100px", fontSize: "16px"}}
+                                color={"green"}
+                                onClick={() => {
+                                }}
+                            >
+                                Copy
+                            </CustomButton>
+                        </CopyToClipboard>
                     </div>
                 </div>
             </Modal>

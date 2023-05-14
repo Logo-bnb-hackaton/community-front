@@ -4,7 +4,6 @@ import styles from "@/styles/Donate.module.css";
 import React, {useEffect, useState} from "react";
 import {erc20ABI, useAccount, useBalance, useContractReads} from "wagmi";
 import {StepProps} from "antd/es/steps";
-import {ResultStatusType} from "antd/es/result";
 import {LoadingOutlined} from "@ant-design/icons";
 import {BigNumber, ethers} from "ethers";
 import {prepareWriteContract, waitForTransaction, writeContract, WriteContractPreparedArgs,} from "@wagmi/core";
@@ -98,7 +97,7 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
         getDonateSteps(donateCoin)
     );
     const [donateResult, setDonateResult] = useState<
-        { status: ResultStatusType; title: string } | undefined
+        { status: 'success' | 'error'; title: string } | undefined
     >(undefined);
     const [tokenBalances, setTokenBalances] = useState<
         Map<string, BigNumber> | undefined
@@ -300,6 +299,10 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
         }
     };
 
+    const isDonateResultSuccess = () => {
+        return donateResult?.status === 'success';
+    }
+
     return (
         <>
             <CustomButton
@@ -325,8 +328,8 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
                     width={"900px"}
                     centered
                     open={isDonateMenuOpen}
-                    okText={"Donate"}
-                    onOk={donate}
+                    okText={isDonateResultSuccess() ? "Done" : "Donate"}
+                    onOk={isDonateResultSuccess() ? closeDonateMenu : donate}
                     okButtonProps={{
                         disabled:
                             isOwner ||
@@ -336,6 +339,7 @@ const Donate: React.FC<Props> = ({profileId, availableTokens, isOwner}) => {
                         className: `${styles.donateModelDoneButton} ${styles.donateModalOkButton} `,
                     }}
                     cancelButtonProps={{
+                        style: { display: isDonateResultSuccess() ? 'none' : '' },
                         className: `${styles.donateModelDoneButton} ${styles.donateModalCancelButton}`,
                     }}
                     onCancel={closeDonateMenu}
