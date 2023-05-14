@@ -7,6 +7,7 @@ interface Props {
 }
 
 const Statistics: React.FC<Props> = ({ profileId }) => {
+  const [dataLoading, setDataLoading] = useState(true);
   const [tokenURI, setTokenURI] = useState("");
   const [authorsAmountsInETH, setAuthorsAmountsInETH] = useState("");
   const [authorsAmountsInUSD, setAuthorsAmountsInUSD] = useState("");
@@ -33,10 +34,10 @@ const Statistics: React.FC<Props> = ({ profileId }) => {
       tokenURIPromise,
       authorsAmountsInETHPromise,
       authorsAmountsInUSDPromise,
-    ]);    
+    ]);
   };
 
-  const loadMetaData = async (uri: string) => {      
+  const loadMetaData = async (uri: string) => {
     const _tokenURI = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
     const response = await fetch(_tokenURI);
     const metadata = await response.json();
@@ -50,7 +51,9 @@ const Statistics: React.FC<Props> = ({ profileId }) => {
     const blob = await imageData.blob();
     const imageURL = URL.createObjectURL(blob);
     setNFTImage(imageURL);
-  }
+
+    setDataLoading(false);
+  };
 
   useEffect(() => {
     loadDatas();
@@ -60,23 +63,52 @@ const Statistics: React.FC<Props> = ({ profileId }) => {
     <>
       <div className={styles.container}>
         <div className={styles.wrapper}>
-          <img className={styles.image} src={nftImage} alt="NFT Image" />
-          <h3>{nftMetadata?.name}</h3>
+          {dataLoading ? (
+            <Spinner />
+          ) : (
+            <>
+              <img className={styles.image} src={nftImage} alt="NFT Image" />
+              <h3>{nftMetadata?.name}</h3>
+            </>
+          )}
         </div>
 
         <div className={styles.textWrapper}>
           <h2>Statistics</h2>
-          <div>
-            <p>Total Amount</p>
-            <h3>BNB {authorsAmountsInETH}</h3>
-          </div>
-          <div>
-            <p>Equivalent to USD</p>
-            <h3>$ {authorsAmountsInUSD}</h3>
-          </div>
+          {!dataLoading &&
+            <>
+              <div>
+                <p>Total Amount</p>
+                <h3>BNB {authorsAmountsInETH}</h3>
+              </div>
+              <div>
+                <p>Equivalent to USD</p>
+                <h3>$ {authorsAmountsInUSD}</h3>
+              </div>
+            </>
+          }
         </div>
       </div>
     </>
+  );
+};
+
+const Spinner = ({ width = "50px", height = "50px" }) => {
+  return (
+    <div
+      className={styles.sk_chase}
+      style={{
+        width: width,
+        height: height,
+      }}
+    >
+      <div className={styles.sk_chase_dot}></div>
+      <div className={styles.sk_chase_dot}></div>
+      <div className={styles.sk_chase_dot}></div>
+      <div className={styles.sk_chase_dot}></div>
+      <div className={styles.sk_chase_dot}></div>
+      <div className={styles.sk_chase_dot}></div>
+    </div>
   );
 };
 
