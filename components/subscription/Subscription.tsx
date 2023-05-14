@@ -367,6 +367,7 @@ const Subscription: React.FC<Props> = (
                     width: "100%",
                     fontSize: "21px",
                     whiteSpace: "pre-wrap",
+                    textAlign: 'justify',
                 }}
             >
                 {subscription.description}
