@@ -410,8 +410,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         return 0;
     });
 
-    console.log(topProfiles);
-
     return {
         props: {
             authStatus: getAuthStatus(ctx),
