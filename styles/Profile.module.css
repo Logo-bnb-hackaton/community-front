@@ -13,24 +13,11 @@
   justify-content: center;
   align-items: center;
 }
-/* 
-.centerWrapper {
-  min-width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 0 4rem;
-} */
 
 .grid {
   width: var(--max-width);
   max-width: 100%;
   display: grid;
-  /* grid-template-columns: 380px auto;
-    grid-template-rows: 380px auto;
-    grid-template-areas:
-      "logo description"
-      "donate donate"; */
   column-gap: 80px;
   row-gap: 64px;
   display: flex;
@@ -44,7 +31,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 32px;
   overflow: visible;
 }
 
@@ -181,17 +167,16 @@
   transform: scale(1.03);
 }
 
-.personIcon{
-    margin: 0;
-    display: inline-block;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: contain;
-  }
+.personIcon {
+  margin: 0;
+  display: inline-block;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
 
 .errorBorder {
   border: 1px solid red;
-  /* border-radius: 20px; */
 }
 
 .logoProfile {
@@ -218,13 +203,58 @@
   /* justify-content: left; */
 }
 
+.container {
+  position: relative;
+  overflow: hidden;
+  min-width: 350px;
+  min-height: 350px;
+  width: 350px;
+  height: 350px;
+  border-radius: 20px;
+}
+
+.icon {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 40px;
+  height: 40px;
+  background-color: #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  border-radius: 0 20px;
+}
+
+.embeddedComponent {
+  border-radius: 20px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 350px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+  z-index: 1;
+}
+
+.showComponent {
+  transform: translateX(0%);
+}
+
+.hideComponent {
+  visibility: hidden;
+}
+
 @media screen and (max-width: 1090px) {
   .grid {
     flex-direction: column;
-  }
-
-  .grid * {
-    margin: 10px 0;
   }
 
   .socialMediaLinksContainer {
