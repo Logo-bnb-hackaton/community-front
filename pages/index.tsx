@@ -22,30 +22,18 @@ import {buildProfileImageLink} from "@/utils/s3";
 import * as Api from "@/api";
 import {BaseProfileDTO} from "@/api/dto/profile.dto";
 
+
+interface BriefProfileInfo {
+    id: string,
+    logoId: string;
+    title: string,
+}
+
 interface Props extends AuthProps {
+    topProfiles: BriefProfileInfo[]
 }
 
-export interface BaseProfile {
-    id: string;
-    title: string;
-    description: string;
-    logoId?: string;
-    newBase64Logo?: string;
-    socialMediaLinks: string[];
-}
-
-const fromProfileDTO = (dto: BaseProfileDTO): BaseProfile => {
-    return {
-        id: dto.id,
-        title: dto.title,
-        description: dto.description,
-        logoId: dto.logoId,
-        newBase64Logo: undefined,
-        socialMediaLinks: dto.socialMediaLinks,
-    };
-};
-
-const Home: NextPage<Props> = () => {
+const Home: NextPage<Props> = ({topProfiles}) => {
     const router = useRouter();
     const {address, isConnected} = useAccount();
     const [priceToMint, setPriceToMint] = useState<BigNumber | undefined>(
@@ -220,46 +208,6 @@ const Home: NextPage<Props> = () => {
         setShowAlert(false);
     };
 
-    const [baseDatas, setBaseDatas] = useState<BaseProfile[] | undefined>(
-        undefined
-    );
-    const loadProfiles = async () => {
-        console.log("Load profile ....");
-        try {
-          const updatedProfiles: BaseProfile[] = [];
-          const profiles: Promise<void>[] = [];
-    
-          let i = 0;
-          while (i++ < 9) {
-            const profilePromise = Api.profile
-              .loadProfile(i.toString(), null)
-              .then((profile) => {
-                if (profile) {
-                  updatedProfiles.push(fromProfileDTO(profile));
-                }
-              });
-            profiles.push(profilePromise);
-          }
-    
-          await Promise.all(profiles).then(() => {
-            console.log(
-              `All profiles loaded. Number of profiles: ${updatedProfiles.length}`
-            );
-            const shuffledBaseDatas = updatedProfiles.sort(
-              () => 0.5 - Math.random()
-            );
-            const selectedBaseDatas = shuffledBaseDatas.slice(0, 3);
-            setBaseDatas(selectedBaseDatas);
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
-    useEffect(() => {
-        loadProfiles();
-    }, []);
-
     return (
         <>
             {showAlert && (
@@ -394,8 +342,8 @@ const Home: NextPage<Props> = () => {
                         <h2 style={{alignSelf: "start"}}>VIEW TOP PROFILES</h2>
                         <div className={styles.topProfileWrapper}>
                             <div className={styles.topProfileContainer}>
-                                {baseDatas &&
-                                    baseDatas.map((baseData) => (
+                                {topProfiles &&
+                                    topProfiles.map((baseData) => (
                                         <div
                                             key={baseData.id}
                                             className={styles.topProfileContainerWrapper}>
@@ -424,9 +372,50 @@ const Home: NextPage<Props> = () => {
 };
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+
+    const defaultProfileIds = [1, 2, 7];
+
+    const fromProfileDTO = (dto: BaseProfileDTO): BriefProfileInfo => {
+        return {
+            id: dto.id,
+            title: dto.title,
+            logoId: dto.logoId,
+        };
+    };
+
+    console.log("Load top profiles ....");
+    const topProfiles: BriefProfileInfo[] = [];
+    const profilesPromises: Promise<void>[] = [];
+
+    try {
+        for (let index in defaultProfileIds) {
+            const profilePromise = Api.profile
+                .loadProfile(defaultProfileIds[index].toString(), null)
+                .then((profile) => {
+                    if (profile) {
+                        topProfiles.push(fromProfileDTO(profile));
+                    }
+                });
+            profilesPromises.push(profilePromise);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    await Promise.all(profilesPromises);
+
+    topProfiles.sort(function (a, b) {
+        if (a.id < b.id) return -1;
+        if (a.id > b.id) return 1;
+        return 0;
+    });
+
+    console.log(topProfiles);
+
     return {
         props: {
             authStatus: getAuthStatus(ctx),
+            topProfiles: topProfiles
         },
     };
 };
