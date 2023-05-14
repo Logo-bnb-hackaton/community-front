@@ -13,24 +13,11 @@
   justify-content: center;
   align-items: center;
 }
-/* 
-.centerWrapper {
-  min-width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 0 4rem;
-} */
 
 .grid {
   width: var(--max-width);
   max-width: 100%;
   display: grid;
-  /* grid-template-columns: 380px auto;
-    grid-template-rows: 380px auto;
-    grid-template-areas:
-      "logo description"
-      "donate donate"; */
   column-gap: 80px;
   row-gap: 64px;
   display: flex;
@@ -44,7 +31,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 32px;
   overflow: visible;
 }
 

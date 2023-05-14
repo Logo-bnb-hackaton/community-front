@@ -75,14 +75,12 @@ const Profile: React.FC<Props> = ({
             {/* Todo use markdown here, but not now */}
             <p className={styles.lineBreak}>{baseData.description}</p>
           </div>
-        {
-                (isOwner || getAvailableSubscriptions().length > 0) &&
-                <SubscriptionList
-                    profileId={baseData.id}
-                    subscriptions={getAvailableSubscriptions()}
-                    isOwner={isOwner}
-                />
-            }
+          <SocialMediaList
+            socialMediaLinks={baseData.socialMediaLinks}
+            setSocialLinks={undefined}
+            editing={false}
+            hasError={false}
+          />
         </div>
       </div>
       <Donate
