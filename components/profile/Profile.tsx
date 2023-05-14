@@ -4,10 +4,10 @@ import SocialMediaList from "@/components/social_media_list/SocialMediaList";
 import Donate from "@/components/donate/donate";
 import SubscriptionList from "@/components/subscription/SubscriptionList";
 import Statistics from "@/components/statistics/Statistics";
-import React, { useEffect, useState } from "react";
-import { BaseProfile } from "@/pages/profile/[profileId]";
-import { BriefSubscriptionInfo } from "@/api/dto/subscription.dto";
-import { buildProfileImageLink } from "@/utils/s3";
+import React, {useState} from "react";
+import {BaseProfile} from "@/pages/profile/[profileId]";
+import {BriefSubscriptionInfo} from "@/api/dto/subscription.dto";
+import {buildProfileImageLink} from "@/utils/s3";
 
 interface Props {
   baseData: BaseProfile;
@@ -88,11 +88,14 @@ const Profile: React.FC<Props> = ({
         availableTokens={tokens}
         isOwner={isOwner}
       />
-      <SubscriptionList
-        profileId={baseData.id}
-        subscriptions={getAvailableSubscriptions()}
-        isOwner={isOwner}
-      />
+      {
+          (isOwner || getAvailableSubscriptions().length > 0) &&
+          <SubscriptionList
+              profileId={baseData.id}
+              subscriptions={getAvailableSubscriptions()}
+              isOwner={isOwner}
+          />
+      }
     </div>
   );
 };
