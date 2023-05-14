@@ -7,10 +7,8 @@ import CustomButton from "@/components/customButton/CustomButton";
 import {addressBySymbol, baseCoin, possibleTokens} from "@/utils/tokens";
 import {LoadingOutlined} from "@ant-design/icons";
 import * as Contract from "@/contract";
-import {BaseProfile, ProfileError} from "@/pages/profile/[profileId]";
+import {BaseProfile, MAX_DESCRIPTION_LEN, ProfileError} from "@/pages/profile/[profileId]";
 import {tryBuildProfileImageLink} from "@/utils/s3";
-
-const MAX_DESCRIPTION_LEN = 150;
 
 interface Props {
     id: string;

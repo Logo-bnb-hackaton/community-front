@@ -51,7 +51,7 @@ const fromProfileDTO = (dto: BaseProfileDTO): BaseProfile => {
     };
 };
 
-const MAX_DESCRIPTION_LEN = 250;
+export const MAX_DESCRIPTION_LEN = 220;
 
 interface Props extends AuthProps {
     profile?: ProfileDTO;
