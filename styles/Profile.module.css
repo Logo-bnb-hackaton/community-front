@@ -181,13 +181,13 @@
   transform: scale(1.03);
 }
 
-.personIcon{
-    margin: 0;
-    display: inline-block;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: contain;
-  }
+.personIcon {
+  margin: 0;
+  display: inline-block;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
 
 .errorBorder {
   border: 1px solid red;
@@ -220,8 +220,10 @@
 .container {
   position: relative;
   overflow: hidden;
-  width: 100%;
-  height: 100%;
+  min-width: 350px;
+  min-height: 350px;
+  width: 350px;
+  height: 350px;
   border-radius: 20px;
 }
 
@@ -267,10 +269,6 @@
 @media screen and (max-width: 1090px) {
   .grid {
     flex-direction: column;
-  }
-
-  .grid * {
-    margin: 10px 0;
   }
 
   .socialMediaLinksContainer {
