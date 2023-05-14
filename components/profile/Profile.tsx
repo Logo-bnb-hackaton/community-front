@@ -63,11 +63,15 @@ const Profile: React.FC<Props> = ({
                 availableTokens={tokens}
                 isOwner={isOwner}
             />
-            <SubscriptionList
-                profileId={baseData.id}
-                subscriptions={getAvailableSubscriptions()}
-                isOwner={isOwner}
-            />
+
+            {
+                (isOwner || getAvailableSubscriptions().length > 0) &&
+                <SubscriptionList
+                    profileId={baseData.id}
+                    subscriptions={getAvailableSubscriptions()}
+                    isOwner={isOwner}
+                />
+            }
         </div>
     );
 };
