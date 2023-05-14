@@ -4,6 +4,7 @@ import styles from "@/styles/Subscription.module.css";
 import CustomButton from "@/components/customButton/CustomButton";
 import * as Api from "@/api";
 import {TgChatDTO} from "@/api/dto/integration.dto";
+import Link from "next/link";
 
 enum Platform {
     Telegram = "Telegram",
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const TgBotName = 'nodde_bot';
+export const TgBotLink = `https://t.me/${TgBotName}`;
 const savingStepIndex = 1;
 const finalStepIndex = 2;
 
@@ -87,17 +89,17 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
     /**
      * Component
      */
-    const generateDescriptions = (descriptionItems: string[], child: ReactNode | undefined = undefined) => {
+    const generateDescriptions = (descriptionItems: ReactNode[], child: ReactNode | undefined = undefined) => {
         return (
             <div className={styles.integrationStepWrapper}>
                 <div className={styles.integrationStepContentWrapper}>
                     <div className={styles.integrationStepDescriptionWrapper}>
                         <ul>
-                            {descriptionItems.map((text, index) => {
+                            {descriptionItems.map((child, index) => {
                                 return (
                                     <>
                                         {index !== 0 ? <br/> : <></>}
-                                        <li>{text}</li>
+                                        <li>{child}</li>
                                     </>
                                 );
                             })}
@@ -106,6 +108,18 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
                     {child && child}
                 </div>
             </div>
+        );
+    }
+
+    const getTgBotLink = (): ReactNode => {
+        return (
+            <Link
+                href={`https://t.me/${TgBotName}`}
+                className={styles.integrationLink}
+                target={'_blank'}
+            >
+                @{TgBotName}
+            </Link>
         );
     }
 
@@ -126,10 +140,28 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
                 {
                     generateDescriptions(
                         [
-                            `To activate the @${TgBotName}, go to Telegram and search for it by name in the search bar. Click on the bot\'s icon to go to its page.`,
-                            `Press the "Start" button on the bot\'s page.`,
-                            `Invite @${TgBotName} to your private channel. To do this, go to the channel\'s information panel and find the "Members" tab.`,
-                            `Click on the "Add member" button and find @${TgBotName} in the list of available bots. Click on it to add it to the channel.`,
+                            <p key={'tg-instruction-step-one-1'}>
+                                To link your Telegram chat to the subscription, click on {getTgBotLink()}.
+                            </p>,
+                            <p key={'tg-instruction-step-one-2'}>
+                                Press the "Start" button on the bot's page.
+                            </p>,
+                            <p key={'tg-instruction-step-one-3'}>
+                                Invite {getTgBotLink()} to your private chat. To do this, go to the chat's information
+                                panel and find the "Members" tab.
+                            </p>,
+                            <p key={'tg-instruction-step-one-4'}>
+                                Click on the "Add member" button and find {getTgBotLink()} in the list of available
+                                bots. Click on it to add it to the channel.
+                            </p>,
+                            <p key={'tg-instruction-step-one-5'}>
+                                Make {getTgBotLink()} an administrator of your chat. To do this, go to the chat's
+                                information panel and click “Edit” bottom.
+                            </p>,
+                            <p key={'tg-instruction-step-one-6'}>
+                                Select “Administrators” option, click “Add Admin” and tap on {getTgBotLink()} to select
+                                it as an administrator.
+                            </p>,
                         ])
                 }
             </>
@@ -142,9 +174,17 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
                 {
                     generateDescriptions(
                         [
-                            `Write a message "@${TgBotName} bind" in your private channel. The bot should respond with a message containing a code.`,
-                            `Copy the code received from @${TgBotName}.`,
-                            `Enter the copied code in the "Telegram Code" field.`,
+                            <p key={'tg-instruction-step-two-1'}>
+                                Write a message "@nodde_bot bind" in your private chat. The bot should respond with a
+                                private message containing a code.
+                            </p>,
+                            <p key={'tg-instruction-step-two-2'}>
+                                Copy the code received from {getTgBotLink()}.
+                            </p>,
+
+                            <p key={'tg-instruction-step-two-3'}>
+                                Enter the copied code in the "Telegram Token" field below.
+                            </p>,
                         ])
                 }
                 <div className={styles.integrationStepWrapper}>
@@ -167,8 +207,16 @@ const Integration: React.FC<Props> = ({topLvlChat, subscriptionId, previousCallb
             <>
                 {chat &&
                     <>
-                        <p>Telegram chat name: {chat!!.chat!!.title}</p>
-                        <a href={chat!!.chat!!.link} target="_blank">Tg chat link</a>
+                        <h3>Telegram integration completed!</h3>
+                        <Link href={chat!!.chat!!.link} target={'_blank'} style={{margin: '32px 0'}}>
+                            <CustomButton
+                                type={"small"}
+                                style={{padding: '0 32px', backgroundColor: '#d9d9d9'}}
+                                onClick={() => {
+                                }}>
+                                Open '{chat!!.chat!!.title}'
+                            </CustomButton>
+                        </Link>
                     </>
                 }
             </>
