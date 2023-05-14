@@ -152,53 +152,87 @@ const Subscription: React.FC<Props> = (
         }
     }
 
+    const generateInviteCode = async () => {
+        try {
+            setIsLoading(true);
+            const code = (await Api.integration.generateInviteCode(subscription.id)).code;
+            setTgLinkStatus({status: GetInviteLinkStatusType.CODE_GENERATED, code: code});
+        } catch (e) {
+            router.reload();
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     const getPaidButtonText = (tgLinkStatus: TgChatStatusDTO | undefined): ReactNode => {
         if (tgLinkStatus?.status === undefined) {
-            return <p>Refresh page</p>;
+            return (
+                <CustomButton
+                    disabled={isLoading}
+                    type="wide"
+                    color={"green"}
+                    onClick={() => router.reload()}
+                >
+                    Refresh page
+                </CustomButton>
+            );
         }
+
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) {
             return (
                 <CopyToClipboard text={tgLinkStatus.code!!}>
                     <Link href={TgBotLink} target={'_blank'}>
-                        Copy invite code and Go to telegram
+                        <CustomButton
+                            disabled={isLoading}
+                            type="wide"
+                            color={"green"}
+                            onClick={() => {
+                            }}
+                        >
+                            Copy invite code and Go to telegram
+                        </CustomButton>
                     </Link>
                 </CopyToClipboard>
             );
         }
-        if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return <p>Generate invite code</p>;
+        if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) {
+            return (
+                <CustomButton
+                    disabled={isLoading}
+                    type="wide"
+                    color={"green"}
+                    onClick={generateInviteCode}
+                >
+                    Generate invite code
+                </CustomButton>
+            );
+        }
         if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_USED) {
             return (
                 <Link href={TgBotLink} target={'_blank'}>
-                    Go to telegram
+                    <CustomButton
+                        disabled={isLoading}
+                        type="wide"
+                        color={"green"}
+                        onClick={() => {
+                        }}
+                    >
+                        Go to telegram
+                    </CustomButton>
                 </Link>
             );
         }
 
-        return <p>Refresh page</p>;
-    }
-
-    const getPaidFunction = (tgLinkStatus: TgChatStatusDTO | undefined): () => void => {
-        if (tgLinkStatus?.status === undefined) {
-            return () => router.reload();
-        }
-
-        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_GENERATED) return () => {
-        };
-        if (tgLinkStatus.status === GetInviteLinkStatusType.NOT_GENERATED) return async () => {
-            try {
-                setIsLoading(true);
-                const code = (await Api.integration.generateInviteCode(subscription.id)).code;
-                setTgLinkStatus({status: GetInviteLinkStatusType.CODE_GENERATED, code: code});
-            } catch (e) {
-                router.reload();
-            } finally {
-                setIsLoading(false);
-            }
-        }
-        if (tgLinkStatus.status === GetInviteLinkStatusType.CODE_USED) return () => {
-        };
-
-        return () => router.reload();
+        return (
+            <CustomButton
+                disabled={isLoading}
+                type="wide"
+                color={"green"}
+                onClick={() => router.reload()}
+            >
+                Refresh page
+            </CustomButton>
+        );
     }
 
     return (
@@ -326,14 +360,7 @@ const Subscription: React.FC<Props> = (
                 {!isOwner() &&
                     <>
                         {paymentStatus === 'PAID' &&
-                            <CustomButton
-                                disabled={isLoading}
-                                type="wide"
-                                color={"green"}
-                                onClick={getPaidFunction(tgLinkStatus)}
-                            >
-                                {getPaidButtonText(tgLinkStatus)}
-                            </CustomButton>
+                            getPaidButtonText(tgLinkStatus)
                         }
                         {paymentStatus === 'NOT_PAID' &&
                             <CustomButton
