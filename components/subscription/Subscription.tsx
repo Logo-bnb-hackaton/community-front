@@ -403,16 +403,17 @@ const Subscription: React.FC<Props> = (
                             value={getPath()}
                             placeholder="Subscription link"
                         />
-                        <CustomButton
-                            type="small"
-                            style={{minWidth: "100px", fontSize: "16px"}}
-                            color={"green"}
-                            onClick={() => {
-                                navigator.clipboard.writeText(getPath());
-                            }}
-                        >
-                            Copy
-                        </CustomButton>
+                        <CopyToClipboard text={getPath()} onCopy={() => message.success('Copied')}>
+                            <CustomButton
+                                type="small"
+                                style={{minWidth: "100px", fontSize: "16px"}}
+                                color={"green"}
+                                onClick={() => {
+                                }}
+                            >
+                                Copy
+                            </CustomButton>
+                        </CopyToClipboard>
                     </div>
                 </div>
             </Modal>
