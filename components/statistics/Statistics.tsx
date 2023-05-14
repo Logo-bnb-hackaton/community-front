@@ -7,9 +7,9 @@ interface Props {
 }
 
 const Statistics: React.FC<Props> = ({ profileId }) => {
-  const [tokenURI, seTokenURI] = useState("");
-  const [authorsAmountsInETH, seAuthorsAmountsInETH] = useState("");
-  const [authorsAmountsInUSD, seAuthorsAmountsInUSD] = useState("");
+  const [tokenURI, setTokenURI] = useState("");
+  const [authorsAmountsInETH, setAuthorsAmountsInETH] = useState("");
+  const [authorsAmountsInUSD, setAuthorsAmountsInUSD] = useState("");
   const [nftMetadata, setNFTMetadata] = useState<any>();
   const [nftImage, setNFTImage] = useState<any>();
 
@@ -17,17 +17,17 @@ const Statistics: React.FC<Props> = ({ profileId }) => {
     const tokenURIPromise = Contract.statistics
       .getTokenURI(profileId)
       .then(async (uri) => {
-        seTokenURI(uri);
+        setTokenURI(uri);
         await loadMetaData(uri);
       });
 
     const authorsAmountsInETHPromise = Contract.statistics
       .getAuthorsAmountsInETH(profileId)
-      .then((amount) => seAuthorsAmountsInETH(amount));
+      .then((amount) => setAuthorsAmountsInETH(amount));
 
     const authorsAmountsInUSDPromise = Contract.statistics
       .getAuthorsAmountsInUSD(profileId)
-      .then((amount) => seAuthorsAmountsInUSD(amount));
+      .then((amount) => setAuthorsAmountsInUSD(amount));
 
     await Promise.all([
       tokenURIPromise,
